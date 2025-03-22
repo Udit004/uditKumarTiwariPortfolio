@@ -1,0 +1,20 @@
+@import "tailwindcss";
+/* Tailwind CSS directives */
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+/* @import 'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css'; */
+
+
+/* Custom global styles (optional) */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Dark mode styles */
+body.dark {
+  background-color: #1a202c; /* Dark background */
+  color: #f7fafc; /* Light text color */
+}
