@@ -14,7 +14,4 @@ body {
 }
 
 /* Dark mode styles */
-body.dark {
-  background-color: #1a202c; /* Dark background */
-  color: #f7fafc; /* Light text color */
-}
+/* Removed custom dark mode styles as Tailwind CSS handles dark mode */

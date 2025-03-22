@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 
 const Home = () => {
   return (
-    <header
+    <header id="home"
+
       className="
         relative 
         overflow-hidden 
