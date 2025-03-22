@@ -41,7 +41,7 @@ const projects = [
       image: "/assets/portfolio_image2.jpg",
       description: "My personal portfolio showcasing my skills and projects.",
       technologies: "React, Tailwind CSS",
-      liveLink: "https://udit004.github.io/",
+      liveLink: "https://uditportfolio-six.vercel.app/",
       githubLink: "https://github.com/Udit004/Udit004.github.io.git",
     },
     {
