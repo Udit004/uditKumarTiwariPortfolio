@@ -6,25 +6,39 @@ export const DarkModeContext = createContext();
 // Provider Component
 export const DarkModeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(() => {
-    console.log("Dark mode state initialized:", localStorage.getItem("theme") === "dark");
-    return localStorage.getItem("theme") === "dark"; // Corrected return statement
+    // Check localStorage first
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      return savedTheme === "dark";
+    }
+    
+    // If no saved theme, check system preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
+    // Update localStorage and document class
     if (darkMode) {
-      console.log("Dark mode enabled");
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      console.log("Current document classes:", document.documentElement.classList);
-      console.log("Dark mode disabled");
-
-
-      console.log("Dark mode disabled");
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      if (!localStorage.getItem("theme")) {
+        setDarkMode(e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <DarkModeContext.Provider value={{ darkMode, setDarkMode }}>
