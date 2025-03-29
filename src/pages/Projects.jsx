@@ -33,7 +33,7 @@ const projects = [
       image: "/assets/alumni_project_image.jpg",
       description: "An alumni networking platform connecting alumni with students.",
       technologies: "React, Tailwind CSS, MongoDB, Express",
-      liveLink: "https://alumni-networking-klduorjdl-udit004s-projects.vercel.app/",
+      liveLink: "https://alumni-networking.vercel.app/",
       githubLink: "https://github.com/Udit004/alumni-networking.git",
     },
     {
