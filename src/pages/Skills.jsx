@@ -6,7 +6,7 @@ import React from "react"; // Remove motion
 const skills = [
   { name: "HTML", level: 90 },
   { name: "CSS", level: 80 },
-  { name: "JavaScript", level: 70 },
+  { name: "JavaScript", level: 40 },
   { name: "MySQL", level: 60 },
   { name: "React", level: 50 },
   { name: "C Programming", level: 60 },

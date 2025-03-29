@@ -1,12 +1,8 @@
-@import "tailwindcss";
-/* Tailwind CSS directives */
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
-/* @import 'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css'; */
+@tailwind utilities;
 
-
-/* Custom global styles (optional) */
+/* Custom global styles */
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f4f4f4;

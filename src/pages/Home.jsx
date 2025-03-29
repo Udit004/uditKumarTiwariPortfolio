@@ -1,6 +1,7 @@
 import React from "react";
 /* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
+import { TypeAnimation } from 'react-type-animation';
 // import blackBackgroundAnimation from "../images/blackBackgroundAnimation.mp4";
 
 const Home = () => {
@@ -54,15 +55,26 @@ const Home = () => {
           Udit Kumar Tiwari
         </motion.h1>
 
-        {/* Static Title */}
-        <motion.h2
+        {/* Animated Title */}
+        <motion.div
           className="mt-2 text-xl md:text-2xl text-gray-200 dark:text-gray-300 font-semibold"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
         >
-          Web Developer | Front-End Enthusiast
-        </motion.h2>
+          <TypeAnimation
+            sequence={[
+              'Web Developer',
+              1000,
+              'Front-End Enthusiast',
+              1000,
+            ]}
+            wrapper="span"
+            speed={50}
+            repeat={Infinity}
+            className="inline-block"
+          />
+        </motion.div>
 
         {/* Subtitle / Description */}
         <motion.p
