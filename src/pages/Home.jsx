@@ -1,131 +1,256 @@
-import React from "react";
-/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { TypeAnimation } from 'react-type-animation';
-// import blackBackgroundAnimation from "../images/blackBackgroundAnimation.mp4";
 
 const Home = () => {
-  return (
-    <header id="home"
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
 
-      className="
-        relative 
-        overflow-hidden 
-        pt-28    /* Ensures there's space below the navbar */
-        font-['Poppins']  /* Use Poppins font (ensure it's imported globally) */
-      "
-    >
+  useEffect(() => {
+    setIsVisible(true);
+    
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Custom typing animation component
+  const CustomTypeAnimation = () => {
+    const [currentText, setCurrentText] = useState('');
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+    
+    const texts = ['Web Developer', 'Front-End Enthusiast', 'UI/UX Designer', 'React Specialist'];
+    
+    useEffect(() => {
+      const currentFullText = texts[currentIndex];
       
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 dark:from-gray-800 dark:to-gray-900"></div>
+      const timeout = setTimeout(() => {
+        if (!isDeleting) {
+          if (currentText.length < currentFullText.length) {
+            setCurrentText(currentFullText.substring(0, currentText.length + 1));
+          } else {
+            setTimeout(() => setIsDeleting(true), 2000);
+          }
+        } else {
+          if (currentText.length > 0) {
+            setCurrentText(currentText.substring(0, currentText.length - 1));
+          } else {
+            setIsDeleting(false);
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % texts.length);
+          }
+        }
+      }, isDeleting ? 50 : 100);
+      
+      return () => clearTimeout(timeout);
+    }, [currentText, currentIndex, isDeleting]);
+    
+    return (
+      <div className="text-xl md:text-2xl font-semibold text-purple-400 mb-4">
+        <span className="text-purple-300">
+          {currentText}
+          <span className="animate-pulse text-purple-400">|</span>
+        </span>
+      </div>
+    );
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const floatingVariants = {
+    animate: {
+      y: [-10, 10, -10],
+      transition: {
+        duration: 6,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  return (
+    <section id="home" className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 top-10">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        {/* Subtle Gradient Overlay */}
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(147, 51, 234, 0.3) 0%, transparent 50%)`
+          }}
+        />
+        
+        {/* Professional Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-20 left-10 w-32 h-32 border border-purple-500 rounded-lg rotate-12"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 border border-blue-500 rounded-full"></div>
+          <div className="absolute bottom-40 left-20 w-20 h-20 border border-purple-400 rounded-lg rotate-45"></div>
+          <div className="absolute bottom-20 right-10 w-28 h-28 border border-blue-400 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Video Background */}
       <video
         autoPlay
         loop
         muted
-        className="absolute top-0 left-0 w-full h-full object-cover"
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
       >
         <source src="/assets/blackBackgroundAnimation.mp4" type="video/mp4" />
       </video>
-      {/* Main Content Container */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center text-white py-32 md:py-40 px-6">
-        {/* Profile Image with Gradient Ring */}
-        <motion.div
-          className="relative w-48 h-48 md:w-56 md:h-56 rounded-full shadow-xl"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1 }}
+
+      {/* Main Content */}
+      <motion.div 
+        className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 py-20"
+        variants={containerVariants}
+        initial="hidden"
+        animate={isVisible ? "visible" : "hidden"}
+      >
+        {/* Profile Section */}
+        <motion.div 
+          className="relative mb-12"
+          variants={itemVariants}
         >
-          {/* Pulsing Gradient Ring */}
-          <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-pink-500 to-yellow-500 animate-pulse">
-            <img
-              src="/assets/udit_passport.jpg"
-              alt="Udit Kumar Tiwari"
-              className="rounded-full w-full h-full object-cover border-4 border-white dark:border-gray-800"
-            />
+          {/* Professional Profile Image */}
+          <div className="relative w-48 h-48 md:w-56 md:h-56 mx-auto">
+            {/* Subtle Gradient Border */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 p-1">
+              <div className="w-full h-full rounded-full bg-slate-900 p-1">
+                <img
+                  src="/assets/udit_passport.jpg"
+                  alt="Udit Kumar Tiwari"
+                  className="w-full h-full rounded-full object-cover shadow-2xl"
+                />
+              </div>
+            </div>
+            
+            {/* Professional Status Indicator */}
+            <div className="absolute bottom-4 right-4 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg">
+              <div className="w-full h-full bg-green-400 rounded-full animate-pulse"></div>
+            </div>
           </div>
         </motion.div>
 
-        {/* Name */}
-        <motion.h1
-          className="mt-8 text-5xl md:text-6xl font-extrabold tracking-tight"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
-        >
-          Udit Kumar Tiwari
-        </motion.h1>
-
-        {/* Animated Title */}
+        {/* Professional Name */}
         <motion.div
-          className="mt-2 text-xl md:text-2xl text-gray-200 dark:text-gray-300 font-semibold"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
+          variants={itemVariants}
+          className="mb-6"
         >
-          <TypeAnimation
-            sequence={[
-              'Web Developer',
-              1000,
-              'Front-End Enthusiast',
-              1000,
-            ]}
-            wrapper="span"
-            speed={50}
-            repeat={Infinity}
-            className="inline-block"
-          />
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
+            Udit Kumar Tiwari
+          </h1>
         </motion.div>
 
-        {/* Subtitle / Description */}
-        <motion.p
-          className="mt-4 text-lg md:text-xl max-w-2xl text-gray-100 dark:text-gray-400 leading-relaxed"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.7 }}
-        >
-          Passionate about crafting beautiful and responsive websites with a focus 
-          on clean code and modern design. Skilled in <strong>React</strong>,{" "}
-          <strong>JavaScript</strong>, and <strong>Tailwind CSS</strong>. 
-          Always eager to learn and explore new horizons.
-        </motion.p>
-
-        {/* Call-to-Action Buttons */}
+        {/* Professional Role */}
         <motion.div
-          className="mt-8 flex flex-wrap justify-center gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.9 }}
+          variants={itemVariants}
+          className="mb-8"
         >
-          <a
+          <CustomTypeAnimation />
+        </motion.div>
+
+        {/* Professional Description */}
+        <motion.div
+          variants={itemVariants}
+          className="max-w-3xl mb-10"
+        >
+          <p className="text-lg md:text-xl text-gray-300 leading-relaxed font-light text-center">
+            Passionate about crafting beautiful and responsive websites with a focus 
+            on clean code and modern design. Skilled in{" "}
+            <span className="text-purple-400 font-medium">React</span>,{" "}
+            <span className="text-purple-400 font-medium">JavaScript</span>, and{" "}
+            <span className="text-purple-400 font-medium">Tailwind CSS</span>.
+          </p>
+        </motion.div>
+
+        {/* Professional CTA Buttons */}
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          <motion.a
             href="#projects"
-            className="px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-white font-semibold rounded-full shadow hover:shadow-lg hover:-translate-y-1 transform transition"
+            className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-medium text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             View My Work
-          </a>
-          <a
+          </motion.a>
+          
+          <motion.a
             href="#contact"
-            className="px-6 py-3 bg-pink-500 dark:bg-pink-600 text-white font-semibold rounded-full shadow hover:shadow-lg hover:-translate-y-1 transform transition"
+            className="px-8 py-3 bg-transparent border-2 border-purple-500 hover:bg-purple-500 rounded-lg text-white font-medium text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             Contact Me
-          </a>
+          </motion.a>
         </motion.div>
-      </div>
 
-      {/* Bottom Wave Shape */}
-      <div className="absolute inset-x-0 bottom-0 overflow-hidden text-white">
+        {/* Scroll Indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+            <motion.div
+              className="w-1 h-3 bg-white/60 rounded-full mt-2"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Bottom Wave */}
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden">
         <svg
           viewBox="0 0 1440 320"
-          fill="currentColor"
-          className="w-full h-40"
+          className="w-full h-32 md:h-40"
           xmlns="http://www.w3.org/2000/svg"
         >
+          <defs>
+            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(168, 85, 247, 0.8)" />
+              <stop offset="50%" stopColor="rgba(236, 72, 153, 0.8)" />
+              <stop offset="100%" stopColor="rgba(168, 85, 247, 0.8)" />
+            </linearGradient>
+          </defs>
           <path
-            fillOpacity="1"
-            d="M0,64L48,74.7C96,85,192,107,288,133.3C384,160,480,192,576,202.7C672,213,768,203,864,192C960,181,1056,171,1152,186.7C1248,203,1344,245,1392,266.7L1440,288L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
-          ></path>
+            fill="url(#waveGradient)"
+            d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,197.3C960,213,1056,203,1152,181.3C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
         </svg>
       </div>
-    </header>
+    </section>
   );
 };
 
