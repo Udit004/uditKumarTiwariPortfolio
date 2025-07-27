@@ -1,6 +1,10 @@
-import React from "react";
-/* eslint-disable no-unused-vars */
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useContext, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ExternalLink, Github, Download, Eye, Code2, Zap } from "lucide-react";
+
+// Note: Import DarkModeContext from your actual context file path
+import { DarkModeContext } from "../context/DarkModeContext";
+
 
 const projects = [
   {
@@ -8,215 +12,535 @@ const projects = [
     image: "/assets/alumni_project_image.jpg",
     description:
       "A full-stack platform for alumni and students to connect, share opportunities, and network. Features user authentication, profile management, and a discussion forum.",
-    technologies:
-      "React, Tailwind CSS, Node.js, Express, MongoDB, Firebase (Auth), Redux (State Management)",
+    technologies: [
+      "React", "Tailwind CSS", "Node.js", "Express", "MongoDB", "Firebase", "Redux"
+    ],
+    category: "Full-Stack",
+    featured: true,
     liveLink: "https://alumni-networking.vercel.app/",
     githubLink: "https://github.com/Udit004/alumni-networking.git",
   },
   {
+    title: "Advanced To-Do List",
+    image: "/assets/Advance_todo_list.jpg",
+    description:
+      "An advanced, AI-powered Progressive Web App (PWA) for task management. Includes intelligent priority prediction using Machine Learning, Gemini AI integration for productivity assistance, real-time collaboration via Socket.IO, and full notification support.",
+    technologies: [
+      "MERN Stack", "JavaScript", "Tailwind CSS", "Framer Motion", "Socket.IO", "Gemini AI", "Machine Learning"
+    ],
+    category: "AI-Powered",
+    featured: true,
+    liveLink: "https://advance-to-do-list-app.vercel.app/",
+    githubLink: "https://github.com/Udit004/Advance-to-do-list-app",
+  },
+  {
+    title: "Coachlix AI Fitness Coaching",
+    image: "/assets/Coachlix_AI_Fitness_Coaching.jpg",
+    description:
+      "A smart Progressive Web App (PWA) designed to empower users in their fitness journey through AI-powered coaching. Coachlix offers personalized workout and diet plan management, real-time interaction with a Gemini AI chatbot.",
+    technologies: [
+      "Next.js", "JavaScript", "Tailwind CSS", "Firebase", "Gemini AI", "MongoDB", "PWA"
+    ],
+    category: "AI-Powered",
+    featured: true,
+    liveLink: "https://coachlix-ai-fitness-coaching.vercel.app/",
+    githubLink: "https://github.com/Udit004/coachlix-ai-fitness-coaching",
+  },
+  {
     title: "Portfolio Website",
     image: "/assets/portfolio_image2.jpg",
-    description: "A responsive, modern portfolio showcasing my projects, skills, and contact information. Features smooth animations, dark/light mode, and a clean UI.",
-    technologies: "React, Tailwind CSS, Framer Motion (Animations), React Icons",
+    description:
+      "A responsive, modern portfolio showcasing my projects, skills, and contact information. Features smooth animations, dark/light mode, and a clean UI.",
+    technologies: [
+      "React", "Tailwind CSS", "Framer Motion", "React Icons"
+    ],
+    category: "Frontend",
+    featured: false,
     liveLink: "https://uditportfolio-six.vercel.app/",
-    githubLink: "https://github.com/Udit004/Udit004.github.io.git"
+    githubLink: "https://github.com/Udit004/Udit004.github.io.git",
   },
   {
     title: "Badminton Academy",
     image: "/assets/Badminton_Academy.jpg",
     description:
       "A dynamic sports academy website showcasing training programs, coach profiles, and class schedules. Includes animated UI elements and responsive design for seamless browsing on all devices.",
-    technologies: "React, Tailwind CSS, React Router, SwiperJS, Framer Motion",
+    technologies: [
+      "React", "Tailwind CSS", "React Router", "SwiperJS", "Framer Motion"
+    ],
+    category: "Frontend",
+    featured: false,
     liveLink: "https://badminton-academy-chi.vercel.app/",
     githubLink: "https://github.com/Udit004/Badminton-Academy",
   },
   {
-    title: "Advanced To-Do List",
-    image: "/assets/Advance_todo_list.jpg",
+    title: "EU Citizen Wallet Portal",
+    image: "/assets/EU_Citizen_Wallet_Portal.jpg",
     description:
-      "A feature-rich task management application with priority sorting, due dates, progress tracking, and dark/light mode. Helps users organize personal and professional tasks efficiently.",
-    technologies: "React, TypeScript, Tailwind CSS, Framer Motion, React Icons",
-    liveLink: "https://advance-to-do-list-app.vercel.app/",
-    githubLink: "https://github.com/Udit004/Advance-to-do-list-app",
+      "A secure and user-friendly digital wallet platform designed for EU citizens to manage personal documents online. This web application features DigiLocker-style document storage using Supabase for database and authentication.",
+    technologies: [
+      "Next.js", "TypeScript", "Tailwind CSS", "Supabase", "Cloudinary"
+    ],
+    category: "Full-Stack",
+    featured: false,
+    liveLink: "https://lovable.dev/projects/0b75f41c-da58-4a55-a037-874482b53fb9",
+    githubLink: "https://github.com/Udit004/eu-citizen-wallet-portal",
   },
   {
     title: "Task Automation App",
     image: "/assets/window-task-automator.png",
-    description: "A Python GUI tool to automate repetitive Windows tasks (file operations, app launches, etc.). Saves time with customizable workflows and one-click execution.",
-    technologies: "Python, Tkinter (GUI), PyInstaller (Executable Packaging)",
-    Download_latest_version:
-      "https://github.com/Udit004/automated-window-task/releases/download/v1.0/automate.window.task.installer.exe",
-    liveLink: "#",
+    description:
+      "A Python GUI tool to automate repetitive Windows tasks (file operations, app launches, etc.). Saves time with customizable workflows and one-click execution.",
+    technologies: [
+      "Python", "Tkinter", "PyInstaller"
+    ],
+    category: "Desktop App",
+    featured: false,
+    downloadLink: "https://github.com/Udit004/automated-window-task/releases/download/v1.0/automate.window.task.installer.exe",
     githubLink: "https://github.com/Udit004/automated-window-task.git",
   },
   {
     title: "Rock Paper Scissors Game",
     image: "/assets/rock_papper_scissor_screenshort.png",
-    description: "An interactive browser-based game with score tracking, dynamic UI feedback, and a fun minimalist design. Play against the computer in real-time.",
-    technologies: "HTML5, CSS3, JavaScript (DOM Manipulation)",
+    description:
+      "An interactive browser-based game with score tracking, dynamic UI feedback, and a fun minimalist design. Play against the computer in real-time.",
+    technologies: [
+      "HTML5", "CSS3", "JavaScript"
+    ],
+    category: "Game",
+    featured: false,
     liveLink: "https://udit004.github.io/Rock-Paper-Scissor-Game-/",
-    githubLink: "https://github.com/Udit004/Rock-Paper-Scissor-Game-.git"
+    githubLink: "https://github.com/Udit004/Rock-Paper-Scissor-Game-.git",
   },
   {
     title: "Simple Calculator",
     image: "/assets/Calculator_screenshort.png",
-    description: "A lightweight calculator with basic arithmetic operations (+, -, ×, ÷) and a sleek, responsive interface. Built for quick calculations.",
-    technologies: "HTML5, CSS3, JavaScript (Event Handling)",
+    description:
+      "A lightweight calculator with basic arithmetic operations (+, -, ×, ÷) and a sleek, responsive interface. Built for quick calculations.",
+    technologies: [
+      "HTML5", "CSS3", "JavaScript"
+    ],
+    category: "Utility",
+    featured: false,
     liveLink: "https://udit004.github.io/simple-Calculator/",
-    githubLink: "https://github.com/Udit004/simple-Calculator.git"
-  },
-  {
-    title: "To-Do List App",
-    image: "/assets/to do list app screenshort.png",
-    description: "A task manager with add/delete functionality, persistence via LocalStorage, and a clean, intuitive interface. Organize daily tasks effortlessly.",
-    technologies: "HTML5, CSS3, JavaScript, LocalStorage API",
-    liveLink: "#",
-    githubLink: "https://github.com/Udit004/to-do-list-app.git",
+    githubLink: "https://github.com/Udit004/simple-Calculator.git",
   },
 ];
 
+// Memoized ProjectCard component for better performance
+const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+  // Optimized animation variants
+  const cardVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 30,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.4,
+        delay: index * 0.05,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      }
+    },
+    hover: {
+      y: -8,
+      scale: 1.02,
+      transition: {
+        duration: 0.2,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const imageVariants = {
+    initial: { scale: 1 },
+    hover: { 
+      scale: 1.05,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  return (
+    <motion.div
+      className={`group relative overflow-hidden rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 will-change-transform ${project.featured ? 'lg:col-span-2' : ''}`}
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      whileHover="hover"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      layout
+    >
+      {/* Optimized gradient border - only shows on hover */}
+      <motion.div 
+        className={`absolute -inset-px bg-gradient-to-r ${currentThemeConfig.borderGradient} rounded-2xl opacity-0 will-change-opacity`}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.2 }}
+      />
+      
+      <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 h-full">
+        {/* Featured Badge */}
+        {project.featured && (
+          <motion.div 
+            className={`absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r ${currentThemeConfig.buttonGradient} text-white text-xs font-bold flex items-center gap-1 z-10`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Zap size={12} />
+            Featured
+          </motion.div>
+        )}
+
+        {/* Project Image */}
+        <div className="relative overflow-hidden rounded-xl mb-6 aspect-video bg-gray-100 dark:bg-gray-800">
+          <motion.img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover will-change-transform"
+            variants={imageVariants}
+            animate={isHovered ? "hover" : "initial"}
+            loading="lazy"
+          />
+          
+          {/* Overlay - only renders when needed */}
+          <AnimatePresence>
+            {isHovered && (
+              <motion.div
+                className="absolute inset-0 bg-black/40 flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <div className="flex gap-3">
+                  {project.liveLink && (
+                    <motion.a
+                      href={project.liveLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors duration-200"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <Eye size={18} />
+                    </motion.a>
+                  )}
+                  <motion.a
+                    href={project.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors duration-200"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                  >
+                    <Code2 size={18} />
+                  </motion.a>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Content */}
+        <div className="space-y-4">
+          <div className="flex items-start justify-between">
+            <motion.h3 
+              className="text-xl font-bold text-gray-800 dark:text-white"
+              animate={isHovered ? {
+                backgroundImage: `linear-gradient(to right, ${currentThemeConfig.gradient.replace('from-', '').replace('to-', '')})`,
+                WebkitBackgroundClip: 'text',
+                color: 'transparent'
+              } : {
+                color: 'inherit'
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              {project.title}
+            </motion.h3>
+            <span className={`px-2 py-1 rounded-lg bg-gradient-to-r ${currentThemeConfig.cardGradient} text-xs font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap`}>
+              {project.category}
+            </span>
+          </div>
+
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3">
+            {project.description}
+          </p>
+
+          {/* Technologies */}
+          <div className="flex flex-wrap gap-2">
+            {project.technologies.slice(0, project.featured ? 6 : 4).map((tech, techIndex) => (
+              <motion.span
+                key={tech}
+                className={`px-3 py-1 text-xs font-medium bg-gradient-to-r ${currentThemeConfig.cardGradient} text-gray-700 dark:text-gray-200 rounded-full border border-white/20 dark:border-gray-600/30`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + techIndex * 0.03 }}
+              >
+                {tech}
+              </motion.span>
+            ))}
+            {project.technologies.length > (project.featured ? 6 : 4) && (
+              <span className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 rounded-full">
+                +{project.technologies.length - (project.featured ? 6 : 4)} more
+              </span>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-2">
+            {project.liveLink && (
+              <motion.a
+                href={project.liveLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${currentThemeConfig.buttonGradient} text-white font-medium rounded-xl transition-all duration-200`}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <ExternalLink size={16} />
+                Live Demo
+              </motion.a>
+            )}
+            {project.downloadLink && (
+              <motion.a
+                href={project.downloadLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl transition-all duration-200"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Download size={16} />
+                Download
+              </motion.a>
+            )}
+            <motion.a
+              href={project.githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Github size={16} />
+              Code
+            </motion.a>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+ProjectCard.displayName = 'ProjectCard';
+
 const Projects = () => {
+  const { darkMode } = useContext(DarkModeContext);
+  const [currentTheme, setCurrentTheme] = useState(0);
+  const [filter, setFilter] = useState("All");
+
+  // Theme configurations
+  const themes = useMemo(() => [
+    { 
+      accent: 'purple', 
+      gradient: 'from-purple-600 to-blue-600',
+      cardGradient: 'from-purple-500/10 to-blue-500/10',
+      borderGradient: 'from-purple-500/50 to-blue-500/50',
+      buttonGradient: 'from-purple-500 to-blue-600'
+    },
+    { 
+      accent: 'emerald', 
+      gradient: 'from-emerald-600 to-teal-600',
+      cardGradient: 'from-emerald-500/10 to-teal-500/10',
+      borderGradient: 'from-emerald-500/50 to-teal-500/50',
+      buttonGradient: 'from-emerald-500 to-teal-600'
+    },
+    { 
+      accent: 'rose', 
+      gradient: 'from-rose-600 to-pink-600',
+      cardGradient: 'from-rose-500/10 to-pink-500/10',
+      borderGradient: 'from-rose-500/50 to-pink-500/50',
+      buttonGradient: 'from-rose-500 to-pink-600'
+    },
+    { 
+      accent: 'amber', 
+      gradient: 'from-amber-600 to-orange-600',
+      cardGradient: 'from-amber-500/10 to-orange-500/10',
+      borderGradient: 'from-amber-500/50 to-orange-500/50',
+      buttonGradient: 'from-amber-500 to-orange-600'
+    }
+  ], []);
+
+  const currentThemeConfig = useMemo(() => themes[currentTheme], [themes, currentTheme]);
+
+  // Smooth theme transition
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTheme(prev => (prev + 1) % themes.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [themes.length]);
+
+  const categories = useMemo(() => ["All", "Full-Stack", "AI-Powered", "Frontend", "Desktop App", "Game", "Utility"], []);
+  
+  // Memoized filtered projects for better performance
+  const filteredProjects = useMemo(() => 
+    filter === "All" ? projects : projects.filter(project => project.category === filter),
+    [filter]
+  );
+
+  const handleFilterChange = useCallback((category) => {
+    setFilter(category);
+  }, []);
+
+  // Optimized background elements
+  const backgroundElements = useMemo(() => 
+    [...Array(5)].map((_, i) => (
+      <motion.div
+        key={i}
+        className={`absolute w-80 h-80 bg-gradient-to-r ${currentThemeConfig.cardGradient} rounded-full filter blur-3xl opacity-10 will-change-transform`}
+        style={{
+          left: `${20 + (i * 20)}%`,
+          top: `${10 + (i * 15)}%`,
+        }}
+        animate={{
+          x: [-30, 30, -30],
+          y: [-30, 30, -30],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 15 + i * 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: i * 2,
+        }}
+      />
+    )), [currentThemeConfig.cardGradient]
+  );
+
   return (
     <motion.section
       id="projects"
-      className="py-24 px-6 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen relative overflow-hidden"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="py-20 px-6 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen relative overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full filter blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-3/4 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full filter blur-3xl animate-pulse delay-2000"></div>
+      {/* Optimized Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {backgroundElements}
       </div>
 
-      <div className="container mx-auto text-center relative z-10">
+      <div className="container mx-auto max-w-7xl relative z-10">
+        {/* Header */}
         <motion.div
-          className="mb-16"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.6 }}
         >
-          <motion.h3
-            className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent mb-4"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          <motion.div
+            className="inline-block mb-6"
+            animate={{ 
+              rotateY: [0, 360],
+            }}
+            transition={{ 
+              duration: 8, 
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
           >
-            My Projects
-          </motion.h3>
-          <motion.p
-            className="text-xl text-gray-300 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+            <div className={`w-20 h-20 bg-gradient-to-br ${currentThemeConfig.gradient} rounded-2xl flex items-center justify-center text-4xl shadow-xl`}>
+              <span>🚀</span>
+            </div>
+          </motion.div>
+
+          <motion.h2 
+            className={`text-4xl md:text-6xl font-bold bg-gradient-to-r ${currentThemeConfig.gradient} bg-clip-text text-transparent mb-6`}
+            key={currentTheme} // Force re-render for smooth color transition
+            initial={{ opacity: 0.7 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            Explore my portfolio of innovative solutions and creative
-            applications
-          </motion.p>
+            Featured Projects
+          </motion.h2>
+
+          <motion.div
+            className={`w-32 h-2 bg-gradient-to-r ${currentThemeConfig.gradient} mx-auto rounded-full mb-8`}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          />
+
+          <p className="text-gray-600 dark:text-gray-300 text-xl max-w-3xl mx-auto leading-relaxed">
+            Discover my latest work and innovative solutions across various technologies
+          </p>
         </motion.div>
 
+        {/* Optimized Filter Buttons */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
-          }}
+          className="flex flex-wrap justify-center gap-3 mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              className="group relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500"
-              variants={{
-                hidden: { opacity: 0, y: 50, rotateX: -15 },
-                visible: { opacity: 1, y: 0, rotateX: 0 },
-              }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              whileHover={{
-                y: -10,
-                scale: 1.02,
-                transition: { duration: 0.3 },
+          {categories.map((category, index) => (
+            <motion.button
+              key={category}
+              onClick={() => handleFilterChange(category)}
+              className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                filter === category
+                  ? `bg-gradient-to-r ${currentThemeConfig.buttonGradient} text-white shadow-lg scale-105`
+                  : 'bg-white/70 dark:bg-gray-800/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-700/90 hover:scale-105'
+              }`}
+              whileTap={{ scale: 0.95 }}
+              layout
+              layoutId={`filter-${category}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                delay: index * 0.05,
+                layout: { duration: 0.2 }
               }}
             >
-              {/* Gradient border effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
-
-              <div className="relative overflow-hidden rounded-xl mb-6">
-                <motion.img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-48 object-cover"
-                  whileHover={{
-                    scale: 1.1,
-                    transition: { duration: 0.4 },
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
-                  {project.title}
-                </h3>
-
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  {project.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.split(", ").map((tech, techIndex) => (
-                    <span
-                      key={techIndex}
-                      className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-200 rounded-full border border-purple-400/30"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex justify-center gap-4 pt-4">
-                  {project.liveLink !== "#" && (
-                    <motion.a
-                      href={project.liveLink}
-                      className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Live Demo
-                    </motion.a>
-                  )}
-                  {project.liveLink === "#" &&
-                    project.Download_latest_version && (
-                      <motion.a
-                        href={project.Download_latest_version}
-                        className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Download
-                      </motion.a>
-                    )}
-                  <motion.a
-                    href={project.githubLink}
-                    className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-gray-500/25 transition-all duration-300 border border-gray-600"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    GitHub
-                  </motion.a>
-                </div>
-              </div>
-            </motion.div>
+              {category}
+            </motion.button>
           ))}
+        </motion.div>
+
+        {/* Projects Grid */}
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+          layout
+        >
+          <AnimatePresence mode="wait">
+            {filteredProjects.map((project, index) => (
+              <ProjectCard 
+                key={`${project.title}-${filter}`} 
+                project={project} 
+                index={index} 
+                currentThemeConfig={currentThemeConfig}
+              />
+            ))}
+          </AnimatePresence>
         </motion.div>
       </div>
     </motion.section>
