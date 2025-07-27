@@ -6,6 +6,7 @@ import Skills from "./pages/Skills";
 import Projects from "./pages/Projects";
 import Contact from "./pages/Contact";
 import { DarkModeProvider } from "./context/DarkModeContext";
+import AIPortfolioChatbot from "./components/AIPortfolioChatbot";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Skills />
       <Projects />
       <Contact />
+      <AIPortfolioChatbot/>
       <Footer />
     </DarkModeProvider>
   );
