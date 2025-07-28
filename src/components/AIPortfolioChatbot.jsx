@@ -11,6 +11,7 @@ import {
   Mic,
   MicOff,
   Volume2,
+  VolumeX,
 } from "lucide-react";
 
 const AIPortfolioChatbot = () => {
@@ -19,7 +20,7 @@ const AIPortfolioChatbot = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hi! I'm Udit's AI assistant. Ask me anything about his skills, projects, experience, or how to get in touch! 😊",
+      text: "Hi! I'm Udit's AI assistant. I can help you learn about his skills, projects, and experience, or we can have a general conversation. What would you like to know? 😊",
       sender: "ai",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
@@ -31,9 +32,11 @@ const AIPortfolioChatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const [speechEnabled, setSpeechEnabled] = useState(false);
+  const currentUtteranceRef = useRef(null);
 
   // Get Gemini API key from environment variables
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -64,12 +67,33 @@ const AIPortfolioChatbot = () => {
         setIsListening(false);
       };
     }
+
+    // Monitor speech synthesis events
+    if ("speechSynthesis" in window) {
+      const handleSpeechEnd = () => {
+        setIsSpeaking(false);
+        currentUtteranceRef.current = null;
+      };
+
+      // Listen for speech synthesis events
+      speechSynthesis.addEventListener('voiceschanged', () => {
+        // Voices loaded
+      });
+    }
   }, []);
 
-  // Portfolio data for context
+  // Enhanced portfolio context with instructions for general conversation
   const portfolioContext = `
-  You are an AI assistant for Udit Kumar Tiwari's portfolio. Here's information about him:
+  You are an intelligent AI assistant for Udit Kumar Tiwari's portfolio. You should behave like ChatGPT or similar advanced AI models.
 
+  IMPORTANT INSTRUCTIONS:
+  1. If the user asks specifically about Udit Kumar Tiwari, his work, skills, projects, or contact information, provide detailed information from the portfolio data below.
+  2. For general questions, conversations, or topics not related to Udit, respond as a helpful AI assistant would - engage naturally, provide informative answers, and maintain a conversational tone.
+  3. Always be helpful, informative, and maintain context throughout the conversation.
+  4. You can discuss any topic, not just Udit's portfolio. Be versatile and knowledgeable.
+
+  PORTFOLIO INFORMATION (Use only when relevant to Udit-related questions):
+  
   PERSONAL INFORMATION:
   - Name: Udit Kumar Tiwari
   - Role: Web Developer & Tech Enthusiast
@@ -100,7 +124,7 @@ const AIPortfolioChatbot = () => {
   - GitHub: https://github.com/Udit004
   - Instagram: https://www.instagram.com/uditkumar_004/
 
-  Answer questions about Udit in a friendly, professional manner. Keep responses concise but informative. If asked about technical details, provide specific information about the technologies and projects mentioned above.
+  Remember: Be conversational and intelligent. Only mention Udit's information when specifically asked about him or his work.
   `;
 
   const scrollToBottom = () => {
@@ -111,24 +135,33 @@ const AIPortfolioChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Enhanced AI response generation with better context understanding
   const generateAIResponse = async (userMessage) => {
     try {
-      // Check if API key exists
       if (!GEMINI_API_KEY) {
         throw new Error("Gemini API key not found");
       }
 
-      // Prepare the conversation contents array (matching the working Next.js structure)
+      // Check if the message is about Udit or general conversation
+      const isAboutUdit = /\b(udit|developer|portfolio|skills|projects|experience|contact|hire|work|background|about\s+(him|you))\b/i.test(userMessage);
+      
+      let contextualPrompt;
+      if (isAboutUdit) {
+        contextualPrompt = `${portfolioContext}\n\nUser is asking about Udit Kumar Tiwari. Please provide detailed, specific information about him based on the portfolio data provided.`;
+      } else {
+        contextualPrompt = `You are a helpful AI assistant. The user is having a general conversation with you. Respond naturally and helpfully to their question or comment. Be engaging, informative, and conversational like ChatGPT would be.`;
+      }
+
       const contents = [
         {
           role: "user",
-          parts: [{ text: portfolioContext }],
+          parts: [{ text: contextualPrompt }],
         },
         {
           role: "model",
           parts: [
             {
-              text: "I understand. I'll respond as Udit's AI assistant with the information provided.",
+              text: "I understand. I'll respond appropriately based on whether the question is about Udit or a general conversation.",
             },
           ],
         },
@@ -136,13 +169,12 @@ const AIPortfolioChatbot = () => {
           role: "user",
           parts: [
             {
-              text: `User question: ${userMessage}\n\nPlease provide a helpful response about Udit Kumar Tiwari.`,
+              text: `${userMessage}`,
             },
           ],
         },
       ];
 
-      // Use the same API endpoint and model as the working Next.js code
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
       const geminiPayload = {
@@ -186,7 +218,6 @@ const AIPortfolioChatbot = () => {
         const errorBody = await response.text();
         console.error("Gemini API error response:", errorBody);
 
-        // Handle specific error cases (matching the working Next.js code)
         if (response.status === 403) {
           throw new Error("API key is invalid or has insufficient permissions");
         } else if (response.status === 404) {
@@ -202,18 +233,15 @@ const AIPortfolioChatbot = () => {
 
       const data = await response.json();
 
-      // Check if response contains error
       if (data.error) {
         console.error("Gemini API error:", data.error);
         throw new Error(data.error.message || "Unknown API error");
       }
 
-      // Extract response from Gemini's response format (matching working code)
       const aiResponse =
         data.candidates?.[0]?.content?.parts?.[0]?.text ||
         "Sorry, I couldn't generate a response. Please try again.";
 
-      // Check if response was blocked by safety filters
       if (data.candidates?.[0]?.finishReason === "SAFETY") {
         throw new Error(
           "Response was blocked by safety filters. Please rephrase your message."
@@ -224,7 +252,6 @@ const AIPortfolioChatbot = () => {
     } catch (error) {
       console.error("Error calling Gemini API:", error);
 
-      // Provide specific error messages
       if (error.message.includes("API key not found")) {
         return "API configuration issue. Please contact the developer to fix the API setup.";
       } else if (error.message.includes("403")) {
@@ -232,18 +259,58 @@ const AIPortfolioChatbot = () => {
       } else if (error.message.includes("404")) {
         return "API endpoint issue. The service might be temporarily unavailable.";
       } else {
-        return "I'm having trouble connecting right now. You can reach out to Udit directly at rajankumart266@gmail.com or check his projects on GitHub!";
+        return "I'm having trouble connecting right now. Feel free to ask me anything else, or you can reach out to Udit directly at rajankumart266@gmail.com!";
       }
     }
   };
 
+  // Enhanced speech function with stop capability
   const speakText = (text) => {
     if ("speechSynthesis" in window) {
+      // Stop any current speech
+      if (isSpeaking) {
+        stopSpeaking();
+      }
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.9;
       utterance.pitch = 1;
       utterance.volume = 0.8;
+      
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+      };
+      
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        currentUtteranceRef.current = null;
+      };
+      
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+        currentUtteranceRef.current = null;
+      };
+
+      currentUtteranceRef.current = utterance;
       speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Function to stop current speech
+  const stopSpeaking = () => {
+    if ("speechSynthesis" in window && isSpeaking) {
+      speechSynthesis.cancel();
+      setIsSpeaking(false);
+      currentUtteranceRef.current = null;
+    }
+  };
+
+  // Enhanced speak/stop toggle function
+  const toggleSpeech = (text) => {
+    if (isSpeaking) {
+      stopSpeaking();
+    } else {
+      speakText(text);
     }
   };
 
@@ -261,11 +328,12 @@ const AIPortfolioChatbot = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = inputMessage;
     setInputMessage("");
     setIsTyping(true);
 
     // Generate AI response
-    const aiResponse = await generateAIResponse(inputMessage);
+    const aiResponse = await generateAIResponse(currentInput);
 
     setTimeout(() => {
       const aiMessage = {
@@ -316,11 +384,14 @@ const AIPortfolioChatbot = () => {
     }
   };
 
+  // Updated quick questions to be more versatile
   const quickQuestions = [
-    "What are Udit's main skills?",
-    "Tell me about his projects",
-    "How can I contact him?",
-    "What technologies does he use?",
+    "Tell me about Udit's skills and experience",
+    "What projects has he worked on?",
+    "How can I contact Udit?",
+    "What's the weather like today?",
+    "Explain artificial intelligence",
+    "What's trending in web development?",
   ];
 
   return (
@@ -378,10 +449,22 @@ const AIPortfolioChatbot = () => {
                   <h3 className="text-white font-semibold text-sm">
                     Udit's AI Assistant
                   </h3>
-                  <p className="text-white/80 text-xs">Ask me anything!</p>
+                  <p className="text-white/80 text-xs">
+                    {isSpeaking ? "Speaking..." : "Ask me anything!"}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                {/* Global Speech Stop Button */}
+                {isSpeaking && (
+                  <button
+                    onClick={stopSpeaking}
+                    className="p-1 rounded transition-colors text-white bg-red-500/80 hover:bg-red-600"
+                    title="Stop speaking"
+                  >
+                    <VolumeX className="w-4 h-4" />
+                  </button>
+                )}
                 {/* Speech Toggle Button */}
                 <button
                   onClick={() => setSpeechEnabled(!speechEnabled)}
@@ -467,11 +550,23 @@ const AIPortfolioChatbot = () => {
                                 </p>
                                 {message.sender === "ai" && (
                                   <button
-                                    onClick={() => speakText(message.text)}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded transition-colors"
-                                    title="Listen to this message"
+                                    onClick={() => toggleSpeech(message.text)}
+                                    className={`p-1 rounded transition-colors ${
+                                      isSpeaking
+                                        ? "text-red-500 hover:text-red-600"
+                                        : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    }`}
+                                    title={
+                                      isSpeaking
+                                        ? "Stop speaking"
+                                        : "Listen to this message"
+                                    }
                                   >
-                                    <Volume2 className="w-3 h-3" />
+                                    {isSpeaking ? (
+                                      <VolumeX className="w-3 h-3" />
+                                    ) : (
+                                      <Volume2 className="w-3 h-3" />
+                                    )}
                                   </button>
                                 )}
                               </div>
@@ -519,7 +614,7 @@ const AIPortfolioChatbot = () => {
                   {messages.length === 1 && (
                     <div className="px-4 pb-2 border-t border-gray-100 dark:border-gray-700 pt-2">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                        Quick questions:
+                        Try these questions:
                       </p>
                       <div className="grid grid-cols-1 gap-1 max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
                         {quickQuestions.map((question, index) => (
@@ -564,7 +659,7 @@ const AIPortfolioChatbot = () => {
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Type or speak your message..."
+                        placeholder="Ask about Udit or chat with me..."
                         className="w-full p-2 pr-10 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm"
                         disabled={isTyping}
                       />
