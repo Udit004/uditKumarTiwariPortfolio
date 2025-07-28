@@ -1,6 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Bot, User, Sparkles, Minimize2, Mic, MicOff, Volume2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  MessageCircle,
+  X,
+  Send,
+  Bot,
+  User,
+  Sparkles,
+  Minimize2,
+  Mic,
+  MicOff,
+  Volume2,
+} from "lucide-react";
 
 const AIPortfolioChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,29 +20,34 @@ const AIPortfolioChatbot = () => {
     {
       id: 1,
       text: "Hi! I'm Udit's AI assistant. Ask me anything about his skills, projects, experience, or how to get in touch! 😊",
-      sender: 'ai',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
+      sender: "ai",
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    },
   ]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
+  const [speechEnabled, setSpeechEnabled] = useState(false);
 
   // Get Gemini API key from environment variables
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   // Initialize speech recognition
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
       setSpeechSupported(true);
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.lang = "en-US";
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -40,7 +56,7 @@ const AIPortfolioChatbot = () => {
       };
 
       recognitionRef.current.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
+        console.error("Speech recognition error:", event.error);
         setIsListening(false);
       };
 
@@ -88,7 +104,7 @@ const AIPortfolioChatbot = () => {
   `;
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -99,23 +115,31 @@ const AIPortfolioChatbot = () => {
     try {
       // Check if API key exists
       if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not found');
+        throw new Error("Gemini API key not found");
       }
 
       // Prepare the conversation contents array (matching the working Next.js structure)
       const contents = [
         {
           role: "user",
-          parts: [{ text: portfolioContext }]
+          parts: [{ text: portfolioContext }],
         },
         {
-          role: "model", 
-          parts: [{ text: "I understand. I'll respond as Udit's AI assistant with the information provided." }]
+          role: "model",
+          parts: [
+            {
+              text: "I understand. I'll respond as Udit's AI assistant with the information provided.",
+            },
+          ],
         },
         {
           role: "user",
-          parts: [{ text: `User question: ${userMessage}\n\nPlease provide a helpful response about Udit Kumar Tiwari.` }]
-        }
+          parts: [
+            {
+              text: `User question: ${userMessage}\n\nPlease provide a helpful response about Udit Kumar Tiwari.`,
+            },
+          ],
+        },
       ];
 
       // Use the same API endpoint and model as the working Next.js code
@@ -128,40 +152,40 @@ const AIPortfolioChatbot = () => {
           topP: 0.95,
           topK: 40,
           maxOutputTokens: 1500,
-          stopSequences: []
+          stopSequences: [],
         },
         safetySettings: [
           {
             category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
           },
           {
             category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
           },
           {
             category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
           },
           {
             category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
+          },
+        ],
       };
 
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(geminiPayload)
+        body: JSON.stringify(geminiPayload),
       });
 
       if (!response.ok) {
         const errorBody = await response.text();
-        console.error('Gemini API error response:', errorBody);
-        
+        console.error("Gemini API error response:", errorBody);
+
         // Handle specific error cases (matching the working Next.js code)
         if (response.status === 403) {
           throw new Error("API key is invalid or has insufficient permissions");
@@ -170,37 +194,42 @@ const AIPortfolioChatbot = () => {
         } else if (response.status === 429) {
           throw new Error("Rate limit exceeded. Please try again later");
         } else {
-          throw new Error(`Gemini API request failed: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Gemini API request failed: ${response.status} ${response.statusText}`
+          );
         }
       }
 
       const data = await response.json();
-      
+
       // Check if response contains error
       if (data.error) {
-        console.error('Gemini API error:', data.error);
+        console.error("Gemini API error:", data.error);
         throw new Error(data.error.message || "Unknown API error");
       }
 
       // Extract response from Gemini's response format (matching working code)
-      const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response. Please try again.";
+      const aiResponse =
+        data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "Sorry, I couldn't generate a response. Please try again.";
 
       // Check if response was blocked by safety filters
       if (data.candidates?.[0]?.finishReason === "SAFETY") {
-        throw new Error("Response was blocked by safety filters. Please rephrase your message.");
+        throw new Error(
+          "Response was blocked by safety filters. Please rephrase your message."
+        );
       }
 
       return aiResponse;
-
     } catch (error) {
-      console.error('Error calling Gemini API:', error);
-      
+      console.error("Error calling Gemini API:", error);
+
       // Provide specific error messages
-      if (error.message.includes('API key not found')) {
+      if (error.message.includes("API key not found")) {
         return "API configuration issue. Please contact the developer to fix the API setup.";
-      } else if (error.message.includes('403')) {
+      } else if (error.message.includes("403")) {
         return "API access issue. The API key might need proper permissions or billing setup.";
-      } else if (error.message.includes('404')) {
+      } else if (error.message.includes("404")) {
         return "API endpoint issue. The service might be temporarily unavailable.";
       } else {
         return "I'm having trouble connecting right now. You can reach out to Udit directly at rajankumart266@gmail.com or check his projects on GitHub!";
@@ -209,7 +238,7 @@ const AIPortfolioChatbot = () => {
   };
 
   const speakText = (text) => {
-    if ('speechSynthesis' in window) {
+    if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.9;
       utterance.pitch = 1;
@@ -224,12 +253,15 @@ const AIPortfolioChatbot = () => {
     const userMessage = {
       id: Date.now(),
       text: inputMessage,
-      sender: 'user',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      sender: "user",
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputMessage("");
     setIsTyping(true);
 
     // Generate AI response
@@ -239,19 +271,24 @@ const AIPortfolioChatbot = () => {
       const aiMessage = {
         id: Date.now() + 1,
         text: aiResponse,
-        sender: 'ai',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        sender: "ai",
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
       setIsTyping(false);
-      
-      // Auto-speak AI response
-      speakText(aiResponse);
+
+      // Conditional auto-speak based on user preference
+      if (speechEnabled) {
+        speakText(aiResponse);
+      }
     }, 1000);
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -283,7 +320,7 @@ const AIPortfolioChatbot = () => {
     "What are Udit's main skills?",
     "Tell me about his projects",
     "How can I contact him?",
-    "What technologies does he use?"
+    "What technologies does he use?",
   ];
 
   return (
@@ -302,10 +339,10 @@ const AIPortfolioChatbot = () => {
             whileTap={{ scale: 0.95 }}
           >
             <MessageCircle className="text-white w-6 h-6 group-hover:scale-110 transition-transform" />
-            
+
             {/* Pulse Animation */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-blue-600 animate-ping opacity-20"></div>
-            
+
             {/* Notification Dot */}
             <motion.div
               className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"
@@ -324,7 +361,7 @@ const AIPortfolioChatbot = () => {
           <motion.div
             key="chatbot-window"
             className={`fixed bottom-6 right-6 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col ${
-              isMinimized ? 'w-80 h-16' : 'w-80 sm:w-96 h-[500px] sm:h-[600px]'
+              isMinimized ? "w-80 h-16" : "w-80 sm:w-96 h-[500px] sm:h-[600px]"
             }`}
             initial={{ scale: 0, y: 100, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -338,11 +375,27 @@ const AIPortfolioChatbot = () => {
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-sm">Udit's AI Assistant</h3>
+                  <h3 className="text-white font-semibold text-sm">
+                    Udit's AI Assistant
+                  </h3>
                   <p className="text-white/80 text-xs">Ask me anything!</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                {/* Speech Toggle Button */}
+                <button
+                  onClick={() => setSpeechEnabled(!speechEnabled)}
+                  className={`p-1 rounded transition-colors ${
+                    speechEnabled
+                      ? "text-white bg-white/20"
+                      : "text-white/60 hover:text-white/80"
+                  }`}
+                  title={
+                    speechEnabled ? "Disable auto-speech" : "Enable auto-speech"
+                  }
+                >
+                  <Volume2 className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
                   className="text-white/80 hover:text-white p-1 rounded transition-colors"
@@ -368,37 +421,51 @@ const AIPortfolioChatbot = () => {
                       {messages.map((message) => (
                         <motion.div
                           key={message.id}
-                          className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                          className={`flex ${
+                            message.sender === "user"
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <div className={`flex items-start space-x-2 max-w-[85%] ${message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              message.sender === 'user' 
-                                ? 'bg-purple-500' 
-                                : 'bg-gradient-to-r from-blue-500 to-purple-600'
-                            }`}>
-                              {message.sender === 'user' ? (
+                          <div
+                            className={`flex items-start space-x-2 max-w-[85%] ${
+                              message.sender === "user"
+                                ? "flex-row-reverse space-x-reverse"
+                                : ""
+                            }`}
+                          >
+                            <div
+                              className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                message.sender === "user"
+                                  ? "bg-purple-500"
+                                  : "bg-gradient-to-r from-blue-500 to-purple-600"
+                              }`}
+                            >
+                              {message.sender === "user" ? (
                                 <User className="w-3 h-3 text-white" />
                               ) : (
                                 <Bot className="w-3 h-3 text-white" />
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className={`p-3 rounded-lg text-sm break-words ${
-                                message.sender === 'user'
-                                  ? 'bg-purple-500 text-white rounded-br-none'
-                                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none'
-                              }`}>
+                              <div
+                                className={`p-3 rounded-lg text-sm break-words ${
+                                  message.sender === "user"
+                                    ? "bg-purple-500 text-white rounded-br-none"
+                                    : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none"
+                                }`}
+                              >
                                 {message.text}
                               </div>
                               <div className="flex items-center justify-between mt-1">
                                 <p className="text-xs text-gray-500 dark:text-gray-400 px-1">
                                   {message.timestamp}
                                 </p>
-                                {message.sender === 'ai' && (
+                                {message.sender === "ai" && (
                                   <button
                                     onClick={() => speakText(message.text)}
                                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded transition-colors"
@@ -431,8 +498,14 @@ const AIPortfolioChatbot = () => {
                             <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg rounded-bl-none">
                               <div className="flex space-x-1">
                                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                <div
+                                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                  style={{ animationDelay: "0.1s" }}
+                                ></div>
+                                <div
+                                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                  style={{ animationDelay: "0.2s" }}
+                                ></div>
                               </div>
                             </div>
                           </div>
@@ -445,7 +518,9 @@ const AIPortfolioChatbot = () => {
                   {/* Quick Questions */}
                   {messages.length === 1 && (
                     <div className="px-4 pb-2 border-t border-gray-100 dark:border-gray-700 pt-2">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Quick questions:</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                        Quick questions:
+                      </p>
                       <div className="grid grid-cols-1 gap-1 max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
                         {quickQuestions.map((question, index) => (
                           <button
@@ -474,7 +549,9 @@ const AIPortfolioChatbot = () => {
                         exit={{ opacity: 0, scale: 0.8 }}
                       >
                         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs font-medium">Listening...</span>
+                        <span className="text-xs font-medium">
+                          Listening...
+                        </span>
                         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                       </motion.div>
                     )}
@@ -491,18 +568,20 @@ const AIPortfolioChatbot = () => {
                         className="w-full p-2 pr-10 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm"
                         disabled={isTyping}
                       />
-                      
+
                       {/* Voice Input Button */}
                       {speechSupported && (
                         <button
                           onClick={toggleListening}
                           disabled={isTyping}
                           className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-200 ${
-                            isListening 
-                              ? 'text-red-500 bg-red-50 dark:bg-red-900/20' 
-                              : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            isListening
+                              ? "text-red-500 bg-red-50 dark:bg-red-900/20"
+                              : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
-                          title={isListening ? 'Stop listening' : 'Start voice input'}
+                          title={
+                            isListening ? "Stop listening" : "Start voice input"
+                          }
                         >
                           {isListening ? (
                             <MicOff className="w-4 h-4" />
@@ -512,7 +591,7 @@ const AIPortfolioChatbot = () => {
                         </button>
                       )}
                     </div>
-                    
+
                     <motion.button
                       onClick={handleSendMessage}
                       disabled={!inputMessage.trim() || isTyping}

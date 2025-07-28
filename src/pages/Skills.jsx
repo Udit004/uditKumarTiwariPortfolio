@@ -1,67 +1,178 @@
-import React, { useState, useEffect, useContext } from "react";
-import { motion } from "framer-motion";
-import { DarkModeContext } from "../context/DarkModeContext";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
+// 3D Icon component with cursor tracking
+const Icon3D = ({ children, isHovered, mouseX, mouseY, isMobile }) => {
+  const ref = useRef(null);
+  
+  const rotateX = useTransform(mouseY, [-300, 300], [15, -15]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-15, 15]);
+  
+  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
+  const x = useSpring(rotateY, springConfig);
+  const y = useSpring(rotateX, springConfig);
 
-
-const SkillCard = ({ skill, index, categoryColor }) => {
   return (
     <motion.div
-      className="group relative"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ 
-        y: -8,
-        transition: { duration: 0.3 }
+      ref={ref}
+      className="relative perspective-1000"
+      style={{
+        rotateX: isMobile ? 0 : y,
+        rotateY: isMobile ? 0 : x,
+        transformStyle: "preserve-3d",
+      }}
+      animate={isMobile ? {
+        rotateY: isHovered ? [0, 10, -10, 0] : 0,
+        rotateX: isHovered ? [0, 5, -5, 0] : 0,
+        z: isHovered ? 20 : 0,
+      } : {
+        z: isHovered ? 30 : 0,
+        scale: isHovered ? 1.1 : 1,
+      }}
+      transition={{ 
+        duration: isMobile ? 2 : 0.3,
+        repeat: isMobile && isHovered ? Infinity : 0,
+        ease: "easeInOut"
       }}
     >
-      <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden">
-        {/* 3D Background Effect */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
-        
-        {/* Floating Icon */}
-        <motion.div
-          className="relative z-10 mb-4"
-          animate={{ 
-            rotateY: [0, 15, -15, 0],
-            rotateX: [0, 10, -10, 0]
+      <div className="relative transform-gpu" style={{ transformStyle: "preserve-3d" }}>
+        {children}
+        {/* Shadow/depth effect */}
+        <div 
+          className="absolute inset-0 bg-black/20 blur-sm rounded-2xl"
+          style={{ 
+            transform: "translateZ(-10px) scale(0.95)",
+            opacity: isHovered ? 0.3 : 0.1 
           }}
-          transition={{ 
-            duration: 4, 
-            repeat: Infinity, 
-            repeatDelay: 2,
-            ease: "easeInOut"
-          }}
-          whileHover={{
-            scale: 1.2,
-            rotateZ: 10,
-            transition: { duration: 0.3 }
-          }}
-        >
-          <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${categoryColor} flex items-center justify-center text-3xl shadow-xl transform-gpu perspective-1000 hover:shadow-2xl transition-shadow duration-300`}>
-            <span className="drop-shadow-lg">{skill.icon}</span>
-          </div>
-        </motion.div>
-
-        {/* Content */}
-        <div className="relative z-10">
-          <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-purple-600 group-hover:to-cyan-600 transition-all duration-300">
-            {skill.name}
-          </h4>
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-            {skill.description}
-          </p>
-        </div>
-
-        {/* Hover Glow Effect */}
-        <div className={`absolute -inset-1 bg-gradient-to-r ${categoryColor} rounded-2xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10`}></div>
+        />
       </div>
     </motion.div>
   );
 };
 
-const SkillCategory = ({ title, data, index }) => {
+const SkillCard = ({ skill, index, categoryColor, isMobile }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const handleMouseMove = (event) => {
+    if (!isMobile) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      mouseX.set(event.clientX - centerX);
+      mouseY.set(event.clientY - centerY);
+    }
+  };
+
+  return (
+    <motion.div
+      className="group relative cursor-pointer"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ 
+        y: -12,
+        transition: { duration: 0.3 }
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
+    >
+      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+        {/* Animated background gradient */}
+        <motion.div 
+          className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+          animate={{ 
+            background: isHovered ? [
+              `linear-gradient(45deg, ${categoryColor.split(' ')[1]}, ${categoryColor.split(' ')[3]})`,
+              `linear-gradient(135deg, ${categoryColor.split(' ')[3]}, ${categoryColor.split(' ')[1]})`,
+              `linear-gradient(45deg, ${categoryColor.split(' ')[1]}, ${categoryColor.split(' ')[3]})`
+            ] : undefined
+          }}
+          transition={{ duration: 3, repeat: isHovered ? Infinity : 0 }}
+        />
+        
+        {/* 3D Icon Container */}
+        <div className="relative z-10 mb-4 flex justify-center">
+          <Icon3D 
+            isHovered={isHovered} 
+            mouseX={mouseX} 
+            mouseY={mouseY}
+            isMobile={isMobile}
+          >
+            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${categoryColor} flex items-center justify-center text-3xl shadow-2xl border border-white/20`}>
+              <span className="drop-shadow-2xl filter brightness-110">{skill.icon}</span>
+            </div>
+          </Icon3D>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 text-center">
+          <motion.h4 
+            className="text-lg font-bold text-gray-800 dark:text-white mb-2 transition-all duration-300"
+            animate={{
+              background: isHovered ? 
+                `linear-gradient(45deg, rgb(168, 85, 247), rgb(6, 182, 212))` : 
+                'transparent'
+            }}
+            style={{
+              backgroundClip: isHovered ? 'text' : 'unset',
+              WebkitBackgroundClip: isHovered ? 'text' : 'unset',
+              color: isHovered ? 'transparent' : undefined
+            }}
+          >
+            {skill.name}
+          </motion.h4>
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+            {skill.description}
+          </p>
+        </div>
+
+        {/* Floating particles */}
+        {isHovered && (
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full"
+                style={{
+                  left: `${20 + Math.random() * 60}%`,
+                  top: `${20 + Math.random() * 60}%`,
+                }}
+                animate={{
+                  y: [-10, -20, -10],
+                  x: [-5, 5, -5],
+                  opacity: [0, 1, 0],
+                  scale: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Glow effect */}
+        <motion.div 
+          className={`absolute -inset-1 bg-gradient-to-r ${categoryColor} rounded-3xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-500 -z-10`}
+          animate={{
+            opacity: isHovered ? [0.2, 0.4, 0.2] : 0
+          }}
+          transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
+        />
+      </div>
+    </motion.div>
+  );
+};
+
+const SkillCategory = ({ title, data, index, isMobile }) => {
   return (
     <motion.div
       className="mb-16"
@@ -72,20 +183,26 @@ const SkillCategory = ({ title, data, index }) => {
       {/* Category Header */}
       <div className="flex items-center mb-8">
         <motion.div
-          className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${data.color} flex items-center justify-center text-3xl mr-6 shadow-xl`}
+          className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${data.color} flex items-center justify-center text-3xl mr-6 shadow-xl border border-white/20`}
           whileHover={{ 
-            scale: 1.1, 
+            scale: 1.15, 
             rotateY: 180,
             transition: { duration: 0.6 }
           }}
+          style={{ transformStyle: "preserve-3d" }}
         >
-          {data.icon}
+          <span className="drop-shadow-lg">{data.icon}</span>
         </motion.div>
         <div>
           <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
             {title}
           </h3>
-          <div className={`w-20 h-1 bg-gradient-to-r ${data.color} rounded-full`}></div>
+          <motion.div 
+            className={`h-1 bg-gradient-to-r ${data.color} rounded-full`}
+            initial={{ width: 0 }}
+            animate={{ width: "5rem" }}
+            transition={{ duration: 1, delay: index * 0.2 + 0.5 }}
+          />
         </div>
       </div>
 
@@ -97,6 +214,7 @@ const SkillCategory = ({ title, data, index }) => {
             skill={skill} 
             index={skillIndex} 
             categoryColor={data.color}
+            isMobile={isMobile}
           />
         ))}
       </div>
@@ -107,7 +225,7 @@ const SkillCategory = ({ title, data, index }) => {
 const FloatingElements = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(6)].map((_, i) => (
+      {[...Array(8)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full opacity-20"
@@ -116,14 +234,16 @@ const FloatingElements = () => {
             top: `${Math.random() * 100}%`,
           }}
           animate={{
-            y: [-20, 20, -20],
-            x: [-10, 10, -10],
-            opacity: [0.2, 0.5, 0.2],
+            y: [-30, 30, -30],
+            x: [-15, 15, -15],
+            opacity: [0.1, 0.6, 0.1],
+            scale: [0.5, 1.5, 0.5],
           }}
           transition={{
-            duration: 3 + Math.random() * 2,
+            duration: 4 + Math.random() * 3,
             repeat: Infinity,
-            delay: Math.random() * 2,
+            delay: Math.random() * 3,
+            ease: "easeInOut"
           }}
         />
       ))}
@@ -132,10 +252,20 @@ const FloatingElements = () => {
 };
 
 const Skills = () => {
-  const { darkMode } = useContext(DarkModeContext);
   const [currentTheme, setCurrentTheme] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Theme configurations matching the Navbar component
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const themes = [
     { 
       accent: 'purple', 
@@ -165,148 +295,70 @@ const Skills = () => {
 
   const currentThemeConfig = themes[currentTheme];
 
-  // Create skills data with current theme
+  // Enhanced skills data with your requested additions
   const skillsData = {
     "Frontend Development": {
       icon: "🎨",
       color: currentThemeConfig.skillGradient,
-      bgGradient: currentThemeConfig.bgGradient,
       skills: [
-        { 
-          name: "HTML5", 
-          icon: "🌐",
-          description: "Semantic markup & modern standards"
-        },
-        { 
-          name: "CSS3", 
-          icon: "🎭",
-          description: "Advanced styling & animations"
-        },
-        { 
-          name: "JavaScript", 
-          icon: "⚡",
-          description: "Modern ES6+ features"
-        },
-        { 
-          name: "React", 
-          icon: "⚛️",
-          description: "Component-based architecture"
-        },
-        { 
-          name: "Redux", 
-          icon: "🔄",
-          description: "State management"
-        },
-        { 
-          name: "Tailwind CSS", 
-          icon: "🎨",
-          description: "Utility-first framework"
-        },
-        { 
-          name: "Framer Motion", 
-          icon: "🎬",
-          description: "Smooth animations"
-        }
+        { name: "HTML5", icon: "🌐", description: "Semantic markup & modern standards" },
+        { name: "CSS3", icon: "🎭", description: "Advanced styling & animations" },
+        { name: "JavaScript", icon: "⚡", description: "Modern ES6+ features" },
+        { name: "React", icon: "⚛️", description: "Component-based architecture" },
+        { name: "Redux", icon: "🔄", description: "State management" },
+        { name: "Tailwind CSS", icon: "🎨", description: "Utility-first framework" },
+        { name: "Framer Motion", icon: "🎬", description: "Smooth animations" }
       ]
     },
     "Backend & Databases": {
       icon: "⚙️",
       color: currentThemeConfig.skillGradient,
-      bgGradient: currentThemeConfig.bgGradient,
       skills: [
-        { 
-          name: "Node.js", 
-          icon: "🟢",
-          description: "Server-side JavaScript runtime"
-        },
-        { 
-          name: "Express", 
-          icon: "🚂",
-          description: "Fast web framework"
-        },
-        { 
-          name: "MongoDB", 
-          icon: "🍃",
-          description: "NoSQL database"
-        },
-        { 
-          name: "Firebase", 
-          icon: "🔥",
-          description: "Backend-as-a-Service"
-        }
+        { name: "Node.js", icon: "🟢", description: "Server-side JavaScript runtime" },
+        { name: "Express", icon: "🚂", description: "Fast web framework" },
+        { name: "MongoDB", icon: "🍃", description: "NoSQL database" },
+        { name: "MySQL", icon: "🐬", description: "Relational database" },
+        { name: "Firebase", icon: "🔥", description: "Backend-as-a-Service" },
+        { name: "Supabase", icon: "⚡", description: "Open source Firebase alternative" }
+      ]
+    },
+    "Cloud & Services": {
+      icon: "☁️",
+      color: currentThemeConfig.skillGradient,
+      skills: [
+        { name: "Vercel", icon: "▲", description: "Deployment platform" },
+        { name: "Render", icon: "🚀", description: "Cloud application platform" },
+        { name: "Cloudinary", icon: "☁️", description: "Media management service" },
+        { name: "Razorpay", icon: "💳", description: "Payment gateway integration" }
       ]
     },
     "Programming Languages": {
       icon: "💻",
       color: currentThemeConfig.skillGradient,
-      bgGradient: currentThemeConfig.bgGradient,
       skills: [
-        { 
-          name: "JavaScript", 
-          icon: "📜",
-          description: "Dynamic programming language"
-        },
-        { 
-          name: "Python", 
-          icon: "🐍",
-          description: "Versatile & powerful"
-        },
-        { 
-          name: "C", 
-          icon: "🔧",
-          description: "System programming"
-        },
-        { 
-          name: "C++", 
-          icon: "⚒️",
-          description: "Object-oriented programming"
-        },
-        { 
-          name: "Java", 
-          icon: "☕",
-          description: "Enterprise development"
-        }
+        { name: "JavaScript", icon: "📜", description: "Dynamic programming language" },
+        { name: "Python", icon: "🐍", description: "Versatile & powerful" },
+        { name: "C", icon: "🔧", description: "System programming" },
+        { name: "C++", icon: "⚒️", description: "Object-oriented programming" },
+        { name: "Java", icon: "☕", description: "Enterprise development" }
       ]
     },
     "Tools & Technologies": {
       icon: "🛠️",
       color: currentThemeConfig.skillGradient,
-      bgGradient: currentThemeConfig.bgGradient,
       skills: [
-        { 
-          name: "Git & GitHub", 
-          icon: "🌿",
-          description: "Version control & collaboration"
-        },
-        { 
-          name: "Vercel", 
-          icon: "▲",
-          description: "Deployment platform"
-        },
-        { 
-          name: "PyInstaller", 
-          icon: "📦",
-          description: "Python app bundler"
-        },
-        { 
-          name: "DOM Manipulation", 
-          icon: "🎯",
-          description: "Dynamic web interactions"
-        },
-        { 
-          name: "LocalStorage API", 
-          icon: "💾",
-          description: "Client-side data storage"
-        }
+        { name: "Git & GitHub", icon: "🌿", description: "Version control & collaboration" },
+        { name: "PyInstaller", icon: "📦", description: "Python app bundler" },
+        { name: "DOM Manipulation", icon: "🎯", description: "Dynamic web interactions" },
+        { name: "REST APIs", icon: "🔗", description: "Web service integration" }
       ]
     }
   };
 
-  // Sync with navbar theme changes (simplified approach)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTheme(prev => (prev + 1) % themes.length);
-    }, 10000); // Change theme every 10 seconds
+    }, 12000);
     return () => clearInterval(interval);
   }, []);
 
@@ -332,13 +384,14 @@ const Skills = () => {
               scale: [1, 1.2, 1]
             }}
             transition={{ 
-              duration: 3, 
+              duration: 4, 
               repeat: Infinity, 
-              repeatDelay: 4 
+              repeatDelay: 3 
             }}
+            style={{ transformStyle: "preserve-3d" }}
           >
-            <div className={`w-20 h-20 bg-gradient-to-br ${currentThemeConfig.gradient} rounded-2xl flex items-center justify-center text-4xl shadow-2xl transform-gpu`}>
-              <span className="drop-shadow-lg">💫</span>
+            <div className={`w-20 h-20 bg-gradient-to-br ${currentThemeConfig.gradient} rounded-2xl flex items-center justify-center text-4xl shadow-2xl transform-gpu border border-white/20`}>
+              <span className="drop-shadow-2xl">💫</span>
             </div>
           </motion.div>
           
@@ -366,6 +419,7 @@ const Skills = () => {
               title={category}
               data={data}
               index={index}
+              isMobile={isMobile}
             />
           ))}
         </div>
