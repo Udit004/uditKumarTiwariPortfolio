@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useContext, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, Download, Eye, Code2, Zap } from "lucide-react";
 
 // Note: Import DarkModeContext from your actual context file path
 import { DarkModeContext } from "../context/DarkModeContext";
-
 
 const projects = [
   {
@@ -127,49 +126,58 @@ const projects = [
 ];
 
 // Memoized ProjectCard component for better performance
-const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
+const ProjectCard = memo(({ project, index, currentThemeConfig }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+  const handleImageLoad = useCallback(() => setImageLoaded(true), []);
 
-  // Optimized animation variants
-  const cardVariants = {
+  // Optimized animation variants - reduced complexity
+  const cardVariants = useMemo(() => ({
     hidden: { 
       opacity: 0, 
-      y: 30,
-      scale: 0.95
+      y: 20,
+      scale: 0.98
     },
     visible: { 
       opacity: 1, 
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.4,
-        delay: index * 0.05,
-        ease: [0.25, 0.46, 0.45, 0.94]
+        duration: 0.3,
+        delay: index * 0.03,
+        ease: "easeOut"
       }
     },
     hover: {
-      y: -8,
-      scale: 1.02,
+      y: -6,
+      scale: 1.01,
       transition: {
         duration: 0.2,
         ease: "easeOut"
       }
     }
-  };
+  }), [index]);
 
-  const imageVariants = {
+  const imageVariants = useMemo(() => ({
     initial: { scale: 1 },
     hover: { 
-      scale: 1.05,
+      scale: 1.03,
       transition: {
-        duration: 0.3,
+        duration: 0.2,
         ease: "easeOut"
       }
     }
-  };
+  }), []);
+
+  // Memoized gradient styles to prevent recalculation
+  const gradientStyles = useMemo(() => ({
+    border: `bg-gradient-to-r ${currentThemeConfig.borderGradient}`,
+    button: `bg-gradient-to-r ${currentThemeConfig.buttonGradient}`,
+    card: `bg-gradient-to-r ${currentThemeConfig.cardGradient}`
+  }), [currentThemeConfig]);
 
   return (
     <motion.div
@@ -184,7 +192,7 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
     >
       {/* Optimized gradient border - only shows on hover */}
       <motion.div 
-        className={`absolute -inset-px bg-gradient-to-r ${currentThemeConfig.borderGradient} rounded-2xl opacity-0 will-change-opacity`}
+        className={`absolute -inset-px ${gradientStyles.border} rounded-2xl opacity-0 will-change-opacity`}
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.2 }}
       />
@@ -193,28 +201,36 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
         {/* Featured Badge */}
         {project.featured && (
           <motion.div 
-            className={`absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r ${currentThemeConfig.buttonGradient} text-white text-xs font-bold flex items-center gap-1 z-10`}
+            className={`absolute top-4 right-4 px-3 py-1 rounded-full ${gradientStyles.button} text-white text-xs font-bold flex items-center gap-1 z-10`}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2 }}
           >
             <Zap size={12} />
             Featured
           </motion.div>
         )}
 
-        {/* Project Image */}
+        {/* Project Image with lazy loading and fallback */}
         <div className="relative overflow-hidden rounded-xl mb-6 aspect-video bg-gray-100 dark:bg-gray-800">
+          {!imageLoaded && (
+            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl" />
+          )}
           <motion.img
             src={project.image}
             alt={project.title}
-            className="w-full h-full object-cover will-change-transform"
+            className={`w-full h-full object-cover will-change-transform transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             variants={imageVariants}
             animate={isHovered ? "hover" : "initial"}
             loading="lazy"
+            onLoad={handleImageLoad}
+            onError={(e) => {
+              e.target.src = '/assets/placeholder-project.jpg'; // fallback image
+              setImageLoaded(true);
+            }}
           />
           
-          {/* Overlay - only renders when needed */}
+          {/* Overlay - only renders when hovered */}
           <AnimatePresence>
             {isHovered && (
               <motion.div
@@ -235,7 +251,7 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
                       whileTap={{ scale: 0.95 }}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
+                      transition={{ delay: 0.05 }}
                     >
                       <Eye size={18} />
                     </motion.a>
@@ -249,7 +265,7 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
                     whileTap={{ scale: 0.95 }}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.15 }}
+                    transition={{ delay: 0.1 }}
                   >
                     <Code2 size={18} />
                   </motion.a>
@@ -275,7 +291,7 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
             >
               {project.title}
             </motion.h3>
-            <span className={`px-2 py-1 rounded-lg bg-gradient-to-r ${currentThemeConfig.cardGradient} text-xs font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap`}>
+            <span className={`px-2 py-1 rounded-lg ${gradientStyles.card} text-xs font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap`}>
               {project.category}
             </span>
           </div>
@@ -284,25 +300,27 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
             {project.description}
           </p>
 
-          {/* Technologies */}
-          <div className="flex flex-wrap gap-2">
-            {project.technologies.slice(0, project.featured ? 6 : 4).map((tech, techIndex) => (
-              <motion.span
-                key={tech}
-                className={`px-3 py-1 text-xs font-medium bg-gradient-to-r ${currentThemeConfig.cardGradient} text-gray-700 dark:text-gray-200 rounded-full border border-white/20 dark:border-gray-600/30`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + techIndex * 0.03 }}
-              >
-                {tech}
-              </motion.span>
-            ))}
-            {project.technologies.length > (project.featured ? 6 : 4) && (
-              <span className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 rounded-full">
-                +{project.technologies.length - (project.featured ? 6 : 4)} more
-              </span>
-            )}
-          </div>
+          {/* Technologies - Memoized to prevent re-renders */}
+          {useMemo(() => (
+            <div className="flex flex-wrap gap-2">
+              {project.technologies.slice(0, project.featured ? 6 : 4).map((tech, techIndex) => (
+                <motion.span
+                  key={tech}
+                  className={`px-3 py-1 text-xs font-medium ${gradientStyles.card} text-gray-700 dark:text-gray-200 rounded-full border border-white/20 dark:border-gray-600/30`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 + techIndex * 0.02 }}
+                >
+                  {tech}
+                </motion.span>
+              ))}
+              {project.technologies.length > (project.featured ? 6 : 4) && (
+                <span className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 rounded-full">
+                  +{project.technologies.length - (project.featured ? 6 : 4)} more
+                </span>
+              )}
+            </div>
+          ), [project.technologies, project.featured, gradientStyles.card])}
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
@@ -311,9 +329,9 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
                 href={project.liveLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${currentThemeConfig.buttonGradient} text-white font-medium rounded-xl transition-all duration-200`}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                className={`flex items-center gap-2 px-4 py-2 ${gradientStyles.button} text-white font-medium rounded-xl transition-all duration-200`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <ExternalLink size={16} />
                 Live Demo
@@ -325,8 +343,8 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl transition-all duration-200"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <Download size={16} />
                 Download
@@ -337,8 +355,8 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Github size={16} />
               Code
@@ -352,12 +370,43 @@ const ProjectCard = React.memo(({ project, index, currentThemeConfig }) => {
 
 ProjectCard.displayName = 'ProjectCard';
 
-const Projects = () => {
+// Memoized background elements to prevent unnecessary re-renders
+const BackgroundElements = memo(({ currentThemeConfig }) => {
+  const elements = useMemo(() => 
+    [...Array(3)].map((_, i) => (
+      <motion.div
+        key={i}
+        className={`absolute w-80 h-80 bg-gradient-to-r ${currentThemeConfig.cardGradient} rounded-full filter blur-3xl opacity-5 will-change-transform`}
+        style={{
+          left: `${20 + (i * 25)}%`,
+          top: `${10 + (i * 20)}%`,
+        }}
+        animate={{
+          x: [-20, 20, -20],
+          y: [-20, 20, -20],
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          duration: 12 + i * 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: i * 3,
+        }}
+      />
+    )), [currentThemeConfig.cardGradient]
+  );
+
+  return <div className="absolute inset-0 overflow-hidden pointer-events-none">{elements}</div>;
+});
+
+BackgroundElements.displayName = 'BackgroundElements';
+
+const Projects = memo(() => {
   const { darkMode } = useContext(DarkModeContext);
   const [currentTheme, setCurrentTheme] = useState(0);
   const [filter, setFilter] = useState("All");
 
-  // Theme configurations
+  // Theme configurations - memoized to prevent recalculation
   const themes = useMemo(() => [
     { 
       accent: 'purple', 
@@ -391,11 +440,11 @@ const Projects = () => {
 
   const currentThemeConfig = useMemo(() => themes[currentTheme], [themes, currentTheme]);
 
-  // Smooth theme transition
+  // Reduced theme transition interval for better performance
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTheme(prev => (prev + 1) % themes.length);
-    }, 8000);
+    }, 10000); // Increased interval
     return () => clearInterval(interval);
   }, [themes.length]);
 
@@ -411,51 +460,24 @@ const Projects = () => {
     setFilter(category);
   }, []);
 
-  // Optimized background elements
-  const backgroundElements = useMemo(() => 
-    [...Array(5)].map((_, i) => (
-      <motion.div
-        key={i}
-        className={`absolute w-80 h-80 bg-gradient-to-r ${currentThemeConfig.cardGradient} rounded-full filter blur-3xl opacity-10 will-change-transform`}
-        style={{
-          left: `${20 + (i * 20)}%`,
-          top: `${10 + (i * 15)}%`,
-        }}
-        animate={{
-          x: [-30, 30, -30],
-          y: [-30, 30, -30],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 15 + i * 2,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: i * 2,
-        }}
-      />
-    )), [currentThemeConfig.cardGradient]
-  );
-
   return (
     <motion.section
       id="projects"
       className="py-20 px-6 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen relative overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.4 }}
     >
       {/* Optimized Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {backgroundElements}
-      </div>
+      <BackgroundElements currentThemeConfig={currentThemeConfig} />
 
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Header */}
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: -30 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4 }}
         >
           <motion.div
             className="inline-block mb-6"
@@ -476,9 +498,9 @@ const Projects = () => {
           <motion.h2 
             className={`text-4xl md:text-6xl font-bold bg-gradient-to-r ${currentThemeConfig.gradient} bg-clip-text text-transparent mb-6`}
             key={currentTheme} // Force re-render for smooth color transition
-            initial={{ opacity: 0.7 }}
+            initial={{ opacity: 0.8 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.3 }}
           >
             Featured Projects
           </motion.h2>
@@ -487,7 +509,7 @@ const Projects = () => {
             className={`w-32 h-2 bg-gradient-to-r ${currentThemeConfig.gradient} mx-auto rounded-full mb-8`}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           />
 
           <p className="text-gray-600 dark:text-gray-300 text-xl max-w-3xl mx-auto leading-relaxed">
@@ -498,26 +520,25 @@ const Projects = () => {
         {/* Optimized Filter Buttons */}
         <motion.div
           className="flex flex-wrap justify-center gap-3 mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
         >
           {categories.map((category, index) => (
             <motion.button
               key={category}
               onClick={() => handleFilterChange(category)}
-              className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+              className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
                 filter === category
                   ? `bg-gradient-to-r ${currentThemeConfig.buttonGradient} text-white shadow-lg scale-105`
                   : 'bg-white/70 dark:bg-gray-800/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-700/90 hover:scale-105'
               }`}
               whileTap={{ scale: 0.95 }}
               layout
-              layoutId={`filter-${category}`}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
-                delay: index * 0.05,
+                delay: index * 0.03,
                 layout: { duration: 0.2 }
               }}
             >
@@ -545,6 +566,8 @@ const Projects = () => {
       </div>
     </motion.section>
   );
-};
+});
+
+Projects.displayName = 'Projects';
 
 export default Projects;
