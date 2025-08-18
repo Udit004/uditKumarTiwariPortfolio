@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { Mail, Linkedin, Github, Instagram, Send, User, MessageSquare, Play, Pause } from "lucide-react";
 
 // Starry background fallback component
@@ -561,7 +562,7 @@ const Contact = () => {
                   </div>
 
                   {/* Shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[rgba(255,255,255,0)] via-white/20 to-[rgba(255,255,255,0)] transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
                 </button>
               </form>
             </div>

@@ -5,14 +5,14 @@ const Footer = () => {
   return (
     <footer className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 text-white dark:text-gray-300">
       {/* Decorative top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
+  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-[rgba(255,255,255,0)] via-gray-600 to-[rgba(255,255,255,0)]"></div>
       
       {/* Main content */}
       <div className="container mx-auto px-6 py-8">
         <div className="text-center">
           {/* Optional decorative element */}
           <div className="flex justify-center mb-4">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent via-gray-500 to-transparent"></div>
+            <div className="w-12 h-px bg-gradient-to-r from-[rgba(255,255,255,0)] via-gray-500 to-[rgba(255,255,255,0)]"></div>
           </div>
           
           {/* Copyright text */}
@@ -28,7 +28,7 @@ const Footer = () => {
       </div>
       
       {/* Subtle bottom glow effect */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-64 h-px bg-gradient-to-r from-[rgba(255,255,255,0)] via-blue-500/20 to-[rgba(255,255,255,0)]"></div>
     </footer>
   );
 };

@@ -116,10 +116,10 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
   const textAnimation = useMemo(() => ({
     background: isHovered ? 
       `linear-gradient(45deg, rgb(168, 85, 247), rgb(6, 182, 212))` : 
-      'transparent',
+  'rgba(255,255,255,0)',
     backgroundClip: isHovered ? 'text' : 'unset',
     WebkitBackgroundClip: isHovered ? 'text' : 'unset',
-    color: isHovered ? 'transparent' : undefined
+  color: isHovered ? 'rgba(255,255,255,0)' : undefined
   }), [isHovered]);
 
   // Memoized particles for performance

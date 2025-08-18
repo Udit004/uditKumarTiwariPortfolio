@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const Home = () => {
@@ -103,7 +104,7 @@ const Home = () => {
         <div 
           className="absolute inset-0 opacity-20"
           style={{
-            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(147, 51, 234, 0.3) 0%, transparent 50%)`
+            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(147, 51, 234, 0.3) 0%, rgba(255,255,255,0) 50%)`
           }}
         />
         
@@ -144,10 +145,13 @@ const Home = () => {
             {/* Subtle Gradient Border */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 p-1">
               <div className="w-full h-full rounded-full bg-slate-900 p-1">
-                <img
+                <Image
                   src="/assets/udit_passport.jpg"
                   alt="Udit Kumar Tiwari"
-                  className="w-full h-full rounded-full object-cover shadow-2xl"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 384px"
+                  className="rounded-full object-cover shadow-2xl"
+                  priority
                 />
               </div>
             </div>
@@ -207,7 +211,7 @@ const Home = () => {
           
           <motion.a
             href="#contact"
-            className="px-8 py-3 bg-transparent border-2 border-purple-500 hover:bg-purple-500 rounded-lg text-white font-medium text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
+            className="px-8 py-3 bg-[rgba(255,255,255,0)] border-2 border-purple-500 hover:bg-purple-500 rounded-lg text-white font-medium text-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
           >

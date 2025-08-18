@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect, useContext, useMemo, useCallback, memo } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, Download, Eye, Code2, Zap } from "lucide-react";
 
@@ -217,19 +218,23 @@ const ProjectCard = memo(({ project, index, currentThemeConfig }) => {
           {!imageLoaded && (
             <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl" />
           )}
-          <motion.img
-            src={project.image}
-            alt={project.title}
-            className={`w-full h-full object-cover will-change-transform transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          <motion.div
             variants={imageVariants}
             animate={isHovered ? "hover" : "initial"}
-            loading="lazy"
-            onLoad={handleImageLoad}
-            onError={(e) => {
-              e.target.src = '/assets/placeholder-project.jpg'; // fallback image
-              setImageLoaded(true);
-            }}
-          />
+            className={`w-full h-full`}
+          >
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className={`object-cover will-change-transform transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'} rounded-xl`}
+              onLoad={handleImageLoad}
+              onError={() => setImageLoaded(true)}
+              placeholder="empty"
+              {...(project.featured ? { priority: true } : { loading: "lazy" })}
+            />
+          </motion.div>
           
           {/* Overlay - only renders when hovered */}
           <AnimatePresence>
@@ -284,7 +289,7 @@ const ProjectCard = memo(({ project, index, currentThemeConfig }) => {
               animate={isHovered ? {
                 backgroundImage: `linear-gradient(to right, ${currentThemeConfig.gradient.replace('from-', '').replace('to-', '')})`,
                 WebkitBackgroundClip: 'text',
-                color: 'transparent'
+                color: 'rgba(255,255,255,0)'
               } : {
                 color: 'inherit'
               }}
