@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect, useRef, memo, useMemo, useCallback } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
@@ -294,34 +295,40 @@ SkillCategory.displayName = 'SkillCategory';
 
 // Memoized floating elements for better performance
 const FloatingElements = memo(() => {
-  const elements = useMemo(() => 
-    [...Array(6)].map((_, i) => (
-      <motion.div
-        key={i}
-        className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full opacity-20"
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `${Math.random() * 100}%`,
-        }}
-        animate={{
-          y: [-20, 20, -20],
-          x: [-10, 10, -10],
-          opacity: [0.1, 0.4, 0.1],
-          scale: [0.5, 1.2, 0.5],
-        }}
-        transition={{
-          duration: 3 + Math.random() * 2,
-          repeat: Infinity,
-          delay: Math.random() * 2,
-          ease: "easeInOut"
-        }}
-      />
-    )), []
-  );
+  const [positions, setPositions] = useState([]);
+
+  useEffect(() => {
+    // Only run on client
+    const newPositions = [...Array(6)].map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      duration: 3 + Math.random() * 2,
+      delay: Math.random() * 2,
+    }));
+    setPositions(newPositions);
+  }, []);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {elements}
+      {positions.map((pos, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full opacity-20"
+          style={{ left: pos.left, top: pos.top }}
+          animate={{
+            y: [-20, 20, -20],
+            x: [-10, 10, -10],
+            opacity: [0.1, 0.4, 0.1],
+            scale: [0.5, 1.2, 0.5],
+          }}
+          transition={{
+            duration: pos.duration,
+            repeat: Infinity,
+            delay: pos.delay,
+            ease: "easeInOut"
+          }}
+        />
+      ))}
     </div>
   );
 });

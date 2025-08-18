@@ -1,10 +1,11 @@
+"use client"
 import React, { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
-import { DarkModeContext } from "../context/DarkModeContext";
+import { DarkModeContext } from "@/contexts/DarkModeContext";
 
 const Navbar = () => {
-  const { darkMode, setDarkMode } = useContext(DarkModeContext);
+  const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
@@ -27,12 +28,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Toggle dark mode and theme
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    setCurrentTheme((prev) => (prev + 1) % themes.length);
-  };
 
   // Navigation items
   const navItems = ["Home", "About", "Skills", "Projects", "Contact"];
@@ -274,7 +269,7 @@ const Navbar = () => {
                     ) : (
                       <Moon className="text-blue-300 w-5 h-5" />
                     )}
-                    <span>Theme Mode</span>
+                    <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                   </span>
                   
                   {/* Theme dots */}

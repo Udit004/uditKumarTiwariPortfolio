@@ -1,12 +1,13 @@
+"use client"
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Sparkles } from "lucide-react";
 
 // Import components (these will be separate files)
 import ChatWindow from "./ChatWindow";
-import VoiceModeManager from "./hooks/VoiceModeManager";
-import SpeechManager from "./hooks/SpeechManager";
-import { generateAIResponse } from "./services/geminiService";
+import VoiceModeManager from "@/hooks/VoiceModeManager";
+import SpeechManager from "@/hooks/SpeechManager";
+import { generateAIResponse } from "@/services/geminiService";
 
 const AIPortfolioChatbot = () => {
   // Main state management

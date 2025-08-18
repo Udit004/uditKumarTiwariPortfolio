@@ -1,5 +1,5 @@
 // Gemini API Service with enhanced context understanding
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 // Portfolio context for Udit Kumar Tiwari
 const portfolioContext = `

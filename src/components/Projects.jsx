@@ -1,14 +1,15 @@
+"use client"
 import React, { useState, useEffect, useContext, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, Download, Eye, Code2, Zap } from "lucide-react";
 
 // Note: Import DarkModeContext from your actual context file path
-import { DarkModeContext } from "../context/DarkModeContext";
+import { DarkModeContext } from "@/contexts/DarkModeContext";
 
 const projects = [
   {
     title: "Alumni Networking App",
-    image: "/assets/alumni_project_image.jpg",
+  image: "/assets/alumni_project_image.jpg",
     description:
       "A full-stack platform for alumni and students to connect, share opportunities, and network. Features user authentication, profile management, and a discussion forum.",
     technologies: [
@@ -21,7 +22,7 @@ const projects = [
   },
   {
     title: "Advanced To-Do List",
-    image: "/assets/Advance_todo_list.jpg",
+  image: "/assets/Advance_todo_list.jpg",
     description:
       "An advanced, AI-powered Progressive Web App (PWA) for task management. Includes intelligent priority prediction using Machine Learning, Gemini AI integration for productivity assistance, real-time collaboration via Socket.IO, and full notification support.",
     technologies: [
@@ -34,7 +35,7 @@ const projects = [
   },
   {
     title: "Coachlix AI Fitness Coaching",
-    image: "/assets/Coachlix_AI_Fitness_Coaching.jpg",
+  image: "/assets/Coachlix_AI_Fitness_Coaching.jpg",
     description:
       "A smart Progressive Web App (PWA) designed to empower users in their fitness journey through AI-powered coaching. Coachlix offers personalized workout and diet plan management, real-time interaction with a Gemini AI chatbot.",
     technologies: [
@@ -47,7 +48,7 @@ const projects = [
   },
   {
     title: "Portfolio Website",
-    image: "/assets/portfolio_image2.jpg",
+  image: "/assets/portfolio_image2.jpg",
     description:
       "A responsive, modern portfolio showcasing my projects, skills, and contact information. Features smooth animations, dark/light mode, and a clean UI.",
     technologies: [
@@ -60,7 +61,7 @@ const projects = [
   },
   {
     title: "Badminton Academy",
-    image: "/assets/Badminton_Academy.jpg",
+  image: "/assets/Badminton_Academy.jpg",
     description:
       "A dynamic sports academy website showcasing training programs, coach profiles, and class schedules. Includes animated UI elements and responsive design for seamless browsing on all devices.",
     technologies: [
@@ -73,7 +74,7 @@ const projects = [
   },
   {
     title: "EU Citizen Wallet Portal",
-    image: "/assets/EU_Citizen_Wallet_Portal.jpg",
+  image: "/assets/EU_Citizen_Wallet_Portal.jpg",
     description:
       "A secure and user-friendly digital wallet platform designed for EU citizens to manage personal documents online. This web application features DigiLocker-style document storage using Supabase for database and authentication.",
     technologies: [
@@ -86,7 +87,7 @@ const projects = [
   },
   {
     title: "Task Automation App",
-    image: "/assets/window-task-automator.png",
+  image: "/assets/window-task-automator.png",
     description:
       "A Python GUI tool to automate repetitive Windows tasks (file operations, app launches, etc.). Saves time with customizable workflows and one-click execution.",
     technologies: [
@@ -99,7 +100,7 @@ const projects = [
   },
   {
     title: "Rock Paper Scissors Game",
-    image: "/assets/rock_papper_scissor_screenshort.png",
+  image: "/assets/rock_papper_scissor_screenshort.png",
     description:
       "An interactive browser-based game with score tracking, dynamic UI feedback, and a fun minimalist design. Play against the computer in real-time.",
     technologies: [
@@ -112,7 +113,7 @@ const projects = [
   },
   {
     title: "Simple Calculator",
-    image: "/assets/Calculator_screenshort.png",
+  image: "/assets/Calculator_screenshort.png",
     description:
       "A lightweight calculator with basic arithmetic operations (+, -, ×, ÷) and a sleek, responsive interface. Built for quick calculations.",
     technologies: [
@@ -552,7 +553,7 @@ const Projects = memo(() => {
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
           layout
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {filteredProjects.map((project, index) => (
               <ProjectCard 
                 key={`${project.title}-${filter}`} 
