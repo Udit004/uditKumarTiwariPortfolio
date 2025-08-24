@@ -161,7 +161,7 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+      <div className={`relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl ${isMobile ? 'p-3' : 'p-6'} shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden`}>
         {/* Animated background gradient - optimized */}
         <motion.div 
           className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
@@ -170,14 +170,14 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
         />
         
         {/* 3D Icon Container */}
-        <div className="relative z-10 mb-4 flex justify-center">
+        <div className={`relative z-10 ${isMobile ? 'mb-2' : 'mb-4'} flex justify-center`}>
           <Icon3D 
             isHovered={isHovered} 
             mouseX={mouseX} 
             mouseY={mouseY}
             isMobile={isMobile}
           >
-            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${categoryColor} flex items-center justify-center text-3xl shadow-2xl border border-white/20`}>
+            <div className={`${isMobile ? 'w-10 h-10 text-xl' : 'w-16 h-16 text-3xl'} rounded-2xl bg-gradient-to-br ${categoryColor} flex items-center justify-center shadow-2xl border border-white/20`}>
               <span className="drop-shadow-2xl filter brightness-110">{skill.icon}</span>
             </div>
           </Icon3D>
@@ -186,12 +186,12 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
         {/* Content */}
         <div className="relative z-10 text-center">
           <motion.h4 
-            className="text-lg font-bold text-gray-800 dark:text-white mb-2 transition-all duration-200"
+            className={`${isMobile ? 'text-sm' : 'text-lg'} font-bold text-gray-800 dark:text-white ${isMobile ? 'mb-1' : 'mb-2'} transition-all duration-200`}
             animate={textAnimation}
           >
             {skill.name}
           </motion.h4>
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+          <p className={`text-gray-600 dark:text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'} leading-relaxed`}>
             {skill.description}
           </p>
         </div>
@@ -247,15 +247,15 @@ const SkillCategory = memo(({ title, data, index, isMobile }) => {
 
   return (
     <motion.div
-      className="mb-16"
+      className={`${isMobile ? 'mb-8' : 'mb-16'}`}
       variants={categoryVariants}
       initial="initial"
       animate="animate"
     >
       {/* Category Header */}
-      <div className="flex items-center mb-8">
+      <div className={`flex items-center ${isMobile ? 'mb-4' : 'mb-8'}`}>
         <motion.div
-          className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${data.color} flex items-center justify-center text-3xl mr-6 shadow-xl border border-white/20`}
+          className={`${isMobile ? 'w-12 h-12 text-2xl' : 'w-16 h-16 text-3xl'} rounded-2xl bg-gradient-to-br ${data.color} flex items-center justify-center ${isMobile ? 'mr-4' : 'mr-6'} shadow-xl border border-white/20`}
           variants={headerVariants}
           whileHover="hover"
           style={{ transformStyle: "preserve-3d" }}
@@ -263,7 +263,7 @@ const SkillCategory = memo(({ title, data, index, isMobile }) => {
           <span className="drop-shadow-lg">{data.icon}</span>
         </motion.div>
         <div>
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
+          <h3 className={`${isMobile ? 'text-xl' : 'text-2xl md:text-3xl'} font-bold text-gray-800 dark:text-white mb-2`}>
             {title}
           </h3>
           <motion.div 
@@ -276,7 +276,7 @@ const SkillCategory = memo(({ title, data, index, isMobile }) => {
       </div>
 
       {/* Skills Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className={`grid ${isMobile ? 'grid-cols-2 gap-3' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'}`}>
         {data.skills.map((skill, skillIndex) => (
           <SkillCard 
             key={skill.name} 
@@ -495,47 +495,47 @@ const Skills = memo(() => {
   return (
     <section
       id="skills"
-      className="relative py-20 px-6 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen overflow-hidden"
+      className={`relative ${isMobile ? 'py-12' : 'py-20'} px-6 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen overflow-hidden`}
     >
       <FloatingElements />
       
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Header */}
         <motion.div
-          className="text-center mb-20"
+          className={`text-center ${isMobile ? 'mb-12' : 'mb-20'}`}
           variants={headerVariants}
           initial="initial"
           animate="animate"
         >
           <motion.div
-            className="inline-block mb-6"
+            className={`inline-block ${isMobile ? 'mb-4' : 'mb-6'}`}
             animate={iconVariants.animate}
             transition={iconVariants.transition}
             style={{ transformStyle: "preserve-3d" }}
           >
-            <div className={`w-20 h-20 bg-gradient-to-br ${currentThemeConfig.gradient} rounded-2xl flex items-center justify-center text-4xl shadow-2xl transform-gpu border border-white/20`}>
+            <div className={`${isMobile ? 'w-16 h-16 text-3xl' : 'w-20 h-20 text-4xl'} bg-gradient-to-br ${currentThemeConfig.gradient} rounded-2xl flex items-center justify-center shadow-2xl transform-gpu border border-white/20`}>
               <span className="drop-shadow-2xl">💫</span>
             </div>
           </motion.div>
           
-          <h2 className={`text-4xl md:text-6xl font-bold bg-gradient-to-r ${currentThemeConfig.gradient} bg-clip-text text-transparent mb-6`}>
+          <h2 className={`${isMobile ? 'text-3xl' : 'text-4xl md:text-6xl'} font-bold bg-gradient-to-r ${currentThemeConfig.gradient} bg-clip-text text-transparent ${isMobile ? 'mb-4' : 'mb-6'}`}>
             Technical Arsenal
           </h2>
           
           <motion.div
-            className={`w-32 h-2 bg-gradient-to-r ${currentThemeConfig.gradient} mx-auto rounded-full mb-8`}
+            className={`${isMobile ? 'w-24' : 'w-32'} h-2 bg-gradient-to-r ${currentThemeConfig.gradient} mx-auto rounded-full ${isMobile ? 'mb-6' : 'mb-8'}`}
             variants={lineVariants}
             initial="initial"
             animate="animate"
           />
           
-          <p className="text-gray-600 dark:text-gray-300 text-xl max-w-3xl mx-auto leading-relaxed">
+          <p className={`text-gray-600 dark:text-gray-300 ${isMobile ? 'text-base' : 'text-xl'} max-w-3xl mx-auto leading-relaxed`}>
             Crafting exceptional digital experiences with cutting-edge technologies and creative innovation
           </p>
         </motion.div>
 
         {/* Skills Categories */}
-        <div className="space-y-16">
+        <div className={`${isMobile ? 'space-y-8' : 'space-y-16'}`}>
           {Object.entries(skillsData).map(([category, data], index) => (
             <SkillCategory
               key={category}

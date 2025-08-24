@@ -128,27 +128,34 @@ const About = () => {
 
       {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-white/30 rounded-full"
-            animate={{
-              y: [-100, (typeof window !== 'undefined' ? window.innerHeight : 800) + 100],
-              x: [Math.random() * 100, Math.random() * 100],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: "linear",
-            }}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-100px`,
-            }}
-          />
-        ))}
+        {[...Array(20)].map((_, i) => {
+          const startX = (i * 5) % 100; // Distribute particles evenly
+          const endX = ((i * 7) + 20) % 100; // Different end positions
+          const duration = 15 + (i % 5) * 2; // Vary duration
+          const delay = i * 0.5; // Stagger delays
+          
+          return (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-white/30 rounded-full"
+              animate={{
+                y: [-100, (typeof window !== 'undefined' ? window.innerHeight : 800) + 100],
+                x: [startX, endX],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: duration,
+                repeat: Infinity,
+                delay: delay,
+                ease: "linear",
+              }}
+              style={{
+                left: `${startX}%`,
+                top: `-100px`,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Main Content Container */}
@@ -457,8 +464,16 @@ const About = () => {
                 animate={{ width: "100%" }}
                 transition={{ duration: 5, repeat: Infinity }}
               >
-                <div className="h-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-50" 
-                     style={{ width: `${((Date.now() % 5000) / 5000) * 100}%` }} />
+                <motion.div 
+                  className="h-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-50"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ 
+                    duration: 5, 
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
               </motion.div>
               
               <p className="text-sm text-gray-500 mt-6 flex items-center justify-center gap-2">

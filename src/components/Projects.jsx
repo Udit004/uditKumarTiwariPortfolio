@@ -9,6 +9,27 @@ import { DarkModeContext } from "../contexts/DarkModeContext";
 
 const projects = [
   {
+    title: "SaveServe - Food Redistribution Platform",
+    image: "/assets/SaveServe.jpg", // Replace with your actual image path
+    description: "A comprehensive full-stack web application connecting Food Providers and Recipients to redistribute surplus food and reduce waste. Features real-time notifications, AI-powered analytics reporting, automated background processing, and separate dashboards for providers and recipients with advanced booking and listing management.",
+    technologies: [
+      "Next.js App Router",
+      "React",
+      "Tailwind CSS", 
+      "Prisma ORM",
+      "MongoDB",
+      "Firebase Cloud Messaging",
+      "Inngest",
+      "Gemini AI",
+      "Cloudinary",
+      "TypeScript"
+    ],
+    category: "Full-Stack Web App",
+    featured: true,
+    liveLink: "https://save-serve-phi.vercel.app/", // Replace with your actual Vercel URL
+    githubLink: "https://github.com/satyam8589/saveserve", // Replace with your actual GitHub repo
+  },
+  {
     title: "Alumni Networking App",
   image: "/assets/alumni_project_image.jpg",
     description:
