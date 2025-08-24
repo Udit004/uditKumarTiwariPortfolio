@@ -35,6 +35,7 @@ export const writeClient = createClient({
   useCdn: false, // Never use CDN for mutations
   apiVersion: '2023-12-01',
   token: process.env.SANITY_API_TOKEN, // Server-side only token
+  perspective: 'published'
 })
 
 // Image URL builder
@@ -246,6 +247,13 @@ export function calculateReadingTime(content) {
 // Function to create a new blog post
 export async function createPost(postData) {
   try {
+    // Check if we have a token
+    if (!process.env.SANITY_API_TOKEN) {
+      throw new Error('SANITY_API_TOKEN is not configured')
+    }
+
+    console.log('Creating post with token length:', process.env.SANITY_API_TOKEN?.length)
+
     // Convert plain text content to Portable Text format
     const portableTextContent = [
       {

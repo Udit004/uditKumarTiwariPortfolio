@@ -103,34 +103,19 @@ export default {
             ]
           }
         },
-        // Custom blocks for rich content
-        {
-          type: 'image',
-          options: {hotspot: true},
-          fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Alternative Text',
-            }
-          ]
-        },
-        {
-          type: 'code',
-          title: 'Code Block',
-          options: {
-            language: 'javascript',
-            languageAlternatives: [
-              {title: 'JavaScript', value: 'javascript'},
-              {title: 'TypeScript', value: 'typescript'},
-              {title: 'HTML', value: 'html'},
-              {title: 'CSS', value: 'css'},
-              {title: 'Python', value: 'python'},
-              {title: 'JSON', value: 'json'}
-            ]
-          }
-        }
-      ],
+                 // Custom blocks for rich content
+         {
+           type: 'image',
+           options: {hotspot: true},
+           fields: [
+             {
+               name: 'alt',
+               type: 'string',
+               title: 'Alternative Text',
+             }
+           ]
+         }
+       ],
       validation: Rule => Rule.required()
     },
     {

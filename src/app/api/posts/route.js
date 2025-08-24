@@ -3,6 +3,15 @@ import { createPost } from '@/lib/sanity'
 
 export async function POST(request) {
   try {
+    // Check if token is available
+    if (!process.env.SANITY_API_TOKEN) {
+      console.error('SANITY_API_TOKEN is not set')
+      return NextResponse.json(
+        { error: 'Sanity API token is not configured' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     
     // Validate required fields
@@ -42,6 +51,12 @@ export async function POST(request) {
       readingTime: body.readingTime || Math.ceil(body.content.split(' ').length / 200)
     }
 
+    console.log('Creating post with data:', { 
+      title: postData.title, 
+      hasToken: !!process.env.SANITY_API_TOKEN,
+      tokenLength: process.env.SANITY_API_TOKEN?.length 
+    })
+
     const post = await createPost(postData)
     
     return NextResponse.json(
@@ -53,6 +68,15 @@ export async function POST(request) {
     )
   } catch (error) {
     console.error('Error creating post:', error)
+    
+    // Provide more specific error messages
+    if (error.statusCode === 401) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Please check your Sanity API token' },
+        { status: 401 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Failed to create post: ' + error.message },
       { status: 500 }

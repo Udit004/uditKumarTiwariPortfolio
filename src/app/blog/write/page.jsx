@@ -40,6 +40,10 @@ import Footer from '@/components/helperComponents/Footer'
 // Rich Text Editor Component
 function RichTextEditor({ value, onChange, placeholder }) {
   const [selection, setSelection] = useState({ start: 0, end: 0 })
+  const [showLinkDialog, setShowLinkDialog] = useState(false)
+  const [showImageDialog, setShowImageDialog] = useState(false)
+  const [linkData, setLinkData] = useState({ url: '', text: '' })
+  const [imageData, setImageData] = useState({ url: '', alt: '' })
   const textareaRef = useRef(null)
 
   const formatText = (format) => {
@@ -51,38 +55,66 @@ function RichTextEditor({ value, onChange, placeholder }) {
     const selectedText = value.substring(start, end)
 
     let formattedText = ''
+    let newCursorPos = start
+
     switch (format) {
       case 'bold':
         formattedText = `**${selectedText}**`
+        newCursorPos = start + formattedText.length
         break
       case 'italic':
         formattedText = `*${selectedText}*`
+        newCursorPos = start + formattedText.length
         break
       case 'code':
         formattedText = `\`${selectedText}\``
+        newCursorPos = start + formattedText.length
         break
       case 'quote':
         formattedText = `> ${selectedText}`
+        newCursorPos = start + formattedText.length
         break
       case 'link':
-        const url = prompt('Enter URL:')
-        if (url) formattedText = `[${selectedText}](${url})`
-        else formattedText = selectedText
-        break
+        if (selectedText) {
+          setLinkData({ url: '', text: selectedText })
+          setShowLinkDialog(true)
+          return
+        } else {
+          setLinkData({ url: '', text: '' })
+          setShowLinkDialog(true)
+          return
+        }
       case 'image':
-        const imageUrl = prompt('Enter image URL:')
-        const altText = prompt('Enter alt text:')
-        if (imageUrl) formattedText = `![${altText || 'image'}](${imageUrl})`
-        else formattedText = selectedText
-        break
+        setImageData({ url: '', alt: '' })
+        setShowImageDialog(true)
+        return
       case 'bullet':
         formattedText = `- ${selectedText}`
+        newCursorPos = start + formattedText.length
         break
       case 'numbered':
         formattedText = `1. ${selectedText}`
+        newCursorPos = start + formattedText.length
+        break
+      case 'h1':
+        formattedText = `# ${selectedText}`
+        newCursorPos = start + formattedText.length
+        break
+      case 'h2':
+        formattedText = `## ${selectedText}`
+        newCursorPos = start + formattedText.length
+        break
+      case 'h3':
+        formattedText = `### ${selectedText}`
+        newCursorPos = start + formattedText.length
+        break
+      case 'strikethrough':
+        formattedText = `~~${selectedText}~~`
+        newCursorPos = start + formattedText.length
         break
       default:
         formattedText = selectedText
+        newCursorPos = start + formattedText.length
     }
 
     const newValue = value.substring(0, start) + formattedText + value.substring(end)
@@ -91,95 +123,206 @@ function RichTextEditor({ value, onChange, placeholder }) {
     // Set cursor position after formatting
     setTimeout(() => {
       textarea.focus()
-      textarea.setSelectionRange(start + formattedText.length, start + formattedText.length)
+      textarea.setSelectionRange(newCursorPos, newCursorPos)
     }, 0)
+  }
+
+  const insertLink = () => {
+    if (linkData.url) {
+      const textarea = textareaRef.current
+      if (!textarea) return
+
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      const selectedText = value.substring(start, end)
+      
+      const linkText = linkData.text || selectedText || 'Link'
+      const formattedText = `[${linkText}](${linkData.url})`
+      
+      const newValue = value.substring(0, start) + formattedText + value.substring(end)
+      onChange(newValue)
+      
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length)
+      }, 0)
+    }
+    setShowLinkDialog(false)
+    setLinkData({ url: '', text: '' })
+  }
+
+  const insertImage = () => {
+    if (imageData.url) {
+      const textarea = textareaRef.current
+      if (!textarea) return
+
+      const start = textarea.selectionStart
+      const altText = imageData.alt || 'image'
+      const formattedText = `![${altText}](${imageData.url})`
+      
+      const newValue = value.substring(0, start) + formattedText + value.substring(start)
+      onChange(newValue)
+      
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length)
+      }, 0)
+    }
+    setShowImageDialog(false)
+    setImageData({ url: '', alt: '' })
   }
 
   return (
     <div className="space-y-2">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 p-2 bg-slate-800/50 rounded-lg border border-slate-700/50">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('bold')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Bold"
-        >
-          <Bold className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('italic')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Italic"
-        >
-          <Italic className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('code')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Code"
-        >
-          <Code className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('quote')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Quote"
-        >
-          <Quote className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('link')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Link"
-        >
-          <LinkIcon className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('image')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Image"
-        >
-          <ImageIcon className="h-4 w-4" />
-        </Button>
+      <div className="flex flex-wrap gap-1 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
+        {/* Text Formatting */}
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('bold')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Bold (Ctrl+B)"
+          >
+            <Bold className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('italic')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Italic (Ctrl+I)"
+          >
+            <Italic className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('strikethrough')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Strikethrough"
+          >
+            <span className="h-4 w-4 text-xs font-bold">S</span>
+          </Button>
+        </div>
+
         <div className="w-px h-6 bg-slate-600 mx-1" />
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('bullet')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Bullet List"
-        >
-          <List className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => formatText('numbered')}
-          className="h-8 w-8 p-0 hover:bg-slate-700/50"
-          title="Numbered List"
-        >
-          <ListOrdered className="h-4 w-4" />
-        </Button>
+
+        {/* Headings */}
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('h1')}
+            className="h-8 px-2 text-xs hover:bg-slate-700/50"
+            title="Heading 1"
+          >
+            H1
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('h2')}
+            className="h-8 px-2 text-xs hover:bg-slate-700/50"
+            title="Heading 2"
+          >
+            H2
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('h3')}
+            className="h-8 px-2 text-xs hover:bg-slate-700/50"
+            title="Heading 3"
+          >
+            H3
+          </Button>
+        </div>
+
+        <div className="w-px h-6 bg-slate-600 mx-1" />
+
+        {/* Code and Quote */}
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('code')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Code"
+          >
+            <Code className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('quote')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Quote"
+          >
+            <Quote className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="w-px h-6 bg-slate-600 mx-1" />
+
+        {/* Links and Images */}
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('link')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Insert Link"
+          >
+            <LinkIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('image')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Insert Image"
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="w-px h-6 bg-slate-600 mx-1" />
+
+        {/* Lists */}
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('bullet')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Bullet List"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('numbered')}
+            className="h-8 w-8 p-0 hover:bg-slate-700/50"
+            title="Numbered List"
+          >
+            <ListOrdered className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Textarea */}
@@ -188,7 +331,7 @@ function RichTextEditor({ value, onChange, placeholder }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-3 border border-slate-700/50 rounded-lg bg-slate-800/50 text-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 placeholder-gray-400 font-mono"
+        className="w-full px-4 py-3 border border-slate-700/50 rounded-lg bg-slate-800/50 text-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 placeholder-gray-400 font-mono leading-relaxed"
         rows={20}
         onSelect={(e) => {
           setSelection({
@@ -196,7 +339,108 @@ function RichTextEditor({ value, onChange, placeholder }) {
             end: e.target.selectionEnd
           })
         }}
+        onKeyDown={(e) => {
+          // Keyboard shortcuts
+          if (e.ctrlKey || e.metaKey) {
+            switch (e.key) {
+              case 'b':
+                e.preventDefault()
+                formatText('bold')
+                break
+              case 'i':
+                e.preventDefault()
+                formatText('italic')
+                break
+              case 'k':
+                e.preventDefault()
+                formatText('link')
+                break
+            }
+          }
+        }}
       />
+
+      {/* Link Dialog */}
+      {showLinkDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Insert Link</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Link Text</label>
+                <Input
+                  value={linkData.text}
+                  onChange={(e) => setLinkData(prev => ({ ...prev, text: e.target.value }))}
+                  placeholder="Link text..."
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">URL</label>
+                <Input
+                  value={linkData.url}
+                  onChange={(e) => setLinkData(prev => ({ ...prev, url: e.target.value }))}
+                  placeholder="https://example.com"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-6">
+              <Button onClick={insertLink} className="flex-1 bg-purple-600 hover:bg-purple-700">
+                Insert Link
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowLinkDialog(false)}
+                className="border-slate-600 text-gray-300"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Dialog */}
+      {showImageDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Insert Image</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Image URL</label>
+                <Input
+                  value={imageData.url}
+                  onChange={(e) => setImageData(prev => ({ ...prev, url: e.target.value }))}
+                  placeholder="https://example.com/image.jpg"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Alt Text</label>
+                <Input
+                  value={imageData.alt}
+                  onChange={(e) => setImageData(prev => ({ ...prev, alt: e.target.value }))}
+                  placeholder="Description of the image"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-6">
+              <Button onClick={insertImage} className="flex-1 bg-purple-600 hover:bg-purple-700">
+                Insert Image
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowImageDialog(false)}
+                className="border-slate-600 text-gray-300"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -421,7 +665,7 @@ export default function WritePage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20">
         <main className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">

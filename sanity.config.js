@@ -2,21 +2,17 @@
 import {defineConfig} from 'sanity';
 import {deskTool} from 'sanity/desk';
 import {visionTool} from '@sanity/vision';
-import {colorInput} from '@sanity/color-input';
-import {codeInput} from '@sanity/code-input';
 
 // Import your schemas
-import post from './src/sanity/schemaTypes/post';
-import author from './src/sanity/schemaTypes/author';
-import category from './src/sanity/schemaTypes/category';
+import post from './src/sanity/schemaTypes/post.js';
+import author from './src/sanity/schemaTypes/author.js';
+import category from './src/sanity/schemaTypes/category.js';
 
 export default defineConfig({
   name: 'default',
-  title: 'Modern Blog',
+  title: 'Udit Portfolio Blog',
   
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || (() => {
-    throw new Error('NEXT_PUBLIC_SANITY_PROJECT_ID is not set. Please add it to your .env.local file.')
-  })(),
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'your-project-id',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
 
   plugins: [
@@ -46,9 +42,7 @@ export default defineConfig({
               .child(S.documentTypeList('category').title('Categories')),
           ]),
     }),
-    visionTool(), // Useful for testing GROQ queries
-    colorInput(),
-    codeInput()
+    visionTool() // Useful for testing GROQ queries
   ],
 
   schema: {
