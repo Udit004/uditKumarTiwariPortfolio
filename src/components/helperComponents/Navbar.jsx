@@ -3,7 +3,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import { DarkModeContext } from "../../contexts/DarkModeContext";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Navbar = () => {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
@@ -11,6 +12,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
   const pathname = usePathname();
+  const router = useRouter();
 
   // Theme configurations matching the Home component
   const themes = [
@@ -66,7 +68,7 @@ const Navbar = () => {
   const handleNavClick = (item) => {
     if (isHomeRoute) {
       if (item === "Blog") {
-        window.location.href = "/blog";
+        router.push("/blog");
       } else {
         // Scroll to section for other items
         const element = document.getElementById(item.toLowerCase());
@@ -77,9 +79,9 @@ const Navbar = () => {
     } else {
       // When not on home route
       if (item === "Portfolio") {
-        window.location.href = "/";
+        router.push("/");
       } else if (item === "Blog") {
-        window.location.href = "/blog";
+        router.push("/blog");
       }
     }
   };
@@ -100,12 +102,12 @@ const Navbar = () => {
       >
         <div className="container mx-auto flex justify-between items-center px-6 py-4">
           {/* Logo Section */}
-          <motion.a
-            href="/"
-            className="flex items-center space-x-3 group"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <Link href="/" prefetch={true}>
+            <motion.div
+              className="flex items-center space-x-3 group cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
             {/* Animated Logo Container */}
             <div className="relative">
               <div className={`absolute inset-0 ${getGradientBg()} rounded-full blur-sm opacity-60 group-hover:opacity-80 transition-opacity duration-300`}></div>
@@ -133,7 +135,8 @@ const Navbar = () => {
                 Web Developer
               </span>
             </div>
-          </motion.a>
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -145,18 +148,34 @@ const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <button
-                    onClick={() => handleNavClick(item)}
-                    className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
-                      darkMode 
-                        ? 'text-white/90 hover:text-white'
-                        : 'text-gray-800/90 hover:text-gray-900'
-                    } ${getHoverColor()}`}
-                  >
-                    {item}
-                    {/* Animated underline */}
-                    <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-full`}></span>
-                  </button>
+                  {isHomeRoute && item !== "Blog" ? (
+                    <button
+                      onClick={() => handleNavClick(item)}
+                      className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
+                        darkMode 
+                          ? 'text-white/90 hover:text-white'
+                          : 'text-gray-800/90 hover:text-gray-900'
+                      } ${getHoverColor()}`}
+                    >
+                      {item}
+                      {/* Animated underline */}
+                      <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-full`}></span>
+                    </button>
+                  ) : (
+                    <Link 
+                      href={item === "Blog" ? "/blog" : item === "Portfolio" ? "/" : `/#${item.toLowerCase()}`}
+                      prefetch={true}
+                      className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
+                        darkMode 
+                          ? 'text-white/90 hover:text-white'
+                          : 'text-gray-800/90 hover:text-gray-900'
+                      } ${getHoverColor()}`}
+                    >
+                      {item}
+                      {/* Animated underline */}
+                      <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-full`}></span>
+                    </Link>
+                  )}
                 </motion.li>
               ))}
             </ul>
@@ -284,27 +303,48 @@ const Navbar = () => {
               {/* Menu Items */}
               <div className="p-4 space-y-2">
                 {navItems.map((item, index) => (
-                  <motion.button
+                  <motion.div
                     key={index}
-                    onClick={() => {
-                      handleNavClick(item);
-                      setIsOpen(false);
-                    }}
-                    className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
-                      darkMode 
-                        ? 'text-white/90 hover:bg-white/5'
-                        : 'text-gray-800/90 hover:bg-gray-800/5'
-                    } ${getHoverColor()}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ x: 5 }}
                   >
-                    <span className="flex items-center justify-between">
-                      {item}
-                      <span className={`w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-6`}></span>
-                    </span>
-                  </motion.button>
+                    {isHomeRoute && item !== "Blog" ? (
+                      <button
+                        onClick={() => {
+                          handleNavClick(item);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
+                          darkMode 
+                            ? 'text-white/90 hover:bg-white/5'
+                            : 'text-gray-800/90 hover:bg-gray-800/5'
+                        } ${getHoverColor()}`}
+                      >
+                        <span className="flex items-center justify-between">
+                          {item}
+                          <span className={`w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-6`}></span>
+                        </span>
+                      </button>
+                    ) : (
+                      <Link
+                        href={item === "Blog" ? "/blog" : item === "Portfolio" ? "/" : `/#${item.toLowerCase()}`}
+                        prefetch={true}
+                        onClick={() => setIsOpen(false)}
+                        className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
+                          darkMode 
+                            ? 'text-white/90 hover:bg-white/5'
+                            : 'text-gray-800/90 hover:bg-gray-800/5'
+                        } ${getHoverColor()}`}
+                      >
+                        <span className="flex items-center justify-between">
+                          {item}
+                          <span className={`w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-6`}></span>
+                        </span>
+                      </Link>
+                    )}
+                  </motion.div>
                 ))}
 
                 {/* Mobile Dark Mode Toggle */}

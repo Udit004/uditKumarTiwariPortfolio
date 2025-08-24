@@ -34,157 +34,67 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import ImageUpload from '@/components/ui/ImageUpload'
-import Navbar from '@/components/helperComponents/Navbar'
-import Footer from '@/components/helperComponents/Footer'
+import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
+
+// Dynamic imports for components
+const Navbar = dynamic(() => import('@/components/helperComponents/Navbar'), {
+  loading: () => (
+    <div className="fixed w-full top-0 z-50 bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50">
+      <div className="container mx-auto flex justify-between items-center px-6 py-4">
+        <div className="animate-pulse bg-slate-700 h-12 w-32 rounded"></div>
+        <div className="hidden md:flex space-x-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-slate-700 h-4 w-16 rounded"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
+  ssr: true
+})
+
+const Footer = dynamic(() => import('@/components/helperComponents/Footer'), {
+  loading: () => (
+    <div className="bg-slate-900 py-8">
+      <div className="container mx-auto px-6">
+        <div className="animate-pulse bg-slate-700 h-4 w-32 rounded mx-auto"></div>
+      </div>
+    </div>
+  ),
+  ssr: true
+})
 
 // Rich Text Editor Component
 function RichTextEditor({ value, onChange, placeholder }) {
-  const [selection, setSelection] = useState({ start: 0, end: 0 })
-  const [showLinkDialog, setShowLinkDialog] = useState(false)
-  const [showImageDialog, setShowImageDialog] = useState(false)
-  const [linkData, setLinkData] = useState({ url: '', text: '' })
-  const [imageData, setImageData] = useState({ url: '', alt: '' })
-  const textareaRef = useRef(null)
+  const [showToolbar, setShowToolbar] = useState(false)
+  const editorRef = useRef(null)
 
-  const formatText = (format) => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const selectedText = value.substring(start, end)
-
-    let formattedText = ''
-    let newCursorPos = start
-
-    switch (format) {
-      case 'bold':
-        formattedText = `**${selectedText}**`
-        newCursorPos = start + formattedText.length
-        break
-      case 'italic':
-        formattedText = `*${selectedText}*`
-        newCursorPos = start + formattedText.length
-        break
-      case 'code':
-        formattedText = `\`${selectedText}\``
-        newCursorPos = start + formattedText.length
-        break
-      case 'quote':
-        formattedText = `> ${selectedText}`
-        newCursorPos = start + formattedText.length
-        break
-      case 'link':
-        if (selectedText) {
-          setLinkData({ url: '', text: selectedText })
-          setShowLinkDialog(true)
-          return
-        } else {
-          setLinkData({ url: '', text: '' })
-          setShowLinkDialog(true)
-          return
-        }
-      case 'image':
-        setImageData({ url: '', alt: '' })
-        setShowImageDialog(true)
-        return
-      case 'bullet':
-        formattedText = `- ${selectedText}`
-        newCursorPos = start + formattedText.length
-        break
-      case 'numbered':
-        formattedText = `1. ${selectedText}`
-        newCursorPos = start + formattedText.length
-        break
-      case 'h1':
-        formattedText = `# ${selectedText}`
-        newCursorPos = start + formattedText.length
-        break
-      case 'h2':
-        formattedText = `## ${selectedText}`
-        newCursorPos = start + formattedText.length
-        break
-      case 'h3':
-        formattedText = `### ${selectedText}`
-        newCursorPos = start + formattedText.length
-        break
-      case 'strikethrough':
-        formattedText = `~~${selectedText}~~`
-        newCursorPos = start + formattedText.length
-        break
-      default:
-        formattedText = selectedText
-        newCursorPos = start + formattedText.length
-    }
-
-    const newValue = value.substring(0, start) + formattedText + value.substring(end)
-    onChange(newValue)
-    
-    // Set cursor position after formatting
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(newCursorPos, newCursorPos)
-    }, 0)
+  const formatText = (command, value = null) => {
+    document.execCommand(command, false, value)
+    editorRef.current?.focus()
   }
 
-  const insertLink = () => {
-    if (linkData.url) {
-      const textarea = textareaRef.current
-      if (!textarea) return
-
-      const start = textarea.selectionStart
-      const end = textarea.selectionEnd
-      const selectedText = value.substring(start, end)
-      
-      const linkText = linkData.text || selectedText || 'Link'
-      const formattedText = `[${linkText}](${linkData.url})`
-      
-      const newValue = value.substring(0, start) + formattedText + value.substring(end)
-      onChange(newValue)
-      
-      setTimeout(() => {
-        textarea.focus()
-        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length)
-      }, 0)
+  const insertText = (text) => {
+    const selection = window.getSelection()
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      range.deleteContents()
+      range.insertNode(document.createTextNode(text))
     }
-    setShowLinkDialog(false)
-    setLinkData({ url: '', text: '' })
-  }
-
-  const insertImage = () => {
-    if (imageData.url) {
-      const textarea = textareaRef.current
-      if (!textarea) return
-
-      const start = textarea.selectionStart
-      const altText = imageData.alt || 'image'
-      const formattedText = `![${altText}](${imageData.url})`
-      
-      const newValue = value.substring(0, start) + formattedText + value.substring(start)
-      onChange(newValue)
-      
-      setTimeout(() => {
-        textarea.focus()
-        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length)
-      }, 0)
-    }
-    setShowImageDialog(false)
-    setImageData({ url: '', alt: '' })
   }
 
   return (
-    <div className="space-y-2">
+    <div className="relative">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
-        {/* Text Formatting */}
-        <div className="flex items-center gap-1">
+      <div className={`absolute top-0 left-0 right-0 z-10 bg-slate-800 border border-slate-700 rounded-t-lg p-2 transition-all duration-300 ${showToolbar ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}>
+        <div className="flex flex-wrap gap-1">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={() => formatText('bold')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Bold (Ctrl+B)"
+            className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-slate-700"
           >
             <Bold className="h-4 w-4" />
           </Button>
@@ -193,122 +103,17 @@ function RichTextEditor({ value, onChange, placeholder }) {
             variant="ghost"
             size="sm"
             onClick={() => formatText('italic')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Italic (Ctrl+I)"
+            className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-slate-700"
           >
             <Italic className="h-4 w-4" />
           </Button>
+          <div className="w-px h-6 bg-slate-600 mx-1"></div>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => formatText('strikethrough')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Strikethrough"
-          >
-            <span className="h-4 w-4 text-xs font-bold">S</span>
-          </Button>
-        </div>
-
-        <div className="w-px h-6 bg-slate-600 mx-1" />
-
-        {/* Headings */}
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('h1')}
-            className="h-8 px-2 text-xs hover:bg-slate-700/50"
-            title="Heading 1"
-          >
-            H1
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('h2')}
-            className="h-8 px-2 text-xs hover:bg-slate-700/50"
-            title="Heading 2"
-          >
-            H2
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('h3')}
-            className="h-8 px-2 text-xs hover:bg-slate-700/50"
-            title="Heading 3"
-          >
-            H3
-          </Button>
-        </div>
-
-        <div className="w-px h-6 bg-slate-600 mx-1" />
-
-        {/* Code and Quote */}
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('code')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Code"
-          >
-            <Code className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('quote')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Quote"
-          >
-            <Quote className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="w-px h-6 bg-slate-600 mx-1" />
-
-        {/* Links and Images */}
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('link')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Insert Link"
-          >
-            <LinkIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('image')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Insert Image"
-          >
-            <ImageIcon className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="w-px h-6 bg-slate-600 mx-1" />
-
-        {/* Lists */}
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => formatText('bullet')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Bullet List"
+            onClick={() => formatText('insertUnorderedList')}
+            className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-slate-700"
           >
             <List className="h-4 w-4" />
           </Button>
@@ -316,678 +121,381 @@ function RichTextEditor({ value, onChange, placeholder }) {
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => formatText('numbered')}
-            className="h-8 w-8 p-0 hover:bg-slate-700/50"
-            title="Numbered List"
+            onClick={() => formatText('insertOrderedList')}
+            className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-slate-700"
           >
             <ListOrdered className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => formatText('formatBlock', '<blockquote>')}
+            className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-slate-700"
+          >
+            <Quote className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => insertText('```\n\n```')}
+            className="h-8 w-8 p-0 text-gray-300 hover:text-white hover:bg-slate-700"
+          >
+            <Code className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* Textarea */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+      {/* Editor */}
+      <div
+        ref={editorRef}
+        contentEditable
+        className="min-h-96 p-4 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent prose prose-invert max-w-none"
+        onInput={(e) => onChange(e.target.innerHTML)}
+        onFocus={() => setShowToolbar(true)}
+        onBlur={() => setShowToolbar(false)}
+        dangerouslySetInnerHTML={{ __html: value }}
         placeholder={placeholder}
-        className="w-full px-4 py-3 border border-slate-700/50 rounded-lg bg-slate-800/50 text-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 placeholder-gray-400 font-mono leading-relaxed"
-        rows={20}
-        onSelect={(e) => {
-          setSelection({
-            start: e.target.selectionStart,
-            end: e.target.selectionEnd
-          })
-        }}
-        onKeyDown={(e) => {
-          // Keyboard shortcuts
-          if (e.ctrlKey || e.metaKey) {
-            switch (e.key) {
-              case 'b':
-                e.preventDefault()
-                formatText('bold')
-                break
-              case 'i':
-                e.preventDefault()
-                formatText('italic')
-                break
-              case 'k':
-                e.preventDefault()
-                formatText('link')
-                break
-            }
-          }
-        }}
       />
-
-      {/* Link Dialog */}
-      {showLinkDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Insert Link</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">Link Text</label>
-                <Input
-                  value={linkData.text}
-                  onChange={(e) => setLinkData(prev => ({ ...prev, text: e.target.value }))}
-                  placeholder="Link text..."
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">URL</label>
-                <Input
-                  value={linkData.url}
-                  onChange={(e) => setLinkData(prev => ({ ...prev, url: e.target.value }))}
-                  placeholder="https://example.com"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-6">
-              <Button onClick={insertLink} className="flex-1 bg-purple-600 hover:bg-purple-700">
-                Insert Link
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowLinkDialog(false)}
-                className="border-slate-600 text-gray-300"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Image Dialog */}
-      {showImageDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Insert Image</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">Image URL</label>
-                <Input
-                  value={imageData.url}
-                  onChange={(e) => setImageData(prev => ({ ...prev, url: e.target.value }))}
-                  placeholder="https://example.com/image.jpg"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">Alt Text</label>
-                <Input
-                  value={imageData.alt}
-                  onChange={(e) => setImageData(prev => ({ ...prev, alt: e.target.value }))}
-                  placeholder="Description of the image"
-                  className="bg-slate-700 border-slate-600 text-white"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-6">
-              <Button onClick={insertImage} className="flex-1 bg-purple-600 hover:bg-purple-700">
-                Insert Image
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowImageDialog(false)}
-                className="border-slate-600 text-gray-300"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
 
-// Image Upload Component - Now using the separate component
-
-// SEO Preview Component
-function SEOPreview({ title, excerpt, slug }) {
-  return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
-      <h4 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
-        <Globe className="h-4 w-4" />
-        SEO Preview
-      </h4>
-      <div className="space-y-2">
-        <div className="text-blue-400 text-sm truncate">
-          {slug ? `yourdomain.com/blog/${slug}` : 'yourdomain.com/blog/...'}
-        </div>
-        <div className="text-white font-medium text-lg truncate">
-          {title || 'Your blog post title will appear here'}
-        </div>
-        <div className="text-gray-400 text-sm line-clamp-2">
-          {excerpt || 'Your blog post excerpt will appear here in search results...'}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default function WritePage() {
+export default function BlogWritePage() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [showPreview, setShowPreview] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
-    tags: [],
-    categories: [],
-    featured: false,
     coverImage: null,
-    coverImageAlt: '',
-    seoTitle: '',
-    seoDescription: '',
-    publishDate: new Date().toISOString().split('T')[0],
-    readingTime: ''
+    categories: [],
+    tags: [],
+    isPublished: false
   })
-  const [newTag, setNewTag] = useState('')
-  const [newCategory, setNewCategory] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [wordCount, setWordCount] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  // Available categories
-  const availableCategories = [
-    'Technology', 'Web Development', 'Design', 'Tutorial', 
-    'Personal', 'Career', 'Programming', 'React', 'Next.js'
-  ]
-
-  // Simple authentication check
-  useEffect(() => {
-    const checkAuth = () => {
-      const isAuth = localStorage.getItem('blog-auth') === 'udit-tiwari-2024'
-      setIsAuthenticated(isAuth)
-      setIsLoading(false)
-    }
-    checkAuth()
-  }, [])
-
-  // Calculate word count
-  useEffect(() => {
-    const words = formData.content.trim().split(/\s+/).filter(word => word.length > 0)
-    setWordCount(words.length)
-  }, [formData.content])
-
-  const handleLogin = () => {
-    const password = prompt('Enter admin password:')
-    if (password === 'udit2024') {
-      localStorage.setItem('blog-auth', 'udit-tiwari-2024')
-      setIsAuthenticated(true)
-    } else {
-      alert('Incorrect password!')
-    }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('blog-auth')
-    setIsAuthenticated(false)
-  }
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [field]: value
     }))
   }
 
-  const addTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, newTag.trim()]
-      }))
-      setNewTag('')
-    }
-  }
-
-  const removeTag = (tagToRemove) => {
+  const handleImageUpload = (imageUrl) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      coverImage: imageUrl
     }))
   }
 
   const addCategory = () => {
-    if (newCategory.trim() && !formData.categories.includes(newCategory.trim())) {
+    const category = prompt('Enter category name:')
+    if (category && !formData.categories.includes(category)) {
       setFormData(prev => ({
         ...prev,
-        categories: [...prev.categories, newCategory.trim()]
+        categories: [...prev.categories, category]
       }))
-      setNewCategory('')
     }
   }
 
-  const removeCategory = (categoryToRemove) => {
+  const removeCategory = (index) => {
     setFormData(prev => ({
       ...prev,
-      categories: prev.categories.filter(cat => cat !== categoryToRemove)
+      categories: prev.categories.filter((_, i) => i !== index)
     }))
   }
 
-  const handleImageUpload = (imageUrl, fileName) => {
-    setFormData(prev => ({
-      ...prev,
-      coverImage: imageUrl,
-      coverImageAlt: fileName
-    }))
+  const addTag = () => {
+    const tag = prompt('Enter tag:')
+    if (tag && !formData.tags.includes(tag)) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tag]
+      }))
+    }
   }
 
-  const generateSlug = () => {
-    const slug = formData.title.toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
-    setFormData(prev => ({ ...prev, slug }))
+  const removeTag = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter((_, i) => i !== index)
+    }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    setLoading(true)
+    setError('')
+    setSuccess('')
 
     try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      // Here you would typically send the data to your API
+      console.log('Submitting post:', formData)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      setSuccess('Post saved successfully!')
+      setFormData({
+        title: '',
+        excerpt: '',
+        content: '',
+        coverImage: null,
+        categories: [],
+        tags: [],
+        isPublished: false
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create post')
-      }
-
-      const result = await response.json()
-      console.log('Post created successfully:', result)
-      router.push('/blog')
-    } catch (error) {
-      console.error('Error creating post:', error)
-      alert('Failed to create post: ' + error.message)
+    } catch (err) {
+      setError('Failed to save post. Please try again.')
     } finally {
-      setIsSubmitting(false)
+      setLoading(false)
     }
-  }
-
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Authentication required
-  if (!isAuthenticated) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-          <div className="container mx-auto px-4 py-20">
-            <div className="max-w-md mx-auto text-center">
-              <div className="mb-8">
-                <Lock className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h1 className="text-2xl font-bold mb-2 text-white">Authentication Required</h1>
-                <p className="text-gray-300 mb-6">
-                  Only authorized users can create blog posts.
-                </p>
-              </div>
-              
-              <Button onClick={handleLogin} className="w-full mb-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                Login to Write Posts
-              </Button>
-              
-              <Link href="/blog">
-                <Button variant="outline" className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/20">
-                  Back to Blog
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    )
   }
 
   return (
     <>
-      <Navbar />
+      <Suspense fallback={
+        <div className="fixed w-full top-0 z-50 bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50">
+          <div className="container mx-auto flex justify-between items-center px-6 py-4">
+            <div className="animate-pulse bg-slate-700 h-12 w-32 rounded"></div>
+            <div className="hidden md:flex space-x-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse bg-slate-700 h-4 w-16 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      }>
+        <Navbar />
+      </Suspense>
+
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20">
-        <main className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-6 py-8">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <Link href="/blog">
-                <Button variant="ghost" className="pl-0 text-gray-300 hover:text-white">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <Link href="/blog" prefetch={true}>
+                <Button variant="ghost" className="text-gray-300 hover:text-white">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Blog
                 </Button>
               </Link>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
-                >
-                  {showPreview ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
-                  {showPreview ? 'Hide Preview' : 'Show Preview'}
-                </Button>
-                <Button variant="outline" onClick={handleLogout} size="sm">
-                  Logout
-                </Button>
-              </div>
+              <h1 className="text-3xl font-bold text-white">Write a New Post</h1>
             </div>
-            <h1 className="text-3xl font-bold text-white">Write a New Post</h1>
-            <p className="text-gray-300 mt-2">
-              Create engaging content with our professional editor
-            </p>
-            <div className="mt-2 text-sm text-green-400 flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Logged in as Udit Kumar Tiwari
+            
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                className="border-slate-600 text-gray-300 hover:text-white hover:border-slate-500"
+                onClick={() => handleInputChange('isPublished', !formData.isPublished)}
+              >
+                {formData.isPublished ? (
+                  <>
+                    <Globe className="h-4 w-4 mr-2" />
+                    Published
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-4 w-4 mr-2" />
+                    Draft
+                  </>
+                )}
+              </Button>
+              
+              <Button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Post
+                  </>
+                )}
+              </Button>
             </div>
           </div>
 
+          {/* Alerts */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400">
+              <AlertCircle className="h-5 w-5" />
+              {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center gap-2 text-green-400">
+              <CheckCircle className="h-5 w-5" />
+              {success}
+            </div>
+          )}
+
           {/* Form */}
-          <form onSubmit={handleSubmit} className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Title */}
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium mb-2 text-white">
-                    Title *
-                  </label>
-                  <Input
-                    id="title"
-                    name="title"
-                    type="text"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="Enter your post title..."
-                    required
-                    className="text-xl bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500/50"
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Title
+              </label>
+              <Input
+                type="text"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="Enter post title..."
+                className="bg-slate-800 border-slate-700 text-white placeholder-gray-400 focus:border-purple-500"
+                required
+              />
+            </div>
+
+            {/* Excerpt */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Excerpt
+              </label>
+              <textarea
+                value={formData.excerpt}
+                onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                placeholder="Enter a brief excerpt..."
+                rows={3}
+                className="w-full p-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent resize-none"
+              />
+            </div>
+
+            {/* Cover Image */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Cover Image
+              </label>
+              <ImageUpload onUpload={handleImageUpload} />
+              {formData.coverImage && (
+                <div className="mt-4 relative w-48 h-32 rounded-lg overflow-hidden">
+                  <Image
+                    src={formData.coverImage}
+                    alt="Cover"
+                    fill
+                    className="object-cover"
                   />
-                </div>
-
-                {/* Excerpt */}
-                <div>
-                  <label htmlFor="excerpt" className="block text-sm font-medium mb-2 text-white">
-                    Excerpt *
-                  </label>
-                  <textarea
-                    id="excerpt"
-                    name="excerpt"
-                    value={formData.excerpt}
-                    onChange={handleInputChange}
-                    placeholder="Write a brief summary of your post..."
-                    required
-                    rows={3}
-                    className="w-full px-3 py-2 border border-slate-700/50 rounded-md bg-slate-800/50 text-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 placeholder-gray-400"
-                  />
-                </div>
-
-                {/* Cover Image */}
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Cover Image
-                  </label>
-                  <ImageUpload 
-                    onImageUpload={handleImageUpload}
-                    className="mb-4"
-                  />
-                  {formData.coverImage && (
-                    <Input
-                      name="coverImageAlt"
-                      value={formData.coverImageAlt}
-                      onChange={handleInputChange}
-                      placeholder="Alt text for accessibility..."
-                      className="bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500/50"
-                    />
-                  )}
-                </div>
-
-                {/* Content */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-white">
-                      Content *
-                    </label>
-                    <div className="text-xs text-gray-400">
-                      {wordCount} words
-                    </div>
-                  </div>
-                  <RichTextEditor
-                    value={formData.content}
-                    onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-                    placeholder="Write your post content here... Use the toolbar above to format your text."
-                  />
-                </div>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* SEO Section */}
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    SEO Settings
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1 text-white">
-                        SEO Title
-                      </label>
-                      <Input
-                        name="seoTitle"
-                        value={formData.seoTitle}
-                        onChange={handleInputChange}
-                        placeholder="SEO optimized title..."
-                        className="bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500/50"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-1 text-white">
-                        SEO Description
-                      </label>
-                      <textarea
-                        name="seoDescription"
-                        value={formData.seoDescription}
-                        onChange={handleInputChange}
-                        placeholder="SEO description..."
-                        rows={3}
-                        className="w-full px-3 py-2 border border-slate-700/50 rounded-md bg-slate-800/50 text-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 placeholder-gray-400"
-                      />
-                    </div>
-
-                    <SEOPreview 
-                      title={formData.seoTitle || formData.title}
-                      excerpt={formData.seoDescription || formData.excerpt}
-                      slug={formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : ''}
-                    />
-                  </div>
-                </div>
-
-                {/* Categories */}
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                    <Hash className="h-5 w-5" />
-                    Categories
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {formData.categories.map((category, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-blue-600/80 text-white">
-                          {category}
-                          <button
-                            type="button"
-                            onClick={() => removeCategory(category)}
-                            className="ml-1 hover:text-red-400"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <select
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-slate-700/50 rounded-md bg-slate-800/50 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                      >
-                        <option value="">Select category...</option>
-                        {availableCategories.map(cat => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={addCategory}
-                        disabled={!newCategory}
-                        className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                    <Tag className="h-5 w-5" />
-                    Tags
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {formData.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-purple-600/80 text-white">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-1 hover:text-red-400"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
-                        placeholder="Add a tag..."
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                        className="bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500/50"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={addTag}
-                        disabled={!newTag.trim()}
-                        className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Publishing Options */}
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Publishing
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1 text-white">
-                        Publish Date
-                      </label>
-                      <Input
-                        type="date"
-                        name="publishDate"
-                        value={formData.publishDate}
-                        onChange={handleInputChange}
-                        className="bg-slate-800/50 border-slate-700/50 text-white focus:ring-purple-500/50"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-1 text-white">
-                        Reading Time (minutes)
-                      </label>
-                      <Input
-                        type="number"
-                        name="readingTime"
-                        value={formData.readingTime}
-                        onChange={handleInputChange}
-                        placeholder="Auto-calculated"
-                        className="bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500/50"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        id="featured"
-                        name="featured"
-                        type="checkbox"
-                        checked={formData.featured}
-                        onChange={handleInputChange}
-                        className="rounded border-slate-700/50 bg-slate-800/50 text-purple-500 focus:ring-purple-500/50"
-                      />
-                      <label htmlFor="featured" className="text-sm font-medium text-white">
-                        Mark as featured post
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit Buttons */}
-                <div className="space-y-3">
                   <Button
-                    type="submit"
-                    disabled={isSubmitting || !formData.title || !formData.excerpt || !formData.content}
-                    className="w-full flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleInputChange('coverImage', null)}
+                    className="absolute top-2 right-2 h-6 w-6 p-0 bg-red-500 hover:bg-red-600 text-white"
                   >
-                    <Save className="h-4 w-4" />
-                    {isSubmitting ? 'Publishing...' : 'Publish Post'}
+                    <X className="h-3 w-3" />
                   </Button>
-                  
-                  <Link href="/blog">
-                    <Button variant="outline" type="button" className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/20">
-                      Cancel
-                    </Button>
-                  </Link>
                 </div>
+              )}
+            </div>
+
+            {/* Categories */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Categories
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.categories.map((category, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="bg-purple-600/80 text-white"
+                  >
+                    {category}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeCategory(index)}
+                      className="h-4 w-4 p-0 ml-1 hover:bg-purple-700"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addCategory}
+                className="border-slate-600 text-gray-300 hover:text-white hover:border-slate-500"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Category
+              </Button>
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Tags
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.tags.map((tag, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="border-slate-600 text-gray-300"
+                  >
+                    #{tag}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeTag(index)}
+                      className="h-4 w-4 p-0 ml-1 hover:bg-slate-700"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addTag}
+                className="border-slate-600 text-gray-300 hover:text-white hover:border-slate-500"
+              >
+                <Hash className="h-4 w-4 mr-2" />
+                Add Tag
+              </Button>
+            </div>
+
+            {/* Content */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Content
+              </label>
+              <RichTextEditor
+                value={formData.content}
+                onChange={(value) => handleInputChange('content', value)}
+                placeholder="Start writing your post..."
+              />
             </div>
           </form>
-        </main>
+        </div>
       </div>
-      <Footer />
+
+      <Suspense fallback={
+        <div className="bg-slate-900 py-8">
+          <div className="container mx-auto px-6">
+            <div className="animate-pulse bg-slate-700 h-4 w-32 rounded mx-auto"></div>
+          </div>
+        </div>
+      }>
+        <Footer />
+      </Suspense>
     </>
   )
 }

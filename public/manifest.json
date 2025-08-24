@@ -1,0 +1,23 @@
+{
+  "name": "Udit Kumar Tiwari - Portfolio",
+  "short_name": "Udit Portfolio",
+  "description": "Portfolio of Udit Kumar Tiwari, Full Stack Developer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/assets/iconImage.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/iconImage.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -8,8 +8,35 @@ import { BlogSearch } from '@/components/BlogSearch'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import Navbar from '@/components/helperComponents/Navbar'
-import Footer from '@/components/helperComponents/Footer'
+import dynamic from 'next/dynamic'
+
+// Dynamic imports for components
+const Navbar = dynamic(() => import('@/components/helperComponents/Navbar'), {
+  loading: () => (
+    <div className="fixed w-full top-0 z-50 bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50">
+      <div className="container mx-auto flex justify-between items-center px-6 py-4">
+        <div className="animate-pulse bg-slate-700 h-12 w-32 rounded"></div>
+        <div className="hidden md:flex space-x-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-slate-700 h-4 w-16 rounded"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
+  ssr: true
+})
+
+const Footer = dynamic(() => import('@/components/helperComponents/Footer'), {
+  loading: () => (
+    <div className="bg-slate-900 py-8">
+      <div className="container mx-auto px-6">
+        <div className="animate-pulse bg-slate-700 h-4 w-32 rounded mx-auto"></div>
+      </div>
+    </div>
+  ),
+  ssr: true
+})
 
 // Loading component for Suspense
 function BlogCardsSkeleton() {
@@ -77,7 +104,21 @@ export default function BlogPage() {
 
   return (
     <>
-      <Navbar />
+      <Suspense fallback={
+        <div className="fixed w-full top-0 z-50 bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50">
+          <div className="container mx-auto flex justify-between items-center px-6 py-4">
+            <div className="animate-pulse bg-slate-700 h-12 w-32 rounded"></div>
+            <div className="hidden md:flex space-x-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse bg-slate-700 h-4 w-16 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      }>
+        <Navbar />
+      </Suspense>
+      
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         {/* Video Background */}
         <div className="absolute inset-0">
@@ -99,167 +140,149 @@ export default function BlogPage() {
           <motion.div
             className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl"
             animate={{
-              x: [0, 100, -50, 0],
-              y: [0, -50, 30, 0],
-              scale: [1, 1.3, 0.8, 1],
+              x: [0, 100, 0],
+              y: [0, -50, 0],
             }}
             transition={{
-              duration: 15,
+              duration: 20,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: "linear"
             }}
-            style={{ top: "10%", left: "10%" }}
+            style={{
+              top: '10%',
+              left: '10%'
+            }}
           />
           <motion.div
-            className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/15 to-cyan-500/15 rounded-full blur-3xl"
+            className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl"
             animate={{
-              x: [0, -80, 40, 0],
-              y: [0, 60, -20, 0],
-              scale: [1, 0.7, 1.1, 1],
+              x: [0, -80, 0],
+              y: [0, 60, 0],
             }}
             transition={{
-              duration: 18,
+              duration: 25,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: "linear"
             }}
-            style={{ bottom: "20%", right: "10%" }}
+            style={{
+              top: '60%',
+              right: '10%'
+            }}
           />
         </div>
-        
-        <main className="relative z-10 container mx-auto px-4 py-20">
-        {/* Header Section */}
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-white">
-            Welcome to My{' '}
-            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              Blog
-            </span>
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-6 leading-relaxed">
-            Discover insights, tutorials, and stories about web development, design, and technology.
-          </p>
-        </motion.div>
 
-        {/* Search Component */}
-        <motion.div 
-          className="mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <Suspense fallback={<div className="h-10 bg-slate-800/50 animate-pulse rounded"></div>}>
-            <BlogSearch initialPosts={allPosts} />
-          </Suspense>
-        </motion.div>
-
-        {/* Featured Posts Section */}
-        {featuredPosts.length > 0 && (
-          <motion.section 
-            className="mb-12"
+        {/* Content */}
+        <div className="relative z-10 container mx-auto px-6 py-24">
+          {/* Header */}
+          <motion.div
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8 }}
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-white">
-              <span className="h-2 w-2 bg-purple-400 rounded-full"></span>
-              Featured Posts
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {featuredPosts.slice(0, 2).map((post, index) => (
-                <motion.div
-                  key={post._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                >
-                  <BlogCard post={post} featured />
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+              Blog
+            </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Exploring technology, development, and everything in between
+            </p>
+          </motion.div>
 
-        {/* All Posts Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-              <span className="h-2 w-2 bg-blue-400 rounded-full"></span>
-              Latest Posts
-            </h2>
-            <div className="text-sm text-gray-400">
-              {allPosts.length} {allPosts.length === 1 ? 'post' : 'posts'}
-            </div>
-          </div>
+          {/* Search and Filters */}
+          <motion.div
+            className="mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <BlogSearch />
+          </motion.div>
 
-          {allPosts.length === 0 ? (
-            <motion.div 
-              className="text-center py-12"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+          {/* Featured Posts */}
+          {featuredPosts.length > 0 && (
+            <motion.section
+              className="mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold mb-2 text-white">No posts yet</h3>
-              <p className="text-gray-400">
-                Check back soon for our latest content!
-              </p>
-            </motion.div>
-          ) : (
-            <Suspense fallback={<BlogCardsSkeleton />}>
+              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-white">
+                <span className="h-2 w-2 bg-purple-400 rounded-full"></span>
+                Featured Posts
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allPosts.map((post, index) => (
+                {featuredPosts.map((post, index) => (
                   <motion.div
                     key={post._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                    transition={{ duration: 0.6, delay: 0.1 * index }}
+                  >
+                    <BlogCard post={post} featured={true} />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+          )}
+
+          {/* All Posts */}
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-white">
+              <span className="h-2 w-2 bg-blue-400 rounded-full"></span>
+              All Posts
+            </h2>
+            
+            <Suspense fallback={<BlogCardsSkeleton />}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {regularPosts.map((post, index) => (
+                  <motion.div
+                    key={post._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 * index }}
                   >
                     <BlogCard post={post} />
                   </motion.div>
                 ))}
               </div>
             </Suspense>
-          )}
-        </motion.section>
 
-        {/* Newsletter Signup CTA */}
-        <motion.section 
-          className="mt-16 py-12 px-6 rounded-2xl bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-purple-500/20 text-center backdrop-blur-sm"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <h3 className="text-2xl font-bold mb-4 text-white">Stay Updated</h3>
-          <p className="text-gray-300 mb-6 max-w-md mx-auto">
-            Subscribe to our newsletter to get the latest posts delivered directly to your inbox.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 rounded-md border border-purple-500/30 bg-slate-800/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-            />
-            <motion.button 
-              className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Subscribe
-            </motion.button>
-          </div>
-        </motion.section>
-        </main>
+            {regularPosts.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">No posts found.</p>
+              </div>
+            )}
+          </motion.section>
+
+          {/* Write Post Button */}
+          <motion.div
+            className="text-center mt-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <Link href="/blog/write" prefetch={true}>
+              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                Write a Post
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
       </div>
-      <Footer />
+
+      <Suspense fallback={
+        <div className="bg-slate-900 py-8">
+          <div className="container mx-auto px-6">
+            <div className="animate-pulse bg-slate-700 h-4 w-32 rounded mx-auto"></div>
+          </div>
+        </div>
+      }>
+        <Footer />
+      </Suspense>
     </>
   )
 }
