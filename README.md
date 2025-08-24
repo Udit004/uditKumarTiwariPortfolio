@@ -1,5 +1,30 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Environment Setup
+
+Before running the development server, you need to set up your environment variables:
+
+1. Create a `.env.local` file in the root directory
+2. Add the following variables:
+
+```bash
+# Sanity Configuration
+NEXT_PUBLIC_SANITY_PROJECT_ID=your-sanity-project-id
+NEXT_PUBLIC_SANITY_DATASET=production
+NEXT_PUBLIC_SANITY_API_VERSION=2025-08-19
+
+# Optional: Add your Sanity API token for write operations
+# SANITY_API_TOKEN=your-sanity-api-token
+
+# Optional: Gemini API Key (if using the AI chatbot feature)
+# NEXT_PUBLIC_GEMINI_API_KEY=your-gemini-api-key
+```
+
+**Important Notes:**
+- Replace `your-sanity-project-id` with your actual Sanity project ID
+- The Sanity project ID can only contain lowercase letters (a-z), numbers (0-9), and dashes
+- You can find your project ID in your Sanity project settings
+
 ## Getting Started
 
 First, run the development server:

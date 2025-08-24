@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, Download, Eye, Code2, Zap } from "lucide-react";
 
 // Note: Import DarkModeContext from your actual context file path
-import { DarkModeContext } from "@/contexts/DarkModeContext";
+import { DarkModeContext } from "../contexts/DarkModeContext";
 
 const projects = [
   {

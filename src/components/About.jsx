@@ -133,7 +133,7 @@ const About = () => {
             key={i}
             className="absolute w-2 h-2 bg-white/30 rounded-full"
             animate={{
-              y: [-100, window.innerHeight + 100],
+              y: [-100, (typeof window !== 'undefined' ? window.innerHeight : 800) + 100],
               x: [Math.random() * 100, Math.random() * 100],
               opacity: [0, 1, 0],
             }}
@@ -187,8 +187,8 @@ const About = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <div className="relative group">
-                {/* Main Profile Container */}
-                <div className="relative w-80 h-80 rounded-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 p-2 shadow-2xl hover:shadow-slate-400/20 transition-all duration-500">
+                                 {/* Main Profile Container */}
+                 <div className="relative w-80 h-80 rounded-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 p-2 shadow-2xl hover:shadow-slate-400/20 transition-all duration-500">
                   {/* Subtle Ring Effect */}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-700 opacity-30 blur-sm group-hover:opacity-50 transition-all duration-700"></div>
                   

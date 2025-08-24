@@ -2,13 +2,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
-import { DarkModeContext } from "@/contexts/DarkModeContext";
+import { DarkModeContext } from "../../contexts/DarkModeContext";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
+  const pathname = usePathname();
 
   // Theme configurations matching the Home component
   const themes = [
@@ -29,8 +31,11 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Navigation items
-  const navItems = ["Home", "About", "Skills", "Projects", "Contact"];
+  // Navigation items based on current route
+  const isHomeRoute = pathname === "/";
+  const navItems = isHomeRoute 
+    ? ["Home", "About", "Skills", "Projects", "Contact", "Blog"]
+    : ["Portfolio", "Blog"];
 
   // Dynamic classes based on theme
   const getAccentColor = (opacity = '') => {
@@ -57,13 +62,37 @@ const Navbar = () => {
     return `bg-gradient-to-r ${currentThemeConfig.gradient}`;
   };
 
+  // Handle navigation click based on route
+  const handleNavClick = (item) => {
+    if (isHomeRoute) {
+      if (item === "Blog") {
+        window.location.href = "/blog";
+      } else {
+        // Scroll to section for other items
+        const element = document.getElementById(item.toLowerCase());
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      // When not on home route
+      if (item === "Portfolio") {
+        window.location.href = "/";
+      } else if (item === "Blog") {
+        window.location.href = "/blog";
+      }
+    }
+  };
+
   return (
     <>
       <motion.nav
         className={`fixed w-full top-0 z-50 transition-all duration-500 ${
           scrolled 
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg border-b border-white/20' 
-            : 'bg-[rgba(255,255,255,0)]'
+            ? darkMode 
+              ? 'bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50' 
+              : 'bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200/50'
+            : 'bg-transparent'
         }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -72,7 +101,7 @@ const Navbar = () => {
         <div className="container mx-auto flex justify-between items-center px-6 py-4">
           {/* Logo Section */}
           <motion.a
-            href="#home"
+            href="/"
             className="flex items-center space-x-3 group"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -93,7 +122,11 @@ const Navbar = () => {
             
             {/* Logo Text */}
             <div className="flex flex-col">
-              <span className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              <span className={`text-xl font-bold ${
+                darkMode 
+                  ? 'bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent'
+                  : 'bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'
+              }`}>
                 Udit's Portfolio
               </span>
               <span className={`text-xs ${getAccentColor()} font-medium tracking-wider`}>
@@ -112,14 +145,18 @@ const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <a
-                    href={`#${item.toLowerCase()}`}
-                    className={`relative text-white/90 ${getHoverColor()} transition-all duration-300 font-medium text-sm tracking-wide uppercase group`}
+                  <button
+                    onClick={() => handleNavClick(item)}
+                    className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
+                      darkMode 
+                        ? 'text-white/90 hover:text-white'
+                        : 'text-gray-800/90 hover:text-gray-900'
+                    } ${getHoverColor()}`}
                   >
                     {item}
                     {/* Animated underline */}
                     <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-full`}></span>
-                  </a>
+                  </button>
                 </motion.li>
               ))}
             </ul>
@@ -128,7 +165,11 @@ const Navbar = () => {
             <motion.button
               onClick={toggleDarkMode}
               aria-label="Toggle Dark Mode & Theme"
-              className="relative p-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 shadow-lg group"
+              className={`relative p-3 rounded-full backdrop-blur-sm border transition-all duration-300 shadow-lg group ${
+                darkMode 
+                  ? 'bg-white/10 border-white/20 hover:bg-white/20'
+                  : 'bg-gray-800/10 border-gray-800/20 hover:bg-gray-800/20'
+              }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -151,7 +192,7 @@ const Navbar = () => {
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Moon className="text-blue-300 w-5 h-5" />
+                    <Moon className="text-gray-700 w-5 h-5" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -164,7 +205,7 @@ const Navbar = () => {
                     className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                       index === currentTheme 
                         ? `${getGradientBg()}` 
-                        : 'bg-white/30'
+                        : darkMode ? 'bg-white/30' : 'bg-gray-600/30'
                     }`}
                   />
                 ))}
@@ -175,7 +216,11 @@ const Navbar = () => {
           {/* Mobile Hamburger */}
           <motion.button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
+            className={`md:hidden p-2 rounded-lg backdrop-blur-sm border transition-all duration-300 ${
+              darkMode 
+                ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                : 'bg-gray-800/10 border-gray-800/20 text-gray-800 hover:bg-gray-800/20'
+            }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
@@ -221,7 +266,11 @@ const Navbar = () => {
             
             {/* Mobile Menu */}
             <motion.div
-              className="fixed top-20 right-4 w-72 bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 z-50 md:hidden overflow-hidden"
+              className={`fixed top-20 right-4 w-72 backdrop-blur-xl rounded-2xl shadow-2xl border z-50 md:hidden overflow-hidden ${
+                darkMode 
+                  ? 'bg-slate-900/95 border-white/10'
+                  : 'bg-white/95 border-gray-200/50'
+              }`}
               initial={{ opacity: 0, scale: 0.9, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: -20 }}
@@ -235,11 +284,17 @@ const Navbar = () => {
               {/* Menu Items */}
               <div className="p-4 space-y-2">
                 {navItems.map((item, index) => (
-                  <motion.a
+                  <motion.button
                     key={index}
-                    href={`#${item.toLowerCase()}`}
-                    className={`block p-3 rounded-lg text-white/90 ${getHoverColor()} transition-all duration-300 hover:bg-white/5 group`}
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      handleNavClick(item);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
+                      darkMode 
+                        ? 'text-white/90 hover:bg-white/5'
+                        : 'text-gray-800/90 hover:bg-gray-800/5'
+                    } ${getHoverColor()}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -249,7 +304,7 @@ const Navbar = () => {
                       {item}
                       <span className={`w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-6`}></span>
                     </span>
-                  </motion.a>
+                  </motion.button>
                 ))}
 
                 {/* Mobile Dark Mode Toggle */}
@@ -258,16 +313,22 @@ const Navbar = () => {
                     toggleDarkMode();
                     setIsOpen(false);
                   }}
-                  className="w-full p-3 mt-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300 flex items-center justify-between group"
+                  className={`w-full p-3 mt-4 rounded-lg border transition-all duration-300 flex items-center justify-between group ${
+                    darkMode 
+                      ? 'bg-white/5 hover:bg-white/10 border-white/10'
+                      : 'bg-gray-800/5 hover:bg-gray-800/10 border-gray-800/10'
+                  }`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <span className="text-white/90 flex items-center space-x-3">
+                  <span className={`flex items-center space-x-3 ${
+                    darkMode ? 'text-white/90' : 'text-gray-800/90'
+                  }`}>
                     {darkMode ? (
                       <Sun className="text-yellow-400 w-5 h-5" />
                     ) : (
-                      <Moon className="text-blue-300 w-5 h-5" />
+                      <Moon className="text-gray-700 w-5 h-5" />
                     )}
                     <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                   </span>
@@ -280,7 +341,7 @@ const Navbar = () => {
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${
                           index === currentTheme 
                             ? `${getGradientBg()}` 
-                            : 'bg-white/20'
+                            : darkMode ? 'bg-white/20' : 'bg-gray-600/20'
                         }`}
                       />
                     ))}
