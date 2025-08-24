@@ -263,23 +263,30 @@ export async function createPost(postData) {
     // Get or create default author
     const authorId = await getDefaultAuthor()
 
-    // Create the post document
+    // Create the post document with enhanced fields
     const post = await writeClient.create({
       _type: 'post',
       title: postData.title,
       slug: {
         _type: 'slug',
-        current: postData.title.toLowerCase()
+        current: postData.slug || postData.title.toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/(^-|-$)/g, '')
       },
       excerpt: postData.excerpt,
       content: portableTextContent,
-      publishedAt: new Date().toISOString(),
-      tags: postData.tags,
-      featured: postData.featured,
-      readingTime: calculateReadingTime(portableTextContent),
-      author: { _type: 'reference', _ref: authorId }
+      publishedAt: postData.publishedAt || new Date().toISOString(),
+      tags: postData.tags || [],
+      categories: postData.categories ? postData.categories.map(cat => ({
+        _type: 'reference',
+        _ref: cat // This assumes categories exist in Sanity, you might need to create them first
+      })) : [],
+      featured: postData.featured || false,
+      readingTime: postData.readingTime || calculateReadingTime(portableTextContent),
+      author: { _type: 'reference', _ref: authorId },
+      // Add SEO fields if they exist
+      ...(postData.seoTitle && { seoTitle: postData.seoTitle }),
+      ...(postData.seoDescription && { seoDescription: postData.seoDescription })
     })
 
     return post
