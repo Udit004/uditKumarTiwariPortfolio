@@ -1,6 +1,14 @@
 // Gemini API Service with enhanced context understanding
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
+// Debug logging
+console.log('Environment check:', {
+  hasApiKey: !!GEMINI_API_KEY,
+  apiKeyLength: GEMINI_API_KEY?.length,
+  apiKeyStart: GEMINI_API_KEY?.substring(0, 10) + '...',
+  allEnvVars: Object.keys(process.env).filter(key => key.includes('GEMINI'))
+});
+
 // Portfolio context for Udit Kumar Tiwari
 const portfolioContext = `
 You are Udit's AI assistant on his portfolio website. Here's information about Udit Kumar Tiwari:

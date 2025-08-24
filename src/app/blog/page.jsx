@@ -143,28 +143,6 @@ export default function BlogPage() {
           <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-6 leading-relaxed">
             Discover insights, tutorials, and stories about web development, design, and technology.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/blog/write">
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25">
-                  Write a Post
-                </Button>
-              </Link>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/blog/manage">
-                <Button variant="outline" className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20 font-medium px-8 py-3 rounded-lg transition-all duration-300">
-                  Manage Blog
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
         </motion.div>
 
         {/* Search Component */}
