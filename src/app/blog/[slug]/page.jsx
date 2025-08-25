@@ -1,106 +1,34 @@
-'use client'
-// app/blog/[slug]/page.tsx
+// app/blog/[slug]/page (App Router server component)
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { PortableText } from '@portabletext/react'
-import { CalendarDays, Clock, User, ArrowLeft, Share2 } from 'lucide-react'
+import { CalendarDays, Clock, User, ArrowLeft } from 'lucide-react'
 import { getPostBySlug, getAllPostSlugs, urlFor, formatDate, calculateReadingTime } from '@/lib/sanity'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ShareButton } from '@/components/ShareButton'
 import { RelatedPosts } from '@/components/RelatedPosts'
-import { PortableTextComponents } from '@/components/PortableTextComponents'
-import { motion } from 'framer-motion'
-import { useEffect, useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import SanityPortableText from '@/components/SanityPortableText'
 
-// Dynamic imports for components
-const Navbar = dynamic(() => import('@/components/helperComponents/Navbar'), {
-  loading: () => (
-    <div className="fixed w-full top-0 z-50 bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50">
-      <div className="container mx-auto flex justify-between items-center px-6 py-4">
-        <div className="animate-pulse bg-slate-700 h-12 w-32 rounded"></div>
-        <div className="hidden md:flex space-x-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-slate-700 h-4 w-16 rounded"></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  ),
-  ssr: true
-})
+// Dynamic imports for layout components
+const Navbar = dynamic(() => import('@/components/helperComponents/Navbar'), { ssr: true })
+const Footer = dynamic(() => import('@/components/helperComponents/Footer'), { ssr: true })
 
-const Footer = dynamic(() => import('@/components/helperComponents/Footer'), {
-  loading: () => (
-    <div className="bg-slate-900 py-8">
-      <div className="container mx-auto px-6">
-        <div className="animate-pulse bg-slate-700 h-4 w-32 rounded mx-auto"></div>
-      </div>
-    </div>
-  ),
-  ssr: true
-})
+export const revalidate = 60
 
-export default function BlogPostPage({ params }) {
-  const [post, setPost] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const postData = await getPostBySlug(params.slug)
-        if (!postData) {
-          setError('Post not found')
-          return
-        }
-        setPost(postData)
-      } catch (err) {
-        console.error('Error fetching post:', err)
-        setError('Failed to load post')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchPost()
-  }, [params.slug])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p>Loading post...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !post) {
+export default async function BlogPostPage({ params }) {
+  const { slug } = await params
+  const post = await getPostBySlug(slug).catch(() => null)
+  if (!post) {
     notFound()
   }
 
-  const readingTime = calculateReadingTime(post.body)
+  const readingTime = Array.isArray(post?.content) ? calculateReadingTime(post.content) : 0
 
   return (
     <>
-      <Suspense fallback={
-        <div className="fixed w-full top-0 z-50 bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50">
-          <div className="container mx-auto flex justify-between items-center px-6 py-4">
-            <div className="animate-pulse bg-slate-700 h-12 w-32 rounded"></div>
-            <div className="hidden md:flex space-x-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-slate-700 h-4 w-16 rounded"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      }>
         <Navbar />
-      </Suspense>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         {/* Video Background */}
@@ -121,33 +49,23 @@ export default function BlogPostPage({ params }) {
         {/* Content */}
         <div className="relative z-10 container mx-auto px-6 py-24">
           {/* Back Button */}
-          <motion.div 
-            className="mb-6"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div className="mb-6">
             <Link href="/blog" prefetch={true}>
               <Button variant="ghost" className="pl-0 text-gray-300 hover:text-white hover:bg-purple-500/20">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Blog
               </Button>
             </Link>
-          </motion.div>
+          </div>
 
           {/* Article Header */}
-          <motion.article 
-            className="max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          <article className="max-w-4xl mx-auto">
             {/* Categories */}
             {post.categories && post.categories.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.categories.map((category) => (
                   <Badge
-                    key={category._id}
+                    key={category._id || category.title}
                     variant="secondary"
                     className="bg-purple-600/80 text-white border-none backdrop-blur-sm"
                   >
@@ -159,7 +77,11 @@ export default function BlogPostPage({ params }) {
 
             {/* Title */}
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
-              {post.title}
+              {Array.isArray(post.title) ? (
+                <SanityPortableText value={post.title} />
+              ) : (
+                post.title
+              )}
             </h1>
 
             {/* Post Meta */}
@@ -183,13 +105,8 @@ export default function BlogPostPage({ params }) {
             </div>
 
             {/* Cover Image */}
-            {post.coverImage && (
-              <motion.div 
-                className="relative w-full h-64 md:h-96 mb-8 rounded-lg overflow-hidden"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
+            {post.coverImage && post.coverImage.asset && (
+              <div className="relative w-full h-64 md:h-96 mb-8 rounded-lg overflow-hidden">
                 <Image
                   src={urlFor(post.coverImage).width(1200).height(600).url()}
                   alt={post.coverImage.alt || post.title}
@@ -198,44 +115,30 @@ export default function BlogPostPage({ params }) {
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 />
-              </motion.div>
+              </div>
             )}
 
             {/* Excerpt */}
             {post.excerpt && (
-              <motion.div 
-                className="mb-8 p-6 bg-slate-800/30 rounded-lg border border-slate-700/50 backdrop-blur-sm"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
-                <p className="text-lg text-gray-300 italic leading-relaxed">
-                  {post.excerpt}
-                </p>
-              </motion.div>
+              <div className="mb-8 p-6 bg-slate-800/30 rounded-lg border border-slate-700/50 backdrop-blur-sm">
+                {Array.isArray(post.excerpt) ? (
+                  <div className="text-lg text-gray-300 italic leading-relaxed">
+                    <SanityPortableText value={post.excerpt} />
+                  </div>
+                ) : (
+                  <p className="text-lg text-gray-300 italic leading-relaxed">{post.excerpt}</p>
+                )}
+              </div>
             )}
 
             {/* Article Content */}
-            <motion.div 
-              className="prose prose-lg prose-invert max-w-none mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
-              <PortableText 
-                value={post.body} 
-                components={PortableTextComponents}
-              />
-            </motion.div>
+            <div className="prose prose-lg prose-invert max-w-none mb-12">
+              <SanityPortableText value={post.content} />
+                                </div>
 
             {/* Author Section */}
-            {post.author && (
-              <motion.div 
-                className="border-t border-slate-700/50 pt-8 mb-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.0 }}
-              >
+            {post.author && post.author.name && (
+              <div className="border-t border-slate-700/50 pt-8 mb-12">
                 <div className="flex items-center gap-4 mb-4">
                   {post.author.image && (
                     <Image
@@ -249,12 +152,17 @@ export default function BlogPostPage({ params }) {
                   <div>
                     <h3 className="text-xl font-semibold text-white">{post.author.name}</h3>
                     {post.author.bio && (
-                      <p className="text-gray-400">{post.author.bio}</p>
+                      Array.isArray(post.author.bio) ? (
+                        <div className="text-gray-400">
+                          <SanityPortableText value={post.author.bio} />
+                        </div>
+                      ) : (
+                        <p className="text-gray-400">{post.author.bio}</p>
+                      )
                     )}
                   </div>
                 </div>
 
-                {/* Author Social Links */}
                 {post.author.social && (
                   <div className="flex gap-4">
                     {post.author.social.twitter && (
@@ -277,7 +185,7 @@ export default function BlogPostPage({ params }) {
                         className="text-gray-400 hover:text-blue-600 transition-colors"
                       >
                         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/>
                         </svg>
                       </a>
                     )}
@@ -307,51 +215,26 @@ export default function BlogPostPage({ params }) {
                     )}
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
 
             {/* Share Button */}
-            <motion.div 
-              className="flex justify-center mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
-            >
+            <div className="flex justify-center mb-12">
               <ShareButton post={post} />
-            </motion.div>
-          </motion.article>
+            </div>
+          </article>
 
           {/* Related Posts */}
-          <Suspense fallback={
-            <div className="mt-16">
-              <div className="animate-pulse bg-slate-700 h-8 w-48 rounded mb-6"></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-slate-800/50 rounded-lg h-48 mb-4"></div>
-                    <div className="space-y-2">
-                      <div className="bg-slate-800/50 rounded h-4 w-3/4"></div>
-                      <div className="bg-slate-800/50 rounded h-4 w-1/2"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          }>
             <RelatedPosts currentPost={post} />
-          </Suspense>
         </div>
       </div>
 
-      <Suspense fallback={
-        <div className="bg-slate-900 py-8">
-          <div className="container mx-auto px-6">
-            <div className="animate-pulse bg-slate-700 h-4 w-32 rounded mx-auto"></div>
-          </div>
-        </div>
-      }>
         <Footer />
-      </Suspense>
     </>
   )
+}
+
+export async function generateStaticParams() {
+  const slugs = await getAllPostSlugs().catch(() => [])
+  return (slugs || []).map((s) => ({ slug: typeof s === 'string' ? s : s?.slug?.current || s?.slug }))
 }
