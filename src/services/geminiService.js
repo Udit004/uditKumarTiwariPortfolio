@@ -2,12 +2,12 @@
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 // Debug logging
-console.log('Environment check:', {
-  hasApiKey: !!GEMINI_API_KEY,
-  apiKeyLength: GEMINI_API_KEY?.length,
-  apiKeyStart: GEMINI_API_KEY?.substring(0, 10) + '...',
-  allEnvVars: Object.keys(process.env).filter(key => key.includes('GEMINI'))
-});
+// console.log("Environment check:", {
+//   hasApiKey: !!GEMINI_API_KEY,
+//   apiKeyLength: GEMINI_API_KEY?.length,
+//   apiKeyStart: GEMINI_API_KEY?.substring(0, 10) + "...",
+//   allEnvVars: Object.keys(process.env).filter((key) => key.includes("GEMINI")),
+// });
 
 // Portfolio context for Udit Kumar Tiwari
 const portfolioContext = `
@@ -51,8 +51,11 @@ export const generateAIResponse = async (userMessage) => {
     }
 
     // Check if the message is about Udit or general conversation
-    const isAboutUdit = /\b(udit|developer|portfolio|skills|projects|experience|contact|hire|work|background|about\s+(him|you))\b/i.test(userMessage);
-    
+    const isAboutUdit =
+      /\b(udit|developer|portfolio|skills|projects|experience|contact|hire|work|background|about\s+(him|you))\b/i.test(
+        userMessage
+      );
+
     let contextualPrompt;
     if (isAboutUdit) {
       contextualPrompt = `${portfolioContext}\n\nUser is asking about Udit Kumar Tiwari. Please provide detailed, specific information about him based on the portfolio data provided. Be conversational and engaging.`;
@@ -83,7 +86,7 @@ export const generateAIResponse = async (userMessage) => {
       },
     ];
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const geminiPayload = {
       contents: contents,
