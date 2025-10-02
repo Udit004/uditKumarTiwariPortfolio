@@ -144,7 +144,7 @@ const Home = () => {
           <div className="relative w-48 h-48 md:w-56 md:h-56 mx-auto">
             {/* Subtle Gradient Border */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 p-1">
-              <div className="w-full h-full rounded-full bg-slate-900 p-1">
+              <div className="w-full h-full rounded-full bg-slate-900 p-1 relative">
                 <Image
                   src="/assets/udit_passport.jpg"
                   alt="Udit Kumar Tiwari"

@@ -242,7 +242,7 @@ const ProjectCard = memo(({ project, index, currentThemeConfig }) => {
           <motion.div
             variants={imageVariants}
             animate={isHovered ? "hover" : "initial"}
-            className={`w-full h-full`}
+            className="relative w-full h-full"
           >
             <Image
               src={project.image}
@@ -306,15 +306,11 @@ const ProjectCard = memo(({ project, index, currentThemeConfig }) => {
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <motion.h3 
-              className="text-xl font-bold text-gray-800 dark:text-white"
-              animate={isHovered ? {
-                backgroundImage: `linear-gradient(to right, ${currentThemeConfig.gradient.replace('from-', '').replace('to-', '')})`,
-                WebkitBackgroundClip: 'text',
-                color: 'rgba(255,255,255,0)'
-              } : {
-                color: 'inherit'
-              }}
-              transition={{ duration: 0.2 }}
+              className={`text-xl font-bold transition-all duration-200 ${
+                isHovered 
+                  ? `bg-gradient-to-r ${currentThemeConfig.gradient} bg-clip-text text-transparent` 
+                  : 'text-gray-800 dark:text-white'
+              }`}
             >
               {project.title}
             </motion.h3>

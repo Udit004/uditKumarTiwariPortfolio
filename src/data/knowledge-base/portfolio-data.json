@@ -1,0 +1,84 @@
+{
+  "personalInfo": {
+    "name": "Udit Kumar Tiwari",
+    "title": "Full-Stack Developer",
+    "email": "rajankumart266@gmail.com",
+    "bio": "Passionate full-stack developer with expertise in modern web technologies and AI integration. I love creating scalable applications and innovative digital solutions.",
+    "location": "Available for remote work",
+    "experience": "1+ years in web development"
+  },
+  "skills": {
+    "frontend": [
+      {
+        "name": "React",
+        "level": "Advanced",
+        "description": "Building dynamic user interfaces with hooks, context, and modern React patterns"
+      },
+      {
+        "name": "Next.js",
+        "level": "Advanced",
+        "description": "Server-side rendering, static site generation, and full-stack Next.js applications"
+      },
+      {
+        "name": "JavaScript/TypeScript", 
+        "level": "Advanced",
+        "description": "Modern ES6+ features, async programming, and TypeScript for type safety"
+      },
+      {
+        "name": "Tailwind CSS",
+        "level": "Advanced",
+        "description": "Responsive design, custom components, and modern CSS frameworks"
+      }
+    ],
+    "backend": [
+      {
+        "name": "Node.js",
+        "level": "Advanced",
+        "description": "Server-side JavaScript, API development, and microservices architecture"
+      },
+      {
+        "name": "Express.js",
+        "level": "Advanced", 
+        "description": "RESTful APIs, middleware, authentication, and server-side logic"
+      },
+      {
+        "name": "Python",
+        "level": "Intermediate",
+        "description": "Web development with Flask/Django, automation scripts, and data processing"
+      }
+    ],
+    "databases": [
+      {
+        "name": "MongoDB",
+        "level": "Advanced",
+        "description": "NoSQL database design, aggregation pipelines, and performance optimization"
+      },
+      {
+        "name": "PostgreSQL", 
+        "level": "Intermediate",
+        "description": "Relational database design, complex queries, and data modeling"
+      },
+      {
+        "name": "Firebase",
+        "level": "Intermediate",
+        "description": "Real-time database, authentication, and cloud functions"
+      }
+    ]
+  },
+  "projects": [
+    {
+      "name": "AI-Powered Portfolio Website",
+      "description": "Interactive portfolio with intelligent chatbot featuring voice recognition and natural conversation capabilities",
+      "technologies": ["React", "Next.js", "Gemini AI", "Tailwind CSS", "Framer Motion"],
+      "features": ["Voice interaction", "AI chatbot", "Responsive design", "Modern animations"],
+      "status": "Completed"
+    },
+    {
+      "name": "E-commerce Platform",
+      "description": "Full-featured online store with payment processing, inventory management, and user authentication",
+      "technologies": ["React", "Node.js", "MongoDB", "Stripe API", "JWT"],
+      "features": ["Payment gateway", "Admin dashboard", "Product catalog", "Order management"],
+      "status": "Completed"
+    }
+  ]
+}

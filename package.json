@@ -12,7 +12,7 @@
     "@portabletext/react": "^3.2.4",
     "@radix-ui/react-slot": "^1.2.3",
     "@sanity/client": "^7.8.2",
-    "@sanity/code-input": "^5.2.1",
+    "@sanity/code-input": "^6.0.1",
     "@sanity/color-input": "^4.0.6",
     "@sanity/image-url": "^1.1.0",
     "@sanity/vision": "^4.4.1",
@@ -29,7 +29,8 @@
     "sanity": "^4.4.1",
     "styled-components": "^6.1.19",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -37,6 +38,7 @@
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
