@@ -94,32 +94,19 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
     }
   }), [index]);
 
-  // Memoized gradient colors to prevent recalculation
-  const gradientColors = useMemo(() => {
-    const colors = categoryColor.split(' ');
-    return {
-      from: colors[1], // e.g., "from-purple-500"
-      to: colors[3]    // e.g., "to-blue-500"
-    };
-  }, [categoryColor]);
+  // Simplified background animation using opacity instead of complex gradients
+  const backgroundAnimation = useMemo(() => ({
+    opacity: isHovered ? 0.2 : 0.1,
+    scale: isHovered ? 1.02 : 1
+  }), [isHovered]);
 
-  // Memoized background animation
-  const backgroundAnimation = useMemo(() => 
-    isHovered ? [
-      `linear-gradient(45deg, ${gradientColors.from}, ${gradientColors.to})`,
-      `linear-gradient(135deg, ${gradientColors.to}, ${gradientColors.from})`,
-      `linear-gradient(45deg, ${gradientColors.from}, ${gradientColors.to})`
-    ] : undefined
-  , [isHovered, gradientColors]);
-
-  // Memoized text animation
+  // Memoized text animation - using opacity instead of background animation
   const textAnimation = useMemo(() => ({
-    background: isHovered ? 
-      `linear-gradient(45deg, rgb(168, 85, 247), rgb(6, 182, 212))` : 
-  'rgba(255,255,255,0)',
-    backgroundClip: isHovered ? 'text' : 'unset',
-    WebkitBackgroundClip: isHovered ? 'text' : 'unset',
-  color: isHovered ? 'rgba(255,255,255,0)' : undefined
+    opacity: isHovered ? 1 : 0
+  }), [isHovered]);
+
+  const normalTextAnimation = useMemo(() => ({
+    opacity: isHovered ? 0 : 1
   }), [isHovered]);
 
   // Memoized particles for performance
@@ -164,9 +151,9 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
       <div className={`relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl ${isMobile ? 'p-3' : 'p-6'} shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden`}>
         {/* Animated background gradient - optimized */}
         <motion.div 
-          className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
-          animate={{ background: backgroundAnimation }}
-          transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
+          className={`absolute inset-0 bg-gradient-to-br ${categoryColor}`}
+          animate={backgroundAnimation}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         />
         
         {/* 3D Icon Container */}
@@ -185,12 +172,23 @@ const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
 
         {/* Content */}
         <div className="relative z-10 text-center">
-          <motion.h4 
-            className={`${isMobile ? 'text-sm' : 'text-lg'} font-bold text-gray-800 dark:text-white ${isMobile ? 'mb-1' : 'mb-2'} transition-all duration-200`}
-            animate={textAnimation}
-          >
-            {skill.name}
-          </motion.h4>
+          <div className="relative">
+            {/* Normal text */}
+            <motion.h4 
+              className={`${isMobile ? 'text-sm' : 'text-lg'} font-bold text-gray-800 dark:text-white ${isMobile ? 'mb-1' : 'mb-2'} transition-all duration-200`}
+              animate={normalTextAnimation}
+            >
+              {skill.name}
+            </motion.h4>
+            
+            {/* Gradient text overlay */}
+            <motion.h4 
+              className={`absolute inset-0 ${isMobile ? 'text-sm' : 'text-lg'} font-bold ${isMobile ? 'mb-1' : 'mb-2'} bg-gradient-to-r from-purple-500 to-cyan-500 bg-clip-text text-transparent transition-all duration-200`}
+              animate={textAnimation}
+            >
+              {skill.name}
+            </motion.h4>
+          </div>
           <p className={`text-gray-600 dark:text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'} leading-relaxed`}>
             {skill.description}
           </p>

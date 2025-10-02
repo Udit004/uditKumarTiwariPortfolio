@@ -5,33 +5,59 @@ import { Mail, Linkedin, Github, Instagram, Send, User, MessageSquare, Play, Pau
 
 // Starry background fallback component
 const StarryBackground = () => {
+  const [stars, setStars] = useState([]);
+  const [movingStars, setMovingStars] = useState([]);
+
+  useEffect(() => {
+    // Generate stars on client-side only to avoid hydration mismatch
+    const staticStars = [...Array(150)].map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      animationDelay: Math.random() * 3,
+      animationDuration: 2 + Math.random() * 2,
+      opacity: 0.3 + Math.random() * 0.7
+    }));
+
+    const movingStarsData = [...Array(30)].map((_, i) => ({
+      id: `moving-${i}`,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      animationDuration: 5 + Math.random() * 5,
+      animationDelay: Math.random() * 5
+    }));
+
+    setStars(staticStars);
+    setMovingStars(movingStarsData);
+  }, []);
+
   return (
     <div className="absolute inset-0 bg-gray-900 overflow-hidden">
       {/* Static stars */}
-      {[...Array(150)].map((_, i) => (
+      {stars.map((star) => (
         <div
-          key={i}
+          key={star.id}
           className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 3}s`,
-            animationDuration: `${2 + Math.random() * 2}s`,
-            opacity: 0.3 + Math.random() * 0.7
+            left: `${star.left}%`,
+            top: `${star.top}%`,
+            animationDelay: `${star.animationDelay}s`,
+            animationDuration: `${star.animationDuration}s`,
+            opacity: star.opacity
           }}
         />
       ))}
       
       {/* Moving stars */}
-      {[...Array(30)].map((_, i) => (
+      {movingStars.map((star) => (
         <div
-          key={`moving-${i}`}
+          key={star.id}
           className="absolute w-0.5 h-0.5 bg-blue-300 rounded-full"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `float ${5 + Math.random() * 5}s linear infinite`,
-            animationDelay: `${Math.random() * 5}s`
+            left: `${star.left}%`,
+            top: `${star.top}%`,
+            animation: `float ${star.animationDuration}s linear infinite`,
+            animationDelay: `${star.animationDelay}s`
           }}
         />
       ))}
@@ -105,7 +131,7 @@ const VideoBackground = ({ videoSrc, onError }) => {
 };
 
 // Robot video component with fallback
-const RobotVideoDisplay = ({ videos, currentIndex, isPlaying, onTogglePlay, onVideoChange, isMobile }) => {
+const RobotVideoDisplay = ({ videos, currentIndex, isPlaying, onTogglePlay, onVideoChange, isMobile, isMounted }) => {
   const videoRefs = useRef([]);
   const [videoErrors, setVideoErrors] = useState({});
 
@@ -154,7 +180,7 @@ const RobotVideoDisplay = ({ videos, currentIndex, isPlaying, onTogglePlay, onVi
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
       
       {/* Play/Pause Control */}
-      {!isMobile && (
+      {isMounted && !isMobile && (
         <button
           onClick={onTogglePlay}
           className="absolute top-4 right-4 p-2 sm:p-3 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-sm transition-colors duration-300 opacity-0 group-hover:opacity-100"
@@ -205,6 +231,7 @@ const Contact = () => {
   const [isRobotVideoPlaying, setIsRobotVideoPlaying] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const backgroundVideoRef = useRef(null);
   
   const [formData, setFormData] = useState({
@@ -218,8 +245,15 @@ const Contact = () => {
     error: false
   });
 
-  // Detect mobile device
+  // Set mounted state to prevent hydration issues
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Detect mobile device - only after mount to prevent hydration mismatch
+  useEffect(() => {
+    if (!isMounted) return;
+    
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
     };
@@ -227,7 +261,7 @@ const Contact = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  }, [isMounted]);
 
   // Handle video error
   const handleVideoError = () => {
@@ -358,7 +392,7 @@ const Contact = () => {
       )}
 
       {/* Floating Video Control */}
-      {!videoError && !isMobile && (
+      {isMounted && !videoError && !isMobile && (
         <div className="absolute top-6 sm:top-8 left-6 sm:left-8 z-20">
           <button
             onClick={toggleBackgroundVideo}
@@ -398,6 +432,7 @@ const Contact = () => {
                 onTogglePlay={() => setIsRobotVideoPlaying(!isRobotVideoPlaying)}
                 onVideoChange={setCurrentRobotVideo}
                 isMobile={isMobile}
+                isMounted={isMounted}
               />
 
               {/* Social Media Icons */}
@@ -424,7 +459,7 @@ const Contact = () => {
                     }}
                   >
                     <div className="relative z-10 transform transition-transform duration-300 group-hover:scale-110 sm:group-hover:scale-125">
-                      <item.icon size={isMobile ? 20 : 24} className="text-white drop-shadow-lg" />
+                      <item.icon size={isMounted && isMobile ? 20 : 24} className="text-white drop-shadow-lg" />
                     </div>
                     
                     {/* Tooltip */}

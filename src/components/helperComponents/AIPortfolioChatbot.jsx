@@ -3,11 +3,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Sparkles } from "lucide-react";
 
-// Import components (these will be separate files)
+// Import components
 import ChatWindow from "./ChatWindow";
 import VoiceModeManager from "../../hooks/VoiceModeManager";
 import SpeechManager from "../../hooks/SpeechManager";
-import { generateAIResponse } from "../../services/geminiService";
+import { ragService } from "../../services/ragService";
 
 const AIPortfolioChatbot = () => {
   // Main state management
@@ -39,6 +39,13 @@ const AIPortfolioChatbot = () => {
   const [currentTranscript, setCurrentTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
   const [voiceInputComplete, setVoiceInputComplete] = useState(false);
+
+  // RAG-related state
+  const [ragStatus, setRagStatus] = useState({
+    isReady: false,
+    documentCount: 0,
+    vectorDBInitialized: false,
+  });
 
   // Refs
   const messagesEndRef = useRef(null);
@@ -162,6 +169,22 @@ const AIPortfolioChatbot = () => {
     }
   }, [isVoiceMode, voiceModeActive, isSpeaking]);
 
+  // Initialize RAG service
+  useEffect(() => {
+    const initializeRAG = async () => {
+      try {
+        await ragService.initialize();
+        const status = await ragService.getStatus();
+        setRagStatus(status);
+        console.log("RAG service status:", status);
+      } catch (error) {
+        console.error("Failed to initialize RAG:", error);
+      }
+    };
+
+    initializeRAG();
+  }, []);
+
   // Auto-scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -171,9 +194,7 @@ const AIPortfolioChatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Enhanced handleSendMessage to support voice mode auto-send
-  // In AIPortfolioChatbot.jsx - Replace the handleSendMessage function:
-
+  // Updated handleSendMessage to use RAG
   const handleSendMessage = async (messageText = null) => {
     const textToSend = messageText || inputMessage;
     if (!textToSend.trim()) return;
@@ -189,40 +210,40 @@ const AIPortfolioChatbot = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    if (!messageText) setInputMessage(""); // Only clear if not auto-sent
+    if (!messageText) setInputMessage("");
     setIsTyping(true);
 
-    // Generate AI response with faster processing
     try {
-      const aiResponse = await generateAIResponse(textToSend);
+      // Use RAG service instead of direct Gemini API
+      const result = await ragService.generateEnhancedResponse(textToSend);
 
-      // Reduced delay for faster response - especially in voice mode
-      const responseDelay = isVoiceMode ? 300 : 800; // Much faster in voice mode
+      const responseDelay = isVoiceMode ? 300 : 800;
 
       setTimeout(() => {
         const aiMessage = {
           id: Date.now() + 1,
-          text: aiResponse,
+          text: result.response,
           sender: "ai",
           timestamp: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           }),
+          usedRAG: result.usedRAG, // Track if RAG was used
+          sources: result.sources, // Store relevant sources
         };
+
         setMessages((prev) => [...prev, aiMessage]);
         setIsTyping(false);
 
-        // Enhanced auto-speak logic for voice mode with immediate speech
+        // Speech functionality
         if (speechEnabled || isVoiceMode) {
-          // Start speaking immediately without additional delay
-          speechManager.speakText(aiResponse);
+          speechManager.speakText(result.response);
         }
       }, responseDelay);
     } catch (error) {
       console.error("Error generating response:", error);
       setIsTyping(false);
 
-      // Fallback response
       const errorMessage = {
         id: Date.now() + 1,
         text: "I'm having trouble processing that right now. Could you try rephrasing your question?",
