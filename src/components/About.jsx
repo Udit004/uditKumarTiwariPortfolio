@@ -188,14 +188,14 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
             {/* Professional Profile Image Section */}
             <motion.div
-              className="flex justify-center lg:justify-start"
+              className="flex justify-center lg:justify-start mb-8 lg:mb-0"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <div className="relative group">
-                                 {/* Main Profile Container */}
-                 <div className="relative w-80 h-80 rounded-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 p-2 shadow-2xl hover:shadow-slate-400/20 transition-all duration-500">
+                {/* Main Profile Container - Responsive sizing */}
+                <div className="relative w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 p-2 shadow-2xl hover:shadow-slate-400/20 transition-all duration-500">
                   {/* Subtle Ring Effect */}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-700 opacity-30 blur-sm group-hover:opacity-50 transition-all duration-700"></div>
                   
@@ -207,7 +207,7 @@ const About = () => {
                         src="/assets/udit_image.jpg"
                         alt="Udit Kumar Tiwari - Full Stack Developer"
                         fill
-                        sizes="(max-width: 768px) 100vw, 320px"
+                        sizes="(max-width: 640px) 256px, (max-width: 768px) 288px, 320px"
                         className="object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-110 contrast-110"
                         priority
                       />
@@ -220,41 +220,41 @@ const About = () => {
                   <div className="absolute inset-0 rounded-full border border-slate-400/20 group-hover:border-slate-300/40 transition-colors duration-500"></div>
                 </div>
 
-                {/* Professional Badge Elements */}
+                {/* Professional Badge Elements - Responsive positioning */}
                 <motion.div
-                  className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-xl border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
+                  className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 lg:-top-4 lg:-right-4 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-xl border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
                 >
-                  <div className="w-8 h-8 bg-blue-500 rounded-sm flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-blue-500 rounded-sm flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white" className="opacity-90 sm:w-4 sm:h-4 lg:w-4 lg:h-4">
                       <path d="M13.5 2c-5.629 0-10.212 4.436-10.212 9.899 0 4.374 2.869 8.077 6.84 9.383.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0113.5 7.68a9.59 9.59 0 012.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0023.712 11.9C23.712 6.436 19.129 2 13.5 2z"/>
                     </svg>
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute -bottom-4 -left-4 w-14 h-14 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-xl border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
+                  className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 lg:-bottom-4 lg:-left-4 w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-xl border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 1 }}
                 >
-                  <div className="w-7 h-7 bg-green-500 rounded-sm flex items-center justify-center">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-green-500 rounded-sm flex items-center justify-center">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white" className="opacity-90 sm:w-3 sm:h-3 lg:w-4 lg:h-4">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute -top-2 -left-6 w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-lg border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
+                  className="absolute -top-1 -left-4 sm:-top-2 sm:-left-5 lg:-top-2 lg:-left-6 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-lg border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 1.2 }}
                 >
-                  <div className="w-6 h-6 bg-purple-500 rounded-sm flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 bg-purple-500 rounded-sm flex items-center justify-center">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="white" className="opacity-90 sm:w-3 sm:h-3 lg:w-3 lg:h-3">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8s0 0 0 0l-6-6zM6 4h7v4h4v12H6V4z"/>
                       <path d="M8 12h8v2H8v-2z"/>
                       <path d="M8 16h8v2H8v-2z"/>
@@ -264,13 +264,13 @@ const About = () => {
                 </motion.div>
 
                 <motion.div
-                  className="absolute -bottom-2 -right-6 w-13 h-13 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-lg border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
+                  className="absolute -bottom-1 -right-4 sm:-bottom-2 sm:-right-5 lg:-bottom-2 lg:-right-6 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center shadow-lg border border-slate-500/30 hover:shadow-slate-400/30 transition-all duration-300 group-hover:scale-105"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 1.4 }}
                 >
-                  <div className="w-6 h-6 bg-cyan-500 rounded-sm flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 bg-cyan-500 rounded-sm flex items-center justify-center">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="white" className="opacity-90 sm:w-3 sm:h-3 lg:w-3 lg:h-3">
                       <path d="M12 2l2.39 7.36h7.74l-6.26 4.55 2.39 7.36L12 16.72l-6.26 4.55 2.39-7.36L2.87 9.36h7.74L12 2z"/>
                     </svg>
                   </div>
@@ -279,9 +279,9 @@ const About = () => {
                 {/* Subtle Background Glow */}
                 <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-slate-500/10 to-slate-400/10 blur-2xl scale-125 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
-                {/* Professional Status Indicator */}
-                <div className="absolute bottom-6 right-6 flex items-center gap-2 bg-slate-800/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-600/30">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                {/* Professional Status Indicator - Responsive positioning */}
+                <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 flex items-center gap-1.5 sm:gap-2 bg-slate-800/80 backdrop-blur-sm px-2 py-1 sm:px-3 sm:py-1.5 rounded-full border border-slate-600/30">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
                   <span className="text-xs text-slate-200 font-medium">Available</span>
                 </div>
               </div>
