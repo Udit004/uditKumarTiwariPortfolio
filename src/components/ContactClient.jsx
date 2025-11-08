@@ -1,7 +1,15 @@
 "use client"
 import React, { useState, useRef, useEffect, memo, useCallback } from "react";
 import Image from "next/image";
-import { Mail, User, MessageSquare, Send, Play, Pause } from "lucide-react";
+import { Mail, User, MessageSquare, Send, Linkedin, Github, Instagram } from "lucide-react";
+
+// Icon mapping object
+const iconMap = {
+  Mail,
+  Linkedin,
+  Github,
+  Instagram
+};
 
 // Simplified Starry Background
 const StarryBackground = memo(() => {
@@ -149,7 +157,7 @@ const SocialIcons = memo(({ contactIcons }) => {
         <h4 className="text-white font-semibold mb-4 text-center text-sm sm:text-base">Connect With Me</h4>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {contactIcons.map((item) => {
-            const Icon = item.icon;
+            const Icon = iconMap[item.icon]; // Get icon component from map
             return (
               <a
                 key={item.label}

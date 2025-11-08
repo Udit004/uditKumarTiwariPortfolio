@@ -1,33 +1,32 @@
 import ContactClient from './ContactClient';
-import { Mail, Linkedin, Github, Instagram } from "lucide-react";
 
 // Server Component - Static data and structure
 const Contact = () => {
-  // Static contact icons data
+  // Static contact icons data - pass icon names as strings
   const contactIcons = [
     {
-      icon: Mail,
+      icon: "Mail", // String instead of component
       href: "mailto:rajankumart266@gmail.com",
       label: "Gmail",
       color: "from-red-500 to-red-600",
       hoverColor: "hover:shadow-red-500/25"
     },
     {
-      icon: Linkedin,
+      icon: "Linkedin",
       href: "https://www.linkedin.com/in/udit-kumar-tiwari-2b2a15216",
       label: "LinkedIn",
       color: "from-blue-600 to-blue-700",
       hoverColor: "hover:shadow-blue-500/25"
     },
     {
-      icon: Github,
+      icon: "Github",
       href: "https://github.com/Udit004",
       label: "GitHub",
       color: "from-gray-700 to-gray-800",
       hoverColor: "hover:shadow-gray-500/25"
     },
     {
-      icon: Instagram,
+      icon: "Instagram",
       href: "https://www.instagram.com/uditkumar_004/profilecard/?igsh=eXhmMGg5MjYweTR6",
       label: "Instagram",
       color: "from-pink-500 to-purple-600",
