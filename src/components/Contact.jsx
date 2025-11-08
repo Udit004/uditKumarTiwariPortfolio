@@ -1,7 +1,8 @@
 "use client"
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Mail, Linkedin, Github, Instagram, Send, User, MessageSquare, Play, Pause } from "lucide-react";
+import { Mail, User, MessageSquare, Send, Play, Pause, Linkedin, Github, Instagram  } from "lucide-react";
+import SocialIcons from "./SocialIcons";
 
 // Starry background fallback component
 const StarryBackground = () => {
@@ -435,43 +436,8 @@ const Contact = () => {
                 isMounted={isMounted}
               />
 
-              {/* Social Media Icons */}
-              <div className="flex justify-center gap-3 sm:gap-4 flex-shrink-0 mt-4 sm:mt-6">
-                {contactIcons.map((item, index) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`
-                      relative group p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br ${item.color}
-                      shadow-2xl shadow-black/30 hover:shadow-3xl ${item.hoverColor}
-                      transform-gpu transition-all duration-500 ease-out
-                      hover:-translate-y-2 sm:hover:-translate-y-3 hover:scale-105 sm:hover:scale-110 active:scale-95 
-                      hover:rotate-2 border border-white/10
-                      before:absolute before:inset-0 before:rounded-xl sm:before:rounded-2xl 
-                      before:bg-gradient-to-br before:from-white/20 before:to-transparent
-                      before:opacity-0 hover:before:opacity-100 before:transition-opacity
-                      backdrop-blur-sm
-                    `}
-                    style={{
-                      animationDelay: `${index * 0.1}s`
-                    }}
-                  >
-                    <div className="relative z-10 transform transition-transform duration-300 group-hover:scale-110 sm:group-hover:scale-125">
-                      <item.icon size={isMounted && isMobile ? 20 : 24} className="text-white drop-shadow-lg" />
-                    </div>
-                    
-                    {/* Tooltip */}
-                    <div className="absolute -bottom-10 sm:-bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-                      <div className="bg-gray-900/90 backdrop-blur-sm text-white text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-lg shadow-xl whitespace-nowrap border border-white/20">
-                        {item.label}
-                        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900/90 rotate-45 border-t border-r border-white/20"></div>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
+              {/* Social Media Icons - Using SocialIcons Component */}
+              <SocialIcons variant="contact" isMounted={isMounted} isMobile={isMobile} />
             </div>
 
             {/* Right Column - Contact Form */}

@@ -3,6 +3,7 @@ import React, { useState, useEffect, lazy, Suspense } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import CustomTypeAnimation from "./CustomTypeAnimation";
+import SocialIcons from "./SocialIcons";
 
 // Static data - could be moved to a separate file
 const socialLinks = [
@@ -126,24 +127,8 @@ const Home = () => {
           </a>
         </div>
 
-        {/* Social Links */}
-        <div className="flex gap-4 mt-8 sm:mt-10 animate-slide-up delay-600">
-          {socialLinks.map((social, index) => (
-            <a
-              key={social.label}
-              href={social.href}
-              aria-label={social.label}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${social.color} rounded-full flex items-center justify-center hover:scale-110 hover:-translate-y-1 transition-all duration-300 shadow-lg animate-scale-in`}
-              style={{ animationDelay: `${700 + index * 100}ms` }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white" className="opacity-90">
-                <path d={social.icon} />
-              </svg>
-            </a>
-          ))}
-        </div>
+        {/* Social Links - Using SocialIcons Component */}
+        <SocialIcons variant="home" />
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
