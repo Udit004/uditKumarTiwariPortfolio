@@ -140,30 +140,57 @@ const Projects = () => {
   return (
     <section
       id="projects"
-      className="py-20 px-6 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen relative overflow-hidden"
+      className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
     >
-      <div className="container mx-auto max-w-7xl relative z-10">
-        {/* Static Header */}
-        <div className="text-center mb-16">
-          <div className="inline-block mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center text-4xl shadow-xl">
-              <span>🚀</span>
+      {/* Background Video Container */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            filter: 'brightness(0.3) contrast(1.2)',
+            transform: 'scale(1.02)'
+          }}
+        >
+          <source src="/assets/blackBackgroundAnimation.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-purple-900/60 to-slate-900/80" />
+        {/* <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-slate-900/50" /> */}
+      </div>
+
+      {/* Animated Background Orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-float-slow top-[10%] left-[10%]" />
+        <div className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float-slower bottom-[20%] right-[10%]" />
+        <div className="absolute w-64 h-64 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-full blur-3xl animate-float-slow top-[50%] right-[30%]" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 py-20 px-4 sm:px-6">
+        <div className="container mx-auto max-w-7xl">
+          <div className="p-6 sm:p-8 md:p-12">
+            {/* Static Header */}
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-6">
+                Featured Projects
+              </h2>
+              <div className="w-24 sm:w-32 h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 mx-auto rounded-full mb-8" />
+              <p className="text-base sm:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed px-4">
+                Discover my latest work and innovative solutions across various technologies
+              </p>
             </div>
+
+            {/* Client Component for interactive features */}
+            <ProjectsClient projects={projects} categories={categories} />
           </div>
-
-          <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">
-            Featured Projects
-          </h2>
-
-          <div className="w-32 h-2 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto rounded-full mb-8" />
-
-          <p className="text-gray-600 dark:text-gray-300 text-xl max-w-3xl mx-auto leading-relaxed">
-            Discover my latest work and innovative solutions across various technologies
-          </p>
         </div>
-
-        {/* Client Component for interactive features */}
-        <ProjectsClient projects={projects} categories={categories} />
       </div>
     </section>
   );

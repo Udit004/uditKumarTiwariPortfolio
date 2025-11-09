@@ -73,11 +73,9 @@ const Home = () => {
             {/* Professional Status Indicator */}
             <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-5 md:right-5">
               <div className="relative">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full border-3 sm:border-4 border-slate-900 shadow-lg">
-                  <div className="w-full h-full bg-green-400 rounded-full animate-pulse"></div>
-                </div>
+                
                 {/* Pulse Ring */}
-                <div className="absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full animate-ping opacity-75"></div>
+                {/* <div className="absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full animate-ping opacity-75"></div> */}
               </div>
             </div>
           </div>

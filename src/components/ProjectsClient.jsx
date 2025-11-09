@@ -10,17 +10,14 @@ const ProjectCard = memo(({ project, index }) => {
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${project.featured ? 'lg:col-span-2' : ''}`}
+      className={`group relative overflow-hidden rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/20 hover:border-white/30 hover:bg-white/10 ${project.featured ? 'lg:col-span-2' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Gradient border on hover */}
-      <div 
-        className={`absolute -inset-px bg-gradient-to-r from-purple-500/50 to-blue-500/50 rounded-2xl transition-opacity duration-300`}
-        style={{ opacity: isHovered ? 1 : 0 }}
-      />
+      {/* Gradient glow on hover */}
+      <div className={`absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500`} />
       
-      <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 h-full">
+      <div className="relative bg-slate-900/90 backdrop-blur-sm rounded-2xl p-6 h-full">
         {/* Featured Badge */}
         {project.featured && (
           <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs font-bold flex items-center gap-1 z-10">
@@ -30,9 +27,9 @@ const ProjectCard = memo(({ project, index }) => {
         )}
 
         {/* Project Image */}
-        <div className="relative overflow-hidden rounded-xl mb-6 aspect-video bg-gray-100 dark:bg-gray-800">
+        <div className="relative overflow-hidden rounded-xl mb-6 aspect-video bg-slate-800/50">
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl" />
+            <div className="absolute inset-0 bg-slate-700 animate-pulse rounded-xl" />
           )}
           <div className={`relative w-full h-full transition-transform duration-300 ${isHovered ? 'scale-105' : 'scale-100'}`}>
             <Image
@@ -76,20 +73,20 @@ const ProjectCard = memo(({ project, index }) => {
 
         {/* Content */}
         <div className="space-y-4">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-3">
             <h3 className={`text-xl font-bold transition-all duration-200 ${
               isHovered 
-                ? 'bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent' 
-                : 'text-gray-800 dark:text-white'
+                ? 'bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent' 
+                : 'text-white'
             }`}>
               {project.title}
             </h3>
-            <span className="px-2 py-1 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-xs font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap">
+            <span className="px-2 py-1 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-xs font-medium text-gray-300 whitespace-nowrap border border-white/10">
               {project.category}
             </span>
           </div>
 
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3">
+          <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
             {project.description}
           </p>
 
@@ -98,13 +95,13 @@ const ProjectCard = memo(({ project, index }) => {
             {project.technologies.slice(0, project.featured ? 6 : 4).map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-gray-700 dark:text-gray-200 rounded-full border border-white/20 dark:border-gray-600/30"
+                className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-gray-200 rounded-full border border-white/20"
               >
                 {tech}
               </span>
             ))}
             {project.technologies.length > (project.featured ? 6 : 4) && (
-              <span className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 rounded-full">
+              <span className="px-3 py-1 text-xs font-medium text-gray-400 rounded-full">
                 +{project.technologies.length - (project.featured ? 6 : 4)} more
               </span>
             )}
@@ -117,7 +114,7 @@ const ProjectCard = memo(({ project, index }) => {
                 href={project.liveLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-medium rounded-xl transition-all duration-200 hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-medium rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50"
               >
                 <ExternalLink size={16} />
                 Live Demo
@@ -128,7 +125,7 @@ const ProjectCard = memo(({ project, index }) => {
                 href={project.downloadLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl transition-all duration-200 hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-green-500/50"
               >
                 <Download size={16} />
                 Download
@@ -138,7 +135,7 @@ const ProjectCard = memo(({ project, index }) => {
               href={project.githubLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-105"
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-gray-200 font-medium rounded-xl hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/10"
             >
               <Github size={16} />
               Code
@@ -172,10 +169,10 @@ const ProjectsClient = ({ projects, categories }) => {
           <button
             key={category}
             onClick={() => handleFilterChange(category)}
-            className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
+            className={`px-6 py-3 rounded-full font-medium transition-all duration-200 backdrop-blur-sm border ${
               filter === category
-                ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg scale-105'
-                : 'bg-white/70 dark:bg-gray-800/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-700/90 hover:scale-105'
+                ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg scale-105 border-transparent'
+                : 'bg-white/10 text-gray-200 hover:bg-white/20 hover:scale-105 border-white/20'
             }`}
           >
             {category}
