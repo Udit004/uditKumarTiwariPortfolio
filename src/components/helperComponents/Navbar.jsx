@@ -93,7 +93,7 @@ const Navbar = () => {
           scrolled 
             ? darkMode 
               ? 'bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50' 
-              : 'bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200/50'
+              : 'bg-gradient-to-r from-purple-50/95 via-white/95 to-blue-50/95 backdrop-blur-md shadow-lg border-b border-purple-200/50'
             : 'bg-transparent'
         }`}
         initial={{ opacity: 0, y: -20 }}
@@ -117,9 +117,9 @@ const Navbar = () => {
                 className="relative h-12 w-12 rounded-full object-cover border-2 border-white/20 shadow-lg"
               />
               {/* Active indicator */}
-              <div className={`absolute -bottom-1 -right-1 w-4 h-4 ${getGradientBg()} rounded-full border-2 border-white shadow-md`}>
+              {/* <div className={`absolute -bottom-1 -right-1 w-4 h-4 ${getGradientBg()} rounded-full border-2 border-white shadow-md`}>
                 <div className="w-full h-full bg-green-400 rounded-full animate-pulse"></div>
-              </div>
+              </div> */}
             </div>
             
             {/* Logo Text */}
@@ -127,11 +127,13 @@ const Navbar = () => {
               <span className={`text-xl font-bold ${
                 darkMode 
                   ? 'bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent'
-                  : 'bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'
+                  : 'bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent'
               }`}>
                 Udit's Portfolio
               </span>
-              <span className={`text-xs ${getAccentColor()} font-medium tracking-wider`}>
+              <span className={`text-xs font-medium tracking-wider ${
+                darkMode ? getAccentColor() : 'text-gray-600'
+              }`}>
                 Web Developer
               </span>
             </div>
@@ -153,9 +155,9 @@ const Navbar = () => {
                       onClick={() => handleNavClick(item)}
                       className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
                         darkMode 
-                          ? 'text-white/90 hover:text-white'
-                          : 'text-gray-800/90 hover:text-gray-900'
-                      } ${getHoverColor()}`}
+                          ? 'text-gray-100 hover:text-white'
+                          : 'text-gray-800 hover:text-gray-950'
+                      }`}
                     >
                       {item}
                       {/* Animated underline */}
@@ -167,9 +169,9 @@ const Navbar = () => {
                       prefetch={true}
                       className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
                         darkMode 
-                          ? 'text-white/90 hover:text-white'
-                          : 'text-gray-800/90 hover:text-gray-900'
-                      } ${getHoverColor()}`}
+                          ? 'text-gray-100 hover:text-white'
+                          : 'text-gray-800 hover:text-gray-950'
+                      }`}
                     >
                       {item}
                       {/* Animated underline */}
@@ -186,8 +188,8 @@ const Navbar = () => {
               aria-label="Toggle Dark Mode & Theme"
               className={`relative p-3 rounded-full backdrop-blur-sm border transition-all duration-300 shadow-lg group ${
                 darkMode 
-                  ? 'bg-white/10 border-white/20 hover:bg-white/20'
-                  : 'bg-gray-800/10 border-gray-800/20 hover:bg-gray-800/20'
+                  ? 'bg-slate-800/80 border-slate-600/50 hover:bg-slate-700/80'
+                  : 'bg-white/80 border-gray-300/50 hover:bg-gray-50/80'
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -211,7 +213,7 @@ const Navbar = () => {
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Moon className="text-gray-700 w-5 h-5" />
+                    <Moon className="text-gray-800 w-5 h-5" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -224,7 +226,7 @@ const Navbar = () => {
                     className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                       index === currentTheme 
                         ? `${getGradientBg()}` 
-                        : darkMode ? 'bg-white/30' : 'bg-gray-600/30'
+                        : darkMode ? 'bg-slate-400/40' : 'bg-gray-400/40'
                     }`}
                   />
                 ))}
@@ -237,8 +239,8 @@ const Navbar = () => {
             onClick={() => setIsOpen(!isOpen)}
             className={`md:hidden p-2 rounded-lg backdrop-blur-sm border transition-all duration-300 ${
               darkMode 
-                ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                : 'bg-gray-800/10 border-gray-800/20 text-gray-800 hover:bg-gray-800/20'
+                ? 'bg-slate-800/80 border-slate-600/50 text-white hover:bg-slate-700/80'
+                : 'bg-white/80 border-gray-300/50 text-gray-800 hover:bg-gray-50/80'
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -288,7 +290,7 @@ const Navbar = () => {
               className={`fixed top-20 right-4 w-72 backdrop-blur-xl rounded-2xl shadow-2xl border z-50 md:hidden overflow-hidden ${
                 darkMode 
                   ? 'bg-slate-900/95 border-white/10'
-                  : 'bg-white/95 border-gray-200/50'
+                  : 'bg-gradient-to-br from-purple-50/98 via-white/98 to-blue-50/98 border-purple-200/50'
               }`}
               initial={{ opacity: 0, scale: 0.9, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -318,9 +320,9 @@ const Navbar = () => {
                         }}
                         className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
                           darkMode 
-                            ? 'text-white/90 hover:bg-white/5'
-                            : 'text-gray-800/90 hover:bg-gray-800/5'
-                        } ${getHoverColor()}`}
+                            ? 'text-gray-100 hover:bg-slate-700/50 hover:text-white'
+                            : 'text-gray-800 hover:bg-gray-100 hover:text-gray-950'
+                        }`}
                       >
                         <span className="flex items-center justify-between">
                           {item}
@@ -334,9 +336,9 @@ const Navbar = () => {
                         onClick={() => setIsOpen(false)}
                         className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
                           darkMode 
-                            ? 'text-white/90 hover:bg-white/5'
-                            : 'text-gray-800/90 hover:bg-gray-800/5'
-                        } ${getHoverColor()}`}
+                            ? 'text-gray-100 hover:bg-slate-700/50 hover:text-white'
+                            : 'text-gray-800 hover:bg-gray-100 hover:text-gray-950'
+                        }`}
                       >
                         <span className="flex items-center justify-between">
                           {item}
@@ -355,22 +357,22 @@ const Navbar = () => {
                   }}
                   className={`w-full p-3 mt-4 rounded-lg border transition-all duration-300 flex items-center justify-between group ${
                     darkMode 
-                      ? 'bg-white/5 hover:bg-white/10 border-white/10'
-                      : 'bg-gray-800/5 hover:bg-gray-800/10 border-gray-800/10'
+                      ? 'bg-slate-800/50 hover:bg-slate-700/50 border-slate-600/50'
+                      : 'bg-gray-100/50 hover:bg-gray-200/50 border-gray-300/50'
                   }`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
                 >
                   <span className={`flex items-center space-x-3 ${
-                    darkMode ? 'text-white/90' : 'text-gray-800/90'
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
                   }`}>
                     {darkMode ? (
                       <Sun className="text-yellow-400 w-5 h-5" />
                     ) : (
-                      <Moon className="text-gray-700 w-5 h-5" />
+                      <Moon className="text-gray-800 w-5 h-5" />
                     )}
-                    <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                    <span className="font-medium">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                   </span>
                   
                   {/* Theme dots */}
@@ -381,7 +383,7 @@ const Navbar = () => {
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${
                           index === currentTheme 
                             ? `${getGradientBg()}` 
-                            : darkMode ? 'bg-white/20' : 'bg-gray-600/20'
+                            : darkMode ? 'bg-slate-400/30' : 'bg-gray-400/30'
                         }`}
                       />
                     ))}

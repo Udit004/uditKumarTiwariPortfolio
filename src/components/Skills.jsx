@@ -1,554 +1,189 @@
-"use client"
-import React, { useState, useEffect, useRef, memo, useMemo, useCallback } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import SkillsClient from './SkillsClient';
 
-// 3D Icon component with cursor tracking - Memoized for performance
-const Icon3D = memo(({ children, isHovered, mouseX, mouseY, isMobile }) => {
-  const ref = useRef(null);
-  
-  const rotateX = useTransform(mouseY, [-300, 300], [15, -15]);
-  const rotateY = useTransform(mouseX, [-300, 300], [-15, 15]);
-  
-  const springConfig = useMemo(() => ({ stiffness: 150, damping: 15, mass: 0.1 }), []);
-  const x = useSpring(rotateY, springConfig);
-  const y = useSpring(rotateX, springConfig);
-
-  // Memoized animation configurations
-  const mobileAnimation = useMemo(() => ({
-    rotateY: isHovered ? [0, 10, -10, 0] : 0,
-    rotateX: isHovered ? [0, 5, -5, 0] : 0,
-    z: isHovered ? 20 : 0,
-  }), [isHovered]);
-
-  const desktopAnimation = useMemo(() => ({
-    z: isHovered ? 30 : 0,
-    scale: isHovered ? 1.1 : 1,
-  }), [isHovered]);
-
-  const transition = useMemo(() => ({ 
-    duration: isMobile ? 1.5 : 0.3,
-    repeat: isMobile && isHovered ? Infinity : 0,
-    ease: "easeInOut"
-  }), [isMobile, isHovered]);
-
-  return (
-    <motion.div
-      ref={ref}
-      className="relative perspective-1000"
-      style={{
-        rotateX: isMobile ? 0 : y,
-        rotateY: isMobile ? 0 : x,
-        transformStyle: "preserve-3d",
-      }}
-      animate={isMobile ? mobileAnimation : desktopAnimation}
-      transition={transition}
-    >
-      <div className="relative transform-gpu" style={{ transformStyle: "preserve-3d" }}>
-        {children}
-        {/* Shadow/depth effect */}
-        <div 
-          className="absolute inset-0 bg-black/20 blur-sm rounded-2xl"
-          style={{ 
-            transform: "translateZ(-10px) scale(0.95)",
-            opacity: isHovered ? 0.3 : 0.1 
-          }}
-        />
-      </div>
-    </motion.div>
-  );
-});
-
-Icon3D.displayName = 'Icon3D';
-
-const SkillCard = memo(({ skill, index, categoryColor, isMobile }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const handleMouseMove = useCallback((event) => {
-    if (!isMobile) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      mouseX.set(event.clientX - centerX);
-      mouseY.set(event.clientY - centerY);
-    }
-  }, [isMobile, mouseX, mouseY]);
-
-  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
-  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
-  const handleTouchStart = useCallback(() => setIsHovered(true), []);
-  const handleTouchEnd = useCallback(() => setIsHovered(false), []);
-
-  // Memoized animation variants
-  const cardVariants = useMemo(() => ({
-    initial: { opacity: 0, y: 15 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.4, delay: index * 0.05 }
-    },
-    hover: {
-      y: -8,
-      transition: { duration: 0.2 }
-    }
-  }), [index]);
-
-  // Simplified background animation using opacity instead of complex gradients
-  const backgroundAnimation = useMemo(() => ({
-    opacity: isHovered ? 0.2 : 0.1,
-    scale: isHovered ? 1.02 : 1
-  }), [isHovered]);
-
-  // Memoized text animation - using opacity instead of background animation
-  const textAnimation = useMemo(() => ({
-    opacity: isHovered ? 1 : 0
-  }), [isHovered]);
-
-  const normalTextAnimation = useMemo(() => ({
-    opacity: isHovered ? 0 : 1
-  }), [isHovered]);
-
-  // Memoized particles for performance
-  const particles = useMemo(() => 
-    isHovered ? [...Array(3)].map((_, i) => (
-      <motion.div
-        key={i}
-        className="absolute w-1 h-1 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full"
-        style={{
-          left: `${20 + Math.random() * 60}%`,
-          top: `${20 + Math.random() * 60}%`,
-        }}
-        animate={{
-          y: [-10, -20, -10],
-          x: [-5, 5, -5],
-          opacity: [0, 1, 0],
-          scale: [0, 1, 0]
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          delay: i * 0.3,
-          ease: "easeInOut"
-        }}
-      />
-    )) : []
-  , [isHovered]);
-
-  return (
-    <motion.div
-      className="group relative cursor-pointer"
-      variants={cardVariants}
-      initial="initial"
-      animate="animate"
-      whileHover="hover"
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div className={`relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl ${isMobile ? 'p-3' : 'p-6'} shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden`}>
-        {/* Animated background gradient - optimized */}
-        <motion.div 
-          className={`absolute inset-0 bg-gradient-to-br ${categoryColor}`}
-          animate={backgroundAnimation}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        />
-        
-        {/* 3D Icon Container */}
-        <div className={`relative z-10 ${isMobile ? 'mb-2' : 'mb-4'} flex justify-center`}>
-          <Icon3D 
-            isHovered={isHovered} 
-            mouseX={mouseX} 
-            mouseY={mouseY}
-            isMobile={isMobile}
-          >
-            <div className={`${isMobile ? 'w-10 h-10 text-xl' : 'w-16 h-16 text-3xl'} rounded-2xl bg-gradient-to-br ${categoryColor} flex items-center justify-center shadow-2xl border border-white/20`}>
-              <span className="drop-shadow-2xl filter brightness-110">{skill.icon}</span>
-            </div>
-          </Icon3D>
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 text-center">
-          <div className="relative">
-            {/* Normal text */}
-            <motion.h4 
-              className={`${isMobile ? 'text-sm' : 'text-lg'} font-bold text-gray-800 dark:text-white ${isMobile ? 'mb-1' : 'mb-2'} transition-all duration-200`}
-              animate={normalTextAnimation}
-            >
-              {skill.name}
-            </motion.h4>
-            
-            {/* Gradient text overlay */}
-            <motion.h4 
-              className={`absolute inset-0 ${isMobile ? 'text-sm' : 'text-lg'} font-bold ${isMobile ? 'mb-1' : 'mb-2'} bg-gradient-to-r from-purple-500 to-cyan-500 bg-clip-text text-transparent transition-all duration-200`}
-              animate={textAnimation}
-            >
-              {skill.name}
-            </motion.h4>
-          </div>
-          <p className={`text-gray-600 dark:text-gray-300 ${isMobile ? 'text-xs' : 'text-sm'} leading-relaxed`}>
-            {skill.description}
-          </p>
-        </div>
-
-        {/* Floating particles - only render when hovered */}
-        {particles.length > 0 && (
-          <div className="absolute inset-0 pointer-events-none">
-            {particles}
-          </div>
-        )}
-
-        {/* Glow effect - optimized */}
-        <motion.div 
-          className={`absolute -inset-1 bg-gradient-to-r ${categoryColor} rounded-3xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300 -z-10`}
-          animate={{
-            opacity: isHovered ? [0.2, 0.4, 0.2] : 0
-          }}
-          transition={{ duration: 1.5, repeat: isHovered ? Infinity : 0 }}
-        />
-      </div>
-    </motion.div>
-  );
-});
-
-SkillCard.displayName = 'SkillCard';
-
-const SkillCategory = memo(({ title, data, index, isMobile }) => {
-  // Memoized animation variants
-  const categoryVariants = useMemo(() => ({
-    initial: { opacity: 0, y: 30 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, delay: index * 0.1 }
-    }
-  }), [index]);
-
-  const headerVariants = useMemo(() => ({
-    hover: { 
-      scale: 1.1, 
-      rotateY: 180,
-      transition: { duration: 0.5 }
-    }
-  }), []);
-
-  const lineVariants = useMemo(() => ({
-    initial: { width: 0 },
-    animate: { 
-      width: "5rem",
-      transition: { duration: 0.8, delay: index * 0.1 + 0.3 }
-    }
-  }), [index]);
-
-  return (
-    <motion.div
-      className={`${isMobile ? 'mb-8' : 'mb-16'}`}
-      variants={categoryVariants}
-      initial="initial"
-      animate="animate"
-    >
-      {/* Category Header */}
-      <div className={`flex items-center ${isMobile ? 'mb-4' : 'mb-8'}`}>
-        <motion.div
-          className={`${isMobile ? 'w-12 h-12 text-2xl' : 'w-16 h-16 text-3xl'} rounded-2xl bg-gradient-to-br ${data.color} flex items-center justify-center ${isMobile ? 'mr-4' : 'mr-6'} shadow-xl border border-white/20`}
-          variants={headerVariants}
-          whileHover="hover"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          <span className="drop-shadow-lg">{data.icon}</span>
-        </motion.div>
-        <div>
-          <h3 className={`${isMobile ? 'text-xl' : 'text-2xl md:text-3xl'} font-bold text-gray-800 dark:text-white mb-2`}>
-            {title}
-          </h3>
-          <motion.div 
-            className={`h-1 bg-gradient-to-r ${data.color} rounded-full`}
-            variants={lineVariants}
-            initial="initial"
-            animate="animate"
-          />
-        </div>
-      </div>
-
-      {/* Skills Grid */}
-      <div className={`grid ${isMobile ? 'grid-cols-2 gap-3' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'}`}>
-        {data.skills.map((skill, skillIndex) => (
-          <SkillCard 
-            key={skill.name} 
-            skill={skill} 
-            index={skillIndex} 
-            categoryColor={data.color}
-            isMobile={isMobile}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-});
-
-SkillCategory.displayName = 'SkillCategory';
-
-// Memoized floating elements for better performance
-const FloatingElements = memo(() => {
-  const [positions, setPositions] = useState([]);
-
-  useEffect(() => {
-    // Only run on client
-    const newPositions = [...Array(6)].map(() => ({
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      duration: 3 + Math.random() * 2,
-      delay: Math.random() * 2,
-    }));
-    setPositions(newPositions);
-  }, []);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {positions.map((pos, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full opacity-20"
-          style={{ left: pos.left, top: pos.top }}
-          animate={{
-            y: [-20, 20, -20],
-            x: [-10, 10, -10],
-            opacity: [0.1, 0.4, 0.1],
-            scale: [0.5, 1.2, 0.5],
-          }}
-          transition={{
-            duration: pos.duration,
-            repeat: Infinity,
-            delay: pos.delay,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
-    </div>
-  );
-});
-
-FloatingElements.displayName = 'FloatingElements';
-
-const Skills = memo(() => {
-  const [currentTheme, setCurrentTheme] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect mobile device - optimized
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
-    };
-    
-    checkMobile();
-    const debouncedResize = debounce(checkMobile, 100);
-    window.addEventListener('resize', debouncedResize);
-    return () => window.removeEventListener('resize', debouncedResize);
-  }, []);
-
-  // Debounce utility
-  const debounce = useCallback((func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  }, []);
-
-  // Memoized themes
-  const themes = useMemo(() => [
-    { 
-      accent: 'purple', 
-      gradient: 'from-purple-600 to-blue-600',
-      skillGradient: 'from-purple-500 to-blue-500',
-      bgGradient: 'from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20'
-    },
-    { 
-      accent: 'emerald', 
-      gradient: 'from-emerald-600 to-teal-600',
-      skillGradient: 'from-emerald-500 to-teal-500',
-      bgGradient: 'from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20'
-    },
-    { 
-      accent: 'rose', 
-      gradient: 'from-rose-600 to-pink-600',
-      skillGradient: 'from-rose-500 to-pink-500',
-      bgGradient: 'from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20'
-    },
-    { 
-      accent: 'amber', 
-      gradient: 'from-amber-600 to-orange-600',
-      skillGradient: 'from-amber-500 to-orange-500',
-      bgGradient: 'from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20'
-    }
-  ], []);
-
-  const currentThemeConfig = useMemo(() => themes[currentTheme], [themes, currentTheme]);
-
-  // Enhanced skills data with your requested additions - memoized
-  const skillsData = useMemo(() => ({
+// Server Component - No animations, just data
+const Skills = () => {
+  // Static skills data - no state needed
+  const skillsData = {
     "Frontend Development": {
-      icon: "🎨",
-      color: currentThemeConfig.skillGradient,
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      color: "from-purple-500 to-blue-500",
       skills: [
-        { name: "HTML5", icon: "🌐", description: "Semantic markup & modern standards" },
-        { name: "CSS3", icon: "🎭", description: "Advanced styling & animations" },
-        { name: "JavaScript", icon: "⚡", description: "Modern ES6+ features" },
-        { name: "React", icon: "⚛️", description: "Component-based architecture" },
-        { name: "Redux", icon: "🔄", description: "State management" },
-        { name: "Tailwind CSS", icon: "🎨", description: "Utility-first framework" },
-        { name: "Framer Motion", icon: "🎬", description: "Smooth animations" }
+        { 
+          name: "HTML5", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg", 
+          description: "Semantic markup" 
+        },
+        { 
+          name: "CSS3", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg", 
+          description: "Advanced styling" 
+        },
+        { 
+          name: "JavaScript", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg", 
+          description: "ES6+ features" 
+        },
+        { 
+          name: "React", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg", 
+          description: "Component-based" 
+        },
+        { 
+          name: "Redux", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg", 
+          description: "State management" 
+        },
+        { 
+          name: "Tailwind CSS", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg", 
+          description: "Utility-first" 
+        },
+        { 
+          name: "Next.js", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg", 
+          description: "React framework" 
+        }
       ]
     },
     "Backend & Databases": {
-      icon: "⚙️",
-      color: currentThemeConfig.skillGradient,
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+      color: "from-emerald-500 to-teal-500",
       skills: [
-        { name: "Node.js", icon: "🟢", description: "Server-side JavaScript runtime" },
-        { name: "Express", icon: "🚂", description: "Fast web framework" },
-        { name: "MongoDB", icon: "🍃", description: "NoSQL database" },
-        { name: "MySQL", icon: "🐬", description: "Relational database" },
-        { name: "Firebase", icon: "🔥", description: "Backend-as-a-Service" },
-        { name: "Supabase", icon: "⚡", description: "Open source Firebase alternative" }
+        { 
+          name: "Node.js", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg", 
+          description: "JavaScript runtime" 
+        },
+        { 
+          name: "Express", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg", 
+          description: "Web framework" 
+        },
+        { 
+          name: "MongoDB", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg", 
+          description: "NoSQL database" 
+        },
+        { 
+          name: "MySQL", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg", 
+          description: "Relational DB" 
+        },
+        { 
+          name: "Firebase", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg", 
+          description: "Backend service" 
+        },
+        { 
+          name: "PostgreSQL", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg", 
+          description: "SQL database" 
+        }
       ]
     },
-    "Cloud & Services": {
-      icon: "☁️",
-      color: currentThemeConfig.skillGradient,
+    "Cloud & DevOps": {
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
+      color: "from-rose-500 to-pink-500",
       skills: [
-        { name: "Vercel", icon: "▲", description: "Deployment platform" },
-        { name: "Render", icon: "🚀", description: "Cloud application platform" },
-        { name: "Cloudinary", icon: "☁️", description: "Media management service" },
-        { name: "Razorpay", icon: "💳", description: "Payment gateway integration" }
+        { 
+          name: "Vercel", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg", 
+          description: "Deployment" 
+        },
+        { 
+          name: "Docker", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg", 
+          description: "Containerization" 
+        },
+        { 
+          name: "Git", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg", 
+          description: "Version control" 
+        },
+        { 
+          name: "GitHub", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg", 
+          description: "Code hosting" 
+        }
       ]
     },
     "Programming Languages": {
-      icon: "💻",
-      color: currentThemeConfig.skillGradient,
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+      color: "from-amber-500 to-orange-500",
       skills: [
-        { name: "JavaScript", icon: "📜", description: "Dynamic programming language" },
-        { name: "Python", icon: "🐍", description: "Versatile & powerful" },
-        { name: "C", icon: "🔧", description: "System programming" },
-        { name: "C++", icon: "⚒️", description: "Object-oriented programming" },
-        { name: "Java", icon: "☕", description: "Enterprise development" }
+        { 
+          name: "JavaScript", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg", 
+          description: "Dynamic language" 
+        },
+        { 
+          name: "TypeScript", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg", 
+          description: "Type safety" 
+        },
+        { 
+          name: "Python", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", 
+          description: "Versatile" 
+        },
+        { 
+          name: "C", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg", 
+          description: "System programming" 
+        },
+        { 
+          name: "C++", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg", 
+          description: "OOP language" 
+        },
+        { 
+          name: "Java", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg", 
+          description: "Enterprise" 
+        }
       ]
-    },
-    "Tools & Technologies": {
-      icon: "🛠️",
-      color: currentThemeConfig.skillGradient,
-      skills: [
-        { name: "Git & GitHub", icon: "🌿", description: "Version control & collaboration" },
-        { name: "PyInstaller", icon: "📦", description: "Python app bundler" },
-        { name: "DOM Manipulation", icon: "🎯", description: "Dynamic web interactions" },
-        { name: "REST APIs", icon: "🔗", description: "Web service integration" }
-      ]
     }
-  }), [currentThemeConfig.skillGradient]);
-
-  // Optimized theme switching with longer intervals
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTheme(prev => (prev + 1) % themes.length);
-    }, 15000); // Increased from 12s to 15s
-    return () => clearInterval(interval);
-  }, [themes.length]);
-
-  // Memoized header animation variants
-  const headerVariants = useMemo(() => ({
-    initial: { opacity: 0, y: -20 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  }), []);
-
-  const iconVariants = useMemo(() => ({
-    animate: { 
-      rotateY: [0, 360],
-      scale: [1, 1.1, 1]
-    },
-    transition: { 
-      duration: 4, 
-      repeat: Infinity, 
-      repeatDelay: 4 
-    }
-  }), []);
-
-  const lineVariants = useMemo(() => ({
-    initial: { width: 0 },
-    animate: { 
-      width: "8rem",
-      transition: { duration: 1.2, delay: 0.4 }
-    }
-  }), []);
+  };
 
   return (
     <section
       id="skills"
-      className={`relative ${isMobile ? 'py-12' : 'py-20'} px-6 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen overflow-hidden`}
+      className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white px-4 py-20 overflow-hidden"
     >
-      <FloatingElements />
-      
-      <div className="container mx-auto max-w-7xl relative z-10">
-        {/* Header */}
-        <motion.div
-          className={`text-center ${isMobile ? 'mb-12' : 'mb-20'}`}
-          variants={headerVariants}
-          initial="initial"
-          animate="animate"
+      {/* Background Video - Same as About */}
+      <div className="absolute inset-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
         >
-          <motion.div
-            className={`inline-block ${isMobile ? 'mb-4' : 'mb-6'}`}
-            animate={iconVariants.animate}
-            transition={iconVariants.transition}
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            <div className={`${isMobile ? 'w-16 h-16 text-3xl' : 'w-20 h-20 text-4xl'} bg-gradient-to-br ${currentThemeConfig.gradient} rounded-2xl flex items-center justify-center shadow-2xl transform-gpu border border-white/20`}>
-              <span className="drop-shadow-2xl">💫</span>
-            </div>
-          </motion.div>
-          
-          <h2 className={`${isMobile ? 'text-3xl' : 'text-4xl md:text-6xl'} font-bold bg-gradient-to-r ${currentThemeConfig.gradient} bg-clip-text text-transparent ${isMobile ? 'mb-4' : 'mb-6'}`}>
-            Technical Arsenal
-          </h2>
-          
-          <motion.div
-            className={`${isMobile ? 'w-24' : 'w-32'} h-2 bg-gradient-to-r ${currentThemeConfig.gradient} mx-auto rounded-full ${isMobile ? 'mb-6' : 'mb-8'}`}
-            variants={lineVariants}
-            initial="initial"
-            animate="animate"
-          />
-          
-          <p className={`text-gray-600 dark:text-gray-300 ${isMobile ? 'text-base' : 'text-xl'} max-w-3xl mx-auto leading-relaxed`}>
-            Crafting exceptional digital experiences with cutting-edge technologies and creative innovation
-          </p>
-        </motion.div>
+          <source src="/assets/purpleBackgroundAnimation.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-purple-900/40 to-slate-900/60" />
+      </div>
 
-        {/* Skills Categories */}
-        <div className={`${isMobile ? 'space-y-8' : 'space-y-16'}`}>
-          {Object.entries(skillsData).map(([category, data], index) => (
-            <SkillCategory
-              key={category}
-              title={category}
-              data={data}
-              index={index}
-              isMobile={isMobile}
-            />
-          ))}
+      <div className="relative z-10 max-w-7xl w-full mx-auto">
+        <div className="p-6 sm:p-8 md:p-12">
+          {/* Static Header */}
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-6">
+              Technical Arsenal
+            </h2>
+            <div className="w-24 sm:w-32 h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 mx-auto rounded-full mb-8" />
+            <p className="text-base sm:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+              Crafting exceptional digital experiences with cutting-edge technologies and creative innovation
+            </p>
+          </div>
+
+          {/* Client Component for interactive parts */}
+          <SkillsClient skillsData={skillsData} />
         </div>
       </div>
     </section>
   );
-});
-
-Skills.displayName = 'Skills';
+};
 
 export default Skills;
