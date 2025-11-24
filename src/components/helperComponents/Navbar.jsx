@@ -11,6 +11,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
+  const [activeSection, setActiveSection] = useState('Home');
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,6 +25,9 @@ const Navbar = () => {
 
   const currentThemeConfig = themes[currentTheme];
 
+  // Navigation items based on current route
+  const isHomeRoute = pathname === "/";
+
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -33,8 +37,32 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Navigation items based on current route
-  const isHomeRoute = pathname === "/";
+  // Detect active section based on scroll position
+  useEffect(() => {
+    if (!isHomeRoute) return;
+
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetHeight = element.offsetHeight;
+          
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section.charAt(0).toUpperCase() + section.slice(1));
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isHomeRoute]);
   const navItems = isHomeRoute 
     ? ["Home", "About", "Skills", "Projects", "Contact", "Blog"]
     : ["Portfolio", "Blog"];
@@ -93,7 +121,7 @@ const Navbar = () => {
           scrolled 
             ? darkMode 
               ? 'bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-700/50' 
-              : 'bg-gradient-to-r from-purple-50/95 via-white/95 to-blue-50/95 backdrop-blur-md shadow-lg border-b border-purple-200/50'
+              : 'bg-gradient-to-r from-purple-600/75 via-indigo-600/65 to-purple-600/95 backdrop-blur-md shadow-lg border-b border-blue-400/30'
             : 'bg-transparent'
         }`}
         initial={{ opacity: 0, y: -20 }}
@@ -127,12 +155,12 @@ const Navbar = () => {
               <span className={`text-xl font-bold ${
                 darkMode 
                   ? 'bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent'
-                  : 'bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent'
+                  : 'bg-gradient-to-r from-purple-200 to-purple-500 bg-clip-text text-transparent'
               }`}>
                 Udit's Portfolio
               </span>
               <span className={`text-xs font-medium tracking-wider ${
-                darkMode ? getAccentColor() : 'text-gray-600'
+                darkMode ? 'text-purple-300' : 'text-white'
               }`}>
                 Web Developer
               </span>
@@ -154,28 +182,38 @@ const Navbar = () => {
                     <button
                       onClick={() => handleNavClick(item)}
                       className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
-                        darkMode 
-                          ? 'text-gray-100 hover:text-white'
-                          : 'text-gray-800 hover:text-gray-950'
+                        activeSection === item
+                          ? darkMode ? 'text-purple-400 font-bold' : 'text-purple-500 font-bold'
+                          : darkMode 
+                            ? 'text-purple-100 hover:text-purple-300'
+                            : 'text-white hover:text-purple-200'
                       }`}
                     >
                       {item}
                       {/* Animated underline */}
-                      <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-full`}></span>
+                      <span className={`absolute -bottom-1 left-0 h-0.5 ${getGradientBg()} transition-all duration-300 ${
+                        activeSection === item ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}></span>
                     </button>
                   ) : (
                     <Link 
                       href={item === "Blog" ? "/blog" : item === "Portfolio" ? "/" : `/#${item.toLowerCase()}`}
                       prefetch={true}
                       className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
-                        darkMode 
-                          ? 'text-gray-100 hover:text-white'
-                          : 'text-gray-800 hover:text-gray-950'
+                        (item === "Blog" && pathname === "/blog") || (item === "Portfolio" && pathname === "/")
+                          ? darkMode ? 'text-purple-400 font-bold' : 'text-purple-900 font-bold'
+                          : darkMode 
+                            ? 'text-purple-100 hover:text-purple-300'
+                            : 'text-white hover:text-purple-200'
                       }`}
                     >
                       {item}
                       {/* Animated underline */}
-                      <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-full`}></span>
+                      <span className={`absolute -bottom-1 left-0 h-0.5 ${getGradientBg()} transition-all duration-300 ${
+                        (item === "Blog" && pathname === "/blog") || (item === "Portfolio" && pathname === "/")
+                          ? 'w-full'
+                          : 'w-0 group-hover:w-full'
+                      }`}></span>
                     </Link>
                   )}
                 </motion.li>
@@ -189,7 +227,7 @@ const Navbar = () => {
               className={`relative p-3 rounded-full backdrop-blur-sm border transition-all duration-300 shadow-lg group ${
                 darkMode 
                   ? 'bg-slate-800/80 border-slate-600/50 hover:bg-slate-700/80'
-                  : 'bg-white/80 border-gray-300/50 hover:bg-gray-50/80'
+                  : 'bg-white/90 border-blue-300/50 hover:bg-blue-50/90'
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -213,7 +251,7 @@ const Navbar = () => {
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Moon className="text-gray-800 w-5 h-5" />
+                    <Moon className="text-blue-900 w-5 h-5" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -240,7 +278,7 @@ const Navbar = () => {
             className={`md:hidden p-2 rounded-lg backdrop-blur-sm border transition-all duration-300 ${
               darkMode 
                 ? 'bg-slate-800/80 border-slate-600/50 text-white hover:bg-slate-700/80'
-                : 'bg-white/80 border-gray-300/50 text-gray-800 hover:bg-gray-50/80'
+                : 'bg-white/90 border-blue-300/50 text-white hover:bg-blue-50/90'
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -290,7 +328,7 @@ const Navbar = () => {
               className={`fixed top-20 right-4 w-72 backdrop-blur-xl rounded-2xl shadow-2xl border z-50 md:hidden overflow-hidden ${
                 darkMode 
                   ? 'bg-slate-900/95 border-white/10'
-                  : 'bg-gradient-to-br from-purple-50/98 via-white/98 to-blue-50/98 border-purple-200/50'
+                  : 'bg-gradient-to-br from-blue-600/98 via-indigo-600/98 to-purple-600/98 border-blue-400/30'
               }`}
               initial={{ opacity: 0, scale: 0.9, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -319,14 +357,18 @@ const Navbar = () => {
                           setIsOpen(false);
                         }}
                         className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
-                          darkMode 
-                            ? 'text-gray-100 hover:bg-slate-700/50 hover:text-white'
-                            : 'text-gray-800 hover:bg-gray-100 hover:text-gray-950'
+                          activeSection === item
+                            ? darkMode ? 'text-purple-400 font-bold bg-purple-100/10' : 'text-purple-900 font-bold bg-purple-100/20'
+                            : darkMode 
+                              ? 'text-purple-100 hover:bg-slate-700/50 hover:text-purple-300'
+                              : 'text-white hover:bg-white/20 hover:text-purple-200'
                         }`}
                       >
                         <span className="flex items-center justify-between">
                           {item}
-                          <span className={`w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-6`}></span>
+                          <span className={`h-0.5 ${getGradientBg()} transition-all duration-300 ${
+                            activeSection === item ? 'w-6' : 'w-0 group-hover:w-6'
+                          }`}></span>
                         </span>
                       </button>
                     ) : (
@@ -335,14 +377,20 @@ const Navbar = () => {
                         prefetch={true}
                         onClick={() => setIsOpen(false)}
                         className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
-                          darkMode 
-                            ? 'text-gray-100 hover:bg-slate-700/50 hover:text-white'
-                            : 'text-gray-800 hover:bg-gray-100 hover:text-gray-950'
+                          (item === "Blog" && pathname === "/blog") || (item === "Portfolio" && pathname === "/")
+                            ? darkMode ? 'text-purple-400 font-bold bg-purple-100/10' : 'text-purple-900 font-bold bg-purple-100/20'
+                            : darkMode 
+                              ? 'text-purple-100 hover:bg-slate-700/50 hover:text-purple-300'
+                              : 'text-white hover:bg-white/20 hover:text-purple-200'
                         }`}
                       >
                         <span className="flex items-center justify-between">
                           {item}
-                          <span className={`w-0 h-0.5 ${getGradientBg()} transition-all duration-300 group-hover:w-6`}></span>
+                          <span className={`h-0.5 ${getGradientBg()} transition-all duration-300 ${
+                            (item === "Blog" && pathname === "/blog") || (item === "Portfolio" && pathname === "/")
+                              ? 'w-6'
+                              : 'w-0 group-hover:w-6'
+                          }`}></span>
                         </span>
                       </Link>
                     )}
@@ -358,19 +406,19 @@ const Navbar = () => {
                   className={`w-full p-3 mt-4 rounded-lg border transition-all duration-300 flex items-center justify-between group ${
                     darkMode 
                       ? 'bg-slate-800/50 hover:bg-slate-700/50 border-slate-600/50'
-                      : 'bg-gray-100/50 hover:bg-gray-200/50 border-gray-300/50'
+                      : 'bg-white/20 hover:bg-white/30 border-white/30'
                   }`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
                 >
                   <span className={`flex items-center space-x-3 ${
-                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                    darkMode ? 'text-gray-100' : 'text-white'
                   }`}>
                     {darkMode ? (
                       <Sun className="text-yellow-400 w-5 h-5" />
                     ) : (
-                      <Moon className="text-gray-800 w-5 h-5" />
+                      <Moon className="text-white w-5 h-5" />
                     )}
                     <span className="font-medium">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                   </span>
