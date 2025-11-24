@@ -200,11 +200,11 @@ const About = () => {
                 </span>
               </h4>
               
-              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4 md:gap-8">
+              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4 md:gap-8 py-2">
                 {techStack.map((tech, index) => (
                   <div
                     key={tech.name}
-                    className="relative group"
+                    className="relative group py-6"
                     style={{
                       animation: `float ${3 + index * 0.2}s ease-in-out infinite`,
                       animationDelay: `${index * 0.1}s`

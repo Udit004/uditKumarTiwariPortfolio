@@ -1,7 +1,14 @@
+"use client"
+import { useState, useCallback } from 'react';
 import ContactClient from './ContactClient';
 
-// Server Component - Static data and structure
+// Client Component - includes background video
 const Contact = () => {
+  const [videoError, setVideoError] = useState(false);
+
+  const handleVideoError = useCallback(() => {
+    setVideoError(true);
+  }, []);
   // Static contact icons data - pass icon names as strings
   const contactIcons = [
     {
@@ -57,6 +64,29 @@ const Contact = () => {
 
   return (
     <section id="contact" className="relative py-10 sm:py-20 overflow-hidden min-h-screen">
+      {/* Background Video/Stars */}
+      {!videoError ? (
+        <div className="absolute inset-0 overflow-hidden">
+          <video
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+            style={{ filter: 'brightness(0.4) contrast(1.1)' }}
+            onError={handleVideoError}
+          >
+            <source src={spaceVideoSrc} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-black/50" />
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-gray-900 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 via-purple-900/30 to-pink-900/50" />
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
@@ -74,7 +104,6 @@ const Contact = () => {
           <ContactClient 
             contactIcons={contactIcons}
             robotVideos={robotVideos}
-            spaceVideoSrc={spaceVideoSrc}
           />
         </div>
       </div>
