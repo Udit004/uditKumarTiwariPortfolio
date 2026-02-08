@@ -42,7 +42,7 @@ const Navbar = () => {
     if (!isHomeRoute) return;
 
     const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+      const sections = ['home', 'about', 'skills', 'experience', 'projects', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -64,7 +64,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHomeRoute]);
   const navItems = isHomeRoute 
-    ? ["Home", "About", "Skills", "Projects", "Contact", "Blog"]
+    ? ["Home", "About", "Skills", "Experience", "Projects", "Contact", "Blog"]
     : ["Portfolio", "Blog"];
 
   // Dynamic classes based on theme
@@ -130,7 +130,7 @@ const Navbar = () => {
       >
         <div className="container mx-auto flex justify-between items-center px-6 py-4">
           {/* Logo Section */}
-          <Link href="/" prefetch={true}>
+          <Link href="/" prefetch={true} className="cursor-pointer">
             <motion.div
               className="flex items-center space-x-3 group cursor-pointer"
               whileHover={{ scale: 1.05 }}
@@ -181,7 +181,7 @@ const Navbar = () => {
                   {isHomeRoute && item !== "Blog" ? (
                     <button
                       onClick={() => handleNavClick(item)}
-                      className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
+                      className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group cursor-pointer ${
                         activeSection === item
                           ? darkMode ? 'text-purple-400 font-bold' : 'text-purple-500 font-bold'
                           : darkMode 
@@ -199,7 +199,7 @@ const Navbar = () => {
                     <Link 
                       href={item === "Blog" ? "/blog" : item === "Portfolio" ? "/" : `/#${item.toLowerCase()}`}
                       prefetch={true}
-                      className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group ${
+                      className={`relative transition-all duration-300 font-medium text-sm tracking-wide uppercase group cursor-pointer ${
                         (item === "Blog" && pathname === "/blog") || (item === "Portfolio" && pathname === "/")
                           ? darkMode ? 'text-purple-400 font-bold' : 'text-purple-900 font-bold'
                           : darkMode 
@@ -224,7 +224,7 @@ const Navbar = () => {
             <motion.button
               onClick={toggleDarkMode}
               aria-label="Toggle Dark Mode & Theme"
-              className={`relative p-3 rounded-full backdrop-blur-sm border transition-all duration-300 shadow-lg group ${
+              className={`relative p-3 rounded-full backdrop-blur-sm border transition-all duration-300 shadow-lg group cursor-pointer ${
                 darkMode 
                   ? 'bg-slate-800/80 border-slate-600/50 hover:bg-slate-700/80'
                   : 'bg-white/90 border-blue-300/50 hover:bg-blue-50/90'
@@ -275,7 +275,7 @@ const Navbar = () => {
           {/* Mobile Hamburger */}
           <motion.button
             onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden p-2 rounded-lg backdrop-blur-sm border transition-all duration-300 ${
+            className={`md:hidden p-2 rounded-lg backdrop-blur-sm border transition-all duration-300 cursor-pointer ${
               darkMode 
                 ? 'bg-slate-800/80 border-slate-600/50 text-white hover:bg-slate-700/80'
                 : 'bg-white/90 border-blue-300/50 text-white hover:bg-blue-50/90'
@@ -356,7 +356,7 @@ const Navbar = () => {
                           handleNavClick(item);
                           setIsOpen(false);
                         }}
-                        className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
+                        className={`w-full text-left p-3 rounded-lg transition-all duration-300 group cursor-pointer ${
                           activeSection === item
                             ? darkMode ? 'text-purple-400 font-bold bg-purple-100/10' : 'text-purple-900 font-bold bg-purple-100/20'
                             : darkMode 
@@ -376,7 +376,7 @@ const Navbar = () => {
                         href={item === "Blog" ? "/blog" : item === "Portfolio" ? "/" : `/#${item.toLowerCase()}`}
                         prefetch={true}
                         onClick={() => setIsOpen(false)}
-                        className={`w-full text-left p-3 rounded-lg transition-all duration-300 group ${
+                        className={`w-full text-left p-3 rounded-lg transition-all duration-300 group cursor-pointer ${
                           (item === "Blog" && pathname === "/blog") || (item === "Portfolio" && pathname === "/")
                             ? darkMode ? 'text-purple-400 font-bold bg-purple-100/10' : 'text-purple-900 font-bold bg-purple-100/20'
                             : darkMode 
@@ -403,7 +403,7 @@ const Navbar = () => {
                     toggleDarkMode();
                     setIsOpen(false);
                   }}
-                  className={`w-full p-3 mt-4 rounded-lg border transition-all duration-300 flex items-center justify-between group ${
+                  className={`w-full p-3 mt-4 rounded-lg border transition-all duration-300 flex items-center justify-between group cursor-pointer ${
                     darkMode 
                       ? 'bg-slate-800/50 hover:bg-slate-700/50 border-slate-600/50'
                       : 'bg-white/20 hover:bg-white/30 border-white/30'
