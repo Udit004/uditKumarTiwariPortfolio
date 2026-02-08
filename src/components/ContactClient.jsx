@@ -180,9 +180,8 @@ const SocialIcons = memo(({ contactIcons }) => {
 SocialIcons.displayName = 'SocialIcons';
 
 // Main Contact Client Component
-const ContactClient = ({ contactIcons, robotVideos, spaceVideoSrc }) => {
+const ContactClient = ({ contactIcons, robotVideos }) => {
   const [currentRobotVideo, setCurrentRobotVideo] = useState(0);
-  const [videoError, setVideoError] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -209,10 +208,6 @@ const ContactClient = ({ contactIcons, robotVideos, spaceVideoSrc }) => {
     return () => clearInterval(robotInterval);
   }, [robotVideos.length]);
 
-  const handleVideoError = useCallback(() => {
-    setVideoError(true);
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ loading: true, success: false, error: false });
@@ -237,13 +232,6 @@ const ContactClient = ({ contactIcons, robotVideos, spaceVideoSrc }) => {
 
   return (
     <>
-      {/* Background */}
-      {!videoError ? (
-        <VideoBackground videoSrc={spaceVideoSrc} onError={handleVideoError} />
-      ) : (
-        <StarryBackground />
-      )}
-
       {/* Content Grid */}
       <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-stretch">
         {/* Left Column - Robot Videos & Social */}
@@ -276,12 +264,12 @@ const ContactClient = ({ contactIcons, robotVideos, spaceVideoSrc }) => {
                   name="user_name"
                   type="text"
                   required
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 border-2 border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:border-transparent bg-white/10 text-white backdrop-blur-sm placeholder-gray-400 hover:border-white/30 hover:bg-white/15 text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 border-2 border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:border-transparent bg-white/80 text-gray-900 backdrop-blur-sm placeholder-gray-500 hover:border-white/30 hover:bg-white/90 text-sm sm:text-base"
                   placeholder="John Doe"
                   value={formData.user_name}
                   onChange={handleChange}
                 />
-                <User className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+                <User className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
               </div>
             </div>
 
@@ -297,12 +285,12 @@ const ContactClient = ({ contactIcons, robotVideos, spaceVideoSrc }) => {
                   name="user_email"
                   type="email"
                   required
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 border-2 border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:border-transparent bg-white/10 text-white backdrop-blur-sm placeholder-gray-400 hover:border-white/30 hover:bg-white/15 text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 border-2 border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:border-transparent bg-white/80 text-gray-900 backdrop-blur-sm placeholder-gray-500 hover:border-white/30 hover:bg-white/90 text-sm sm:text-base"
                   placeholder="john@example.com"
                   value={formData.user_email}
                   onChange={handleChange}
                 />
-                <Mail className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+                <Mail className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
               </div>
             </div>
 
@@ -317,12 +305,12 @@ const ContactClient = ({ contactIcons, robotVideos, spaceVideoSrc }) => {
                   id="message"
                   name="message"
                   required
-                  className="w-full h-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 border-2 border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:border-transparent bg-white/10 text-white backdrop-blur-sm placeholder-gray-400 hover:border-white/30 hover:bg-white/15 resize-none min-h-[100px] sm:min-h-[120px] text-sm sm:text-base"
+                  className="w-full h-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 border-2 border-white/20 rounded-xl focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:border-transparent bg-white/80 text-gray-900 backdrop-blur-sm placeholder-gray-500 hover:border-white/30 hover:bg-white/90 resize-none min-h-[100px] sm:min-h-[120px] text-sm sm:text-base"
                   placeholder="Tell me about your project, ideas, or just say hello!"
                   value={formData.message}
                   onChange={handleChange}
                 />
-                <MessageSquare className="absolute left-3 sm:left-4 top-3 sm:top-4 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+                <MessageSquare className="absolute left-3 sm:left-4 top-3 sm:top-4 w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
               </div>
             </div>
 
