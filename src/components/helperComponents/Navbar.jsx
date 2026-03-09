@@ -1,10 +1,11 @@
 "use client"
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import { DarkModeContext } from "../../contexts/DarkModeContext";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { throttle } from "../../lib/throttleDebounce";
 
 const Navbar = () => {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
@@ -14,6 +15,7 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState('Home');
   const pathname = usePathname();
   const router = useRouter();
+  const sectionCacheRef = useRef({}); // Cache section elements
 
   // Theme configurations matching the Home component
   const themes = [
@@ -28,41 +30,47 @@ const Navbar = () => {
   // Navigation items based on current route
   const isHomeRoute = pathname === "/";
 
-  // Handle scroll effect
+  // Optimized single scroll handler with throttling
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
+      // Update scroll background
       setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  // Detect active section based on scroll position
-  useEffect(() => {
-    if (!isHomeRoute) return;
+      // Detect active section (only on home route)
+      if (isHomeRoute) {
+        const sections = ['home', 'about', 'skills', 'experience', 'projects', 'contact'];
+        const scrollPosition = window.scrollY + 100;
 
-    const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'experience', 'projects', 'contact'];
-      const scrollPosition = window.scrollY + 100;
+        // Cache section elements to avoid repeated DOM queries
+        const sectionIds = {};
+        for (const section of sections) {
+          if (!sectionCacheRef.current[section]) {
+            sectionCacheRef.current[section] = document.getElementById(section);
+          }
+          sectionIds[section] = sectionCacheRef.current[section];
+        }
 
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const offsetTop = element.offsetTop;
-          const offsetHeight = element.offsetHeight;
-          
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section.charAt(0).toUpperCase() + section.slice(1));
-            break;
+        // Find active section
+        for (const section of sections) {
+          const element = sectionIds[section];
+          if (element) {
+            const offsetTop = element.offsetTop;
+            const offsetHeight = element.offsetHeight;
+            
+            if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+              setActiveSection(section.charAt(0).toUpperCase() + section.slice(1));
+              break;
+            }
           }
         }
       }
-    };
+    }, 100); // Throttle to max once per 100ms
 
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Initial check
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHomeRoute]);
+
   const navItems = isHomeRoute 
     ? ["Home", "About", "Skills", "Experience", "Projects", "Contact", "Blog"]
     : ["Portfolio", "Blog"];

@@ -4,8 +4,11 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import CustomTypeAnimation from "./CustomTypeAnimation";
 import SocialIcons from "./SocialIcons";
+import { useVideoLazyLoad } from "../lib/useVideoLazyLoad";
 
 const Home = () => {
+  const videoRef = useVideoLazyLoad();
+
   return (
     <section
       id="home"
@@ -20,10 +23,11 @@ const Home = () => {
 
       {/* Video Background */}
       <video
-        autoPlay
+        ref={videoRef}
         loop
         muted
         playsInline
+        preload="none"
         className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
       >
         <source src="/assets/blackBackgroundAnimation.mp4" type="video/mp4" />
