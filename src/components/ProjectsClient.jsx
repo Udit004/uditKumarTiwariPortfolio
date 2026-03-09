@@ -169,7 +169,7 @@ const ProjectsClient = ({ projects, categories }) => {
           <button
             key={category}
             onClick={() => handleFilterChange(category)}
-            className={`px-6 py-3 rounded-full font-medium transition-all duration-200 backdrop-blur-sm border ${
+            className={`px-6 py-3 rounded-full font-medium transition-all duration-200 backdrop-blur-sm border cursor-pointer ${
               filter === category
                 ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg scale-105 border-transparent'
                 : 'bg-white/10 text-gray-200 hover:bg-white/20 hover:scale-105 border-white/20'

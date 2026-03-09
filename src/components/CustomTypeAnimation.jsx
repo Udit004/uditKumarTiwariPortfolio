@@ -6,7 +6,7 @@ const CustomTypeAnimation = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  const texts = ['Full Stack Developer', 'Frontend Specialist', 'UI/UX Enthusiast', 'Node.js Developer'];
+  const texts = ['Full Stack Developer', 'Frontend Specialist', 'AI Application Developer', 'Backend Developer'];
   
   useEffect(() => {
     const currentFullText = texts[currentIndex];

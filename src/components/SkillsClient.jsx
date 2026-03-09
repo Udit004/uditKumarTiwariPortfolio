@@ -4,15 +4,12 @@ import Image from "next/image";
 
 // Simplified SkillCard - No animations, just hover effects
 const SkillCard = memo(({ skill, categoryColor }) => {
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
       className="group relative cursor-pointer"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 hover:border-white/30 hover:-translate-y-2 hover:bg-white/10">
+      <div className="relative backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 hover:border-white/30 hover:bg-white/10">
         
         {/* Glow effect on hover */}
         <div className={`absolute -inset-0.5 bg-gradient-to-r ${categoryColor} rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500`} />
@@ -26,7 +23,7 @@ const SkillCard = memo(({ skill, categoryColor }) => {
                 alt={skill.name}
                 width={40}
                 height={40}
-                className="w-6 h-6 sm:w-10 sm:h-10 object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300"
+                className="w-6 h-6 sm:w-10 sm:h-10 object-contain filter drop-shadow-lg transition-transform duration-300"
               />
             </div>
           </div>
