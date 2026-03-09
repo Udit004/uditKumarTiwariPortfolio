@@ -1,9 +1,11 @@
 "use client"
 import { useState, useCallback } from 'react';
 import ContactClient from './ContactClient';
+import { useVideoLazyLoad } from '../lib/useVideoLazyLoad';
 
 // Client Component - includes background video
 const Contact = () => {
+  const videoRef = useVideoLazyLoad();
   const [videoError, setVideoError] = useState(false);
 
   const handleVideoError = useCallback(() => {
@@ -68,12 +70,12 @@ const Contact = () => {
       {!videoError ? (
         <div className="absolute inset-0 overflow-hidden">
           <video
+            ref={videoRef}
             className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
             muted
             loop
             playsInline
-            autoPlay
-            preload="metadata"
+            preload="none"
             style={{ filter: 'brightness(0.4) contrast(1.1)' }}
             onError={handleVideoError}
           >

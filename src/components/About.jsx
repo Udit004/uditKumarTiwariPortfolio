@@ -1,6 +1,9 @@
+'use client'
+
 import React from "react";
 import Image from "next/image";
 import AboutClient from "./AboutClient";
+import { useVideoLazyLoad } from "../lib/useVideoLazyLoad";
 
 // Static data - moved outside component
 const techStack = [
@@ -62,6 +65,8 @@ const achievements = [
 ];
 
 const About = () => {
+  const videoRef = useVideoLazyLoad();
+
   return (
 
       <section
@@ -71,10 +76,11 @@ const About = () => {
         {/* Background Video */}
         <div className="absolute inset-0">
           <video
-            autoPlay
+            ref={videoRef}
             loop
             muted
             playsInline
+            preload="none"
             className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
           >
             <source src="/assets/purpleBackgroundAnimation.mp4" type="video/mp4" />

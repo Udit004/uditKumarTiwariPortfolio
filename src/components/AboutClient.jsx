@@ -80,6 +80,7 @@ AboutClient = ({ techStack = null, achievements = null }) => {
                             alt={tech.name}
                             width={48}
                             height={48}
+                            loading="lazy"
                             className="w-8 h-8 sm:w-12 sm:h-12 object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300"
                           />
                         )}

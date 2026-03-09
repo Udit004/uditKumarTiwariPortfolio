@@ -29,9 +29,24 @@ const Skills = () => {
           description: "Component-based" 
         },
         { 
-          name: "Redux", 
+          name: "TanStack Query", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg", 
+          description: "Server state management" 
+        },
+        { 
+          name: "Zustand", 
           icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg", 
           description: "State management" 
+        },
+        { 
+          name: "Axios", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg", 
+          description: "HTTP client" 
+        },
+        { 
+          name: "TypeScript", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg", 
+          description: "Type safety" 
         },
         { 
           name: "Tailwind CSS", 
@@ -78,6 +93,16 @@ const Skills = () => {
           name: "PostgreSQL", 
           icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg", 
           description: "SQL database" 
+        },
+        { 
+          name: "FastAPI", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", 
+          description: "Modern Python API" 
+        },
+        { 
+          name: "Flask", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", 
+          description: "Python web framework" 
         }
       ]
     },
@@ -104,6 +129,31 @@ const Skills = () => {
           name: "GitHub", 
           icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg", 
           description: "Code hosting" 
+        },
+        { 
+          name: "GitHub Actions", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg", 
+          description: "CI/CD automation" 
+        },
+        { 
+          name: "AWS", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg", 
+          description: "Cloud services" 
+        },
+        { 
+          name: "Render", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/heroku/heroku-original.svg", 
+          description: "Cloud platform" 
+        },
+        { 
+          name: "Docker Compose", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg", 
+          description: "Multi-container" 
+        },
+        { 
+          name: "Kubernetes", 
+          icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg", 
+          description: "Orchestration" 
         }
       ]
     },
