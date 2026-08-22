@@ -1,4 +1,4 @@
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk, Caveat } from "next/font/google";
 import "./globals.css";
 import ClientLayout from './layout-client';
 
@@ -20,6 +20,15 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   display: "swap",
+});
+
+// Handwritten-style font used for the "signature" line in the About section
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+  fallback: ["cursive"],
 });
 
 export const metadata = {
@@ -142,7 +151,7 @@ export default function RootLayout({ children }) {
         {/* Preconnect to CDN for icon loading */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
       </head>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} antialiased font-sans`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${caveat.variable} antialiased font-sans`}>
         <ClientLayout>
           {children}
         </ClientLayout>
