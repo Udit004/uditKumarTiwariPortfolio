@@ -120,3 +120,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ─────────────────────────────────────────
+   Ambient orb float animations
+   (referenced by Home.jsx via
+   animate-[float-slow_9s_ease-in-out_infinite]
+   and animate-[float-slower_12s_ease-in-out_infinite],
+   but were never defined — orbs were static without these)
+───────────────────────────────────────── */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(24px, -32px) scale(1.06);
+  }
+}
+
+@keyframes float-slower {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-18px, 26px) scale(1.08);
+  }
+}

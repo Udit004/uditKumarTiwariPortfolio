@@ -153,7 +153,7 @@ RobotVideoDisplay.displayName = 'RobotVideoDisplay';
 const SocialIcons = memo(({ contactIcons }) => {
   return (
     <div className="mt-6 sm:mt-8">
-      <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/20">
+      <div className="p-4 sm:p-6 ">
         <h4 className="text-white font-semibold mb-4 text-center text-sm sm:text-base">Connect With Me</h4>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {contactIcons.map((item) => {
@@ -245,7 +245,7 @@ const ContactClient = ({ contactIcons, robotVideos }) => {
         </div>
 
         {/* Right Column - Contact Form */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col min-h-[500px] lg:min-h-[600px]">
+        <div className=" p-6 sm:p-8 flex flex-col min-h-[500px] lg:min-h-[600px]">
           <div className="mb-4 sm:mb-6">
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Send a Message</h3>
             <p className="text-sm sm:text-base text-gray-300">I'd love to hear from you! Fill out the form below.</p>

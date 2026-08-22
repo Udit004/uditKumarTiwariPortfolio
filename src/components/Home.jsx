@@ -11,11 +11,12 @@ import gsap from "gsap";
 ───────────────────────────────────────── */
 const StatPill = ({ icon: Icon, value, label, color }) => (
   <div className="flex flex-col items-center gap-0.5">
-    <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${color}`}>
-      <Icon size={15} className="text-white" />
+    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mb-1 ${color}`}>
+      <Icon size={14} className="text-white sm:hidden" />
+      <Icon size={15} className="text-white hidden sm:block" />
     </div>
-    <span className="text-white font-bold text-sm">{value}</span>
-    <span className="text-gray-400 text-xs">{label}</span>
+    <span className="text-white font-bold text-xs sm:text-sm">{value}</span>
+    <span className="text-gray-400 text-[10px] sm:text-xs whitespace-nowrap">{label}</span>
   </div>
 );
 
@@ -27,14 +28,15 @@ const FloatingCard = ({ icon: Icon, title, subtitle, className, iconBg }) => (
     className={`flex items-center gap-3 px-4 py-3 rounded-2xl
       border border-purple-500/25 bg-black/50 backdrop-blur-md
       shadow-[0_10px_40px_rgba(0,0,0,0.4),0_0_25px_rgba(168,85,247,0.08)]
+      max-w-[210px]
       ${className}`}
   >
     <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
       <Icon size={18} className="text-white" />
     </div>
-    <div>
-      <p className="text-white font-semibold text-sm leading-none mb-1">{title}</p>
-      <p className="text-gray-400 text-xs">{subtitle}</p>
+    <div className="min-w-0">
+      <p className="text-white font-semibold text-sm leading-none mb-1 whitespace-nowrap">{title}</p>
+      <p className="text-gray-400 text-xs whitespace-nowrap">{subtitle}</p>
     </div>
   </div>
 );
@@ -116,9 +118,9 @@ const Home = () => {
           const width = container.offsetWidth;
           // SVG is 90% of container width
           const svgWidth = width * 0.9;
-          const R_X = (225 / 480) * svgWidth; 
+          const R_X = (225 / 480) * svgWidth;
           const R_Y = (68 / 480) * svgWidth;
-          
+
           const x = R_X * Math.cos(angle);
           const y = R_Y * Math.sin(angle);
           dot.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
@@ -146,7 +148,6 @@ const Home = () => {
       }}
     >
 
-    
       {/* ── Perspective grid floor ── */}
       <div
         className="absolute left-0 right-0 bottom-0 pointer-events-none z-0"
@@ -188,7 +189,7 @@ const Home = () => {
       {/* ════════════════════════════════════════════
           MAIN LAYOUT: Left content + Right visual
       ════════════════════════════════════════════ */}
-      <div className="relative z-10 min-h-screen flex items-center px-6 sm:px-10 lg:px-20 xl:px-28 py-24">
+      <div className="relative z-10 min-h-screen flex items-center px-6 sm:px-10 lg:px-20 xl:px-28 py-20 sm:py-24">
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
           {/* ──────── LEFT CONTENT ──────── */}
@@ -202,7 +203,7 @@ const Home = () => {
             </div>
 
             {/* Hi, I'm */}
-            <h1 className=" md:text-4xl text-3xl font-bold text-white leading-tight tracking-tight mb-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight tracking-tight mb-3">
               Hi, I&apos;m
               <br />
               <span
@@ -216,7 +217,7 @@ const Home = () => {
             </h1>
 
             {/* Tagline */}
-            <p className="text-gray-300 text-lg mb-2 font-medium">
+            <p className="text-gray-300 text-base sm:text-lg mb-2 font-medium">
               Crafting digital experiences that are fast, scalable, and impactful.
             </p>
 
@@ -226,16 +227,16 @@ const Home = () => {
             </div>
 
             {/* Description */}
-            <p className="text-gray-400 text-base leading-relaxed max-w-lg mb-8">
+            <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg mb-8">
               Specializing in{" "}
               <span className="text-purple-400 font-semibold">React</span>,{" "}
               <span className="text-purple-400 font-semibold">Node.js</span>,{" "}
               <span className="text-purple-400 font-semibold">Next.js</span>, and{" "}
               <span className="text-pink-400 font-semibold">AI-powered</span> applications.
               <br />
+              I build modern web solutions that solve real-world problems.
             </p>
 
-  
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row w-full sm:w-auto items-center gap-4 mb-10">
               <a
@@ -251,29 +252,22 @@ const Home = () => {
               <a
                 href="#contact"
                 className="w-full sm:w-auto group flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-sm border border-purple-500/50 bg-white/5 backdrop-blur-sm hover:border-purple-400 hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-lg"
-              >               <span className="relative z-10">Get In Touch</span>
+              >
+                <span className="relative z-10">Get In Touch</span>
                 <MessageSquare size={16} className="relative z-10 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
                 <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </a>
-
-              {/* <a
-                href="#contact"
-                className="group flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-sm border border-purple-500/50 bg-white/5 backdrop-blur-sm hover:border-purple-400 hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-lg"
-c              >
-                Get In Touch
-                <MessageSquare size={15} className="opacity-70" />
-              </a> */}
             </div>
 
             {/* Stats row */}
-            <div className="flex items-center gap-8 mb-6">
+            <div className="flex flex-wrap items-center gap-5 sm:gap-8 mb-6">
               <StatPill
                 icon={Code2}
                 value="20+"
                 label="Projects Completed"
                 color="bg-purple-600/80"
               />
-              <div className="w-px h-10 bg-white/10" />
+              <div className="w-px h-10 bg-white/10 shrink-0" />
               <StatPill
                 icon={({ size, className }) => (
                   <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -284,7 +278,7 @@ c              >
                 label="Years Experience"
                 color="bg-pink-600/80"
               />
-              <div className="w-px h-10 bg-white/10" />
+              <div className="w-px h-10 bg-white/10 shrink-0" />
               <StatPill
                 icon={({ size, className }) => (
                   <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -308,7 +302,7 @@ c              >
             {/* Outer positioning wrapper */}
             <div
               ref={portraitRef}
-              className="relative w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] aspect-[52/60]"
+              className="relative w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[560px] aspect-[52/60]"
             >
 
               {/* Large purple glow behind portrait */}
@@ -342,12 +336,12 @@ c              >
                   fill
                   priority
                   className="object-contain object-bottom"
-                  sizes="(max-width: 640px) 360px, (max-width: 1024px) 480px, 600px"
+                  sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 620px"
                 />
               </div>
 
-              {/* ── SVG Orbital ellipse ── */}
-              <svg
+              {/* ── SVG Orbital ellipse (the glowing swoosh trail) ── */}
+              {/* <svg
                 className="absolute pointer-events-none w-[90%] left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 -rotate-12"
                 style={{
                   zIndex: 20,
@@ -357,14 +351,24 @@ c              >
                 fill="none"
               >
                 <defs>
-                  <linearGradient id="orbitGrad" x1="0" y1="0" x2="480" y2="160" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#9333ea" />
-                    <stop offset="40%" stopColor="#d946ef" stopOpacity="0.9" />
-                    <stop offset="70%" stopColor="#9333ea" stopOpacity="0.6" />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.4" />
+                  <linearGradient id="orbitGrad" x1="0" y1="160" x2="480" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#f0abfc" />
+                    <stop offset="18%" stopColor="#d946ef" stopOpacity="0.95" />
+                    <stop offset="45%" stopColor="#a855f7" stopOpacity="0.7" />
+                    <stop offset="72%" stopColor="#7c3aed" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
-              </svg>
+                <ellipse
+                  cx="240"
+                  cy="80"
+                  rx="225"
+                  ry="68"
+                  stroke="url(#orbitGrad)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </svg> */}
 
               {/* ── Animated glowing dot on orbit ── */}
               <div
@@ -384,7 +388,10 @@ c              >
               </div>
 
               {/* ── Floating Card 1: Clean Code (top-right) ── */}
-              <div ref={card1Ref} className="absolute z-30 top-[8%] -right-[5%] sm:-right-[8%] lg:-right-[4%] scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-top-right">
+              <div
+                ref={card1Ref}
+                className="absolute z-30 top-[6%] right-[1%] sm:-right-[8%] lg:-right-[4%] scale-[0.68] sm:scale-[0.85] lg:scale-100 origin-top-right"
+              >
                 <FloatingCard
                   icon={Code2}
                   title="Clean Code"
@@ -395,7 +402,10 @@ c              >
               </div>
 
               {/* ── Floating Card 2: AI Integration (mid-right) ── */}
-              <div ref={card2Ref} className="absolute z-30 top-[45%] -right-[8%] sm:-right-[10%] lg:-right-[6%] scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-right">
+              <div
+                ref={card2Ref}
+                className="absolute z-30 top-[45%] right-[0%] sm:-right-[10%] lg:-right-[6%] scale-[0.68] sm:scale-[0.85] lg:scale-100 origin-right"
+              >
                 <FloatingCard
                   icon={Bot}
                   title="AI Integration"
@@ -406,7 +416,10 @@ c              >
               </div>
 
               {/* ── Floating Card 3: Modern Design (bottom-left) ── */}
-              <div ref={card3Ref} className="absolute z-30 bottom-[14%] -left-[5%] sm:-left-[6%] lg:-left-[2%] scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-bottom-left">
+              <div
+                ref={card3Ref}
+                className="absolute z-30 bottom-[12%] left-[1%] sm:-left-[6%] lg:-left-[2%] scale-[0.68] sm:scale-[0.85] lg:scale-100 origin-bottom-left"
+              >
                 <FloatingCard
                   icon={Palette}
                   title="Modern Design"
