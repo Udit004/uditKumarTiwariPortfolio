@@ -31,7 +31,7 @@ export default async function BlogPostPage({ params }) {
         <Navbar />
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-        {/* Video Background */}
+        {/* Video Background - COMMENTED OUT
         <div className="absolute inset-0">
           <video
             autoPlay
@@ -42,9 +42,9 @@ export default async function BlogPostPage({ params }) {
           >
             <source src="/assets/blackBackgroundAnimation.mp4" type="video/mp4" />
           </video>
-          {/* Video Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-purple-900/40 to-slate-900/60" />
         </div>
+        */}
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-6 py-24">

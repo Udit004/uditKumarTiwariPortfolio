@@ -198,9 +198,9 @@ const Skills = () => {
   return (
     <section
       id="skills"
-      className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white px-4 py-20 overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center text-white px-4 py-20 overflow-hidden"
     >
-      {/* Background Video - Same as About */}
+      {/* Background Video - Same as About - COMMENTED OUT
       <div className="absolute inset-0">
         <video
           autoPlay
@@ -214,6 +214,7 @@ const Skills = () => {
         </video>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-purple-900/40 to-slate-900/60" />
       </div>
+      */}
 
       <div className="relative z-10 max-w-7xl w-full mx-auto">
         <div className="p-6 sm:p-8 md:p-12">

@@ -10,9 +10,9 @@ const Experience = () => {
   return (
     <section 
       id="experience" 
-      className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white px-4 py-20 overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center text-white px-4 py-20 overflow-hidden"
     >
-      {/* Background Video */}
+      {/* Background Video - COMMENTED OUT
       <div className="absolute inset-0">
         <video
           autoPlay
@@ -26,6 +26,7 @@ const Experience = () => {
         </video>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-purple-900/40 to-slate-900/60" />
       </div>
+      */}
 
       {/* Main Content Container */}
       <div className="relative z-10 max-w-7xl w-full mx-auto">

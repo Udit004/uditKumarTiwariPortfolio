@@ -120,7 +120,7 @@ export default function BlogPage() {
       </Suspense>
       
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-        {/* Video Background */}
+        {/* Video Background - COMMENTED OUT
         <div className="absolute inset-0">
           <video
             autoPlay
@@ -131,9 +131,9 @@ export default function BlogPage() {
           >
             <source src="/assets/blackBackgroundAnimation.mp4" type="video/mp4" />
           </video>
-          {/* Video Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-purple-900/40 to-slate-900/60" />
         </div>
+        */}
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">

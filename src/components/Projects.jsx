@@ -140,9 +140,9 @@ const Projects = () => {
   return (
     <section
       id="projects"
-      className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+      className="relative min-h-screen overflow-hidden"
     >
-      {/* Background Video Container */}
+      {/* Background Video Container - COMMENTED OUT
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <video
           autoPlay
@@ -161,16 +161,17 @@ const Projects = () => {
         </video>
         
         {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-purple-900/60 to-slate-900/80" />
+        {/* <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-purple-900/60 to-slate-900/80" /> */}
         {/* <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-slate-900/50" /> */}
-      </div>
+      {/* </div> */}
+      
 
       {/* Animated Background Orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-float-slow top-[10%] left-[10%]" />
         <div className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float-slower bottom-[20%] right-[10%]" />
         <div className="absolute w-64 h-64 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-full blur-3xl animate-float-slow top-[50%] right-[30%]" />
-      </div>
+      </div> */}
 
       {/* Content */}
       <div className="relative z-10 py-20 px-4 sm:px-6">
