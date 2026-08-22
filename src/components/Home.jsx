@@ -48,9 +48,9 @@ const Home = () => {
   const card1Ref = useRef(null);
   const card2Ref = useRef(null);
   const card3Ref = useRef(null);
-  const orbitDotRef = useRef(null);
   const portraitRef = useRef(null);
   const leftRef = useRef(null);
+  const glowDotsRef = useRef([]);
 
   useEffect(() => {
     // Entrance animation
@@ -107,28 +107,114 @@ const Home = () => {
         delay: 1,
       });
 
-      // Animate the dot around an ellipse
-      let angle = 0;
-      const dot = orbitDotRef.current;
+      // Initialize glow dots with true random movement
       const container = portraitRef.current;
+      if (!container) return;
 
-      const animDot = () => {
-        angle += 0.008;
-        if (dot && container) {
-          const width = container.offsetWidth;
-          // SVG is 90% of container width
-          const svgWidth = width * 0.9;
-          const R_X = (225 / 480) * svgWidth;
-          const R_Y = (68 / 480) * svgWidth;
+      const NUM_DOTS = 18;
+      const dots = [];
 
-          const x = R_X * Math.cos(angle);
-          const y = R_Y * Math.sin(angle);
-          dot.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
-        }
-        requestAnimationFrame(animDot);
+      // Portrait ellipse bounds (relative to container)
+      const getPortraitEllipse = () => {
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        // Portrait div: -bottom-10, 115% size, centered
+        const pw = w * 1.15;
+        const ph = h * 1.15;
+        const offsetBottom = h * 0.1; // -bottom-10 approx
+        return {
+          cx: w / 2,
+          cy: h - ph / 2 + offsetBottom,
+          rx: pw * 0.38,  // tighter horizontal radius
+          ry: ph * 0.48,  // tighter vertical radius
+        };
       };
-      const raf = requestAnimationFrame(animDot);
-      return () => cancelAnimationFrame(raf);
+
+      for (let i = 0; i < NUM_DOTS; i++) {
+        const size = 3 + Math.random() * 5;
+        const dotEl = document.createElement("div");
+        dotEl.className = "absolute rounded-full bg-white pointer-events-none";
+
+        // Randomly assign: front (passes in front of image) or back (disappears behind image)
+        const isFront = Math.random() > 0.5;
+
+        dotEl.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          box-shadow: 0 0 ${6 + size}px white, 0 0 ${14 + size * 2}px #d946ef, 0 0 ${30 + size * 4}px #9333ea;
+          transform: translate(-50%, -50%);
+          opacity: 1;
+          z-index: ${isFront ? 20 : 5};
+        `;
+        container.appendChild(dotEl);
+        glowDotsRef.current.push(dotEl);
+
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        // Start at random position within container
+        const startX = Math.random() * w;
+        const startY = Math.random() * h;
+        // Random direction angle
+        const angle = Math.random() * Math.PI * 2;
+        // Random speed (pixels per frame)
+        const speed = 0.4 + Math.random() * 1.2;
+
+        dots.push({
+          el: dotEl,
+          x: startX,
+          y: startY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          isFront,
+        });
+      }
+
+      let rafId;
+      const animateDots = () => {
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        const ellipse = getPortraitEllipse();
+
+        dots.forEach((dot) => {
+          // Move
+          dot.x += dot.vx;
+          dot.y += dot.vy;
+
+          // Bounce off container walls
+          if (dot.x < 0) { dot.x = 0; dot.vx = Math.abs(dot.vx); }
+          if (dot.x > w) { dot.x = w; dot.vx = -Math.abs(dot.vx); }
+          if (dot.y < 0) { dot.y = 0; dot.vy = Math.abs(dot.vy); }
+          if (dot.y > h) { dot.y = h; dot.vy = -Math.abs(dot.vy); }
+
+          dot.el.style.left = `${dot.x}px`;
+          dot.el.style.top  = `${dot.y}px`;
+
+          // Check if dot is inside portrait ellipse
+          const dx = (dot.x - ellipse.cx) / ellipse.rx;
+          const dy = (dot.y - ellipse.cy) / ellipse.ry;
+          const insidePortrait = dx * dx + dy * dy < 1;
+
+          if (dot.isFront) {
+            // Front dots: always visible, always on top of image
+            dot.el.style.opacity = "1";
+            dot.el.style.zIndex  = "20";
+          } else {
+            // Back dots: hide when inside portrait ellipse (appear to go behind image)
+            dot.el.style.opacity = insidePortrait ? "0" : "1";
+            dot.el.style.zIndex  = insidePortrait ? "3" : "5";
+          }
+        });
+
+        rafId = requestAnimationFrame(animateDots);
+      };
+
+      rafId = requestAnimationFrame(animateDots);
+      return () => {
+        cancelAnimationFrame(rafId);
+        // Cleanup: remove dot elements
+        glowDotsRef.current.forEach((el) => el.remove());
+        glowDotsRef.current = [];
+      };
     });
 
     return () => ctx.revert();
@@ -222,7 +308,7 @@ const Home = () => {
             </p>
 
             {/* GSAP type animation */}
-            <div className="mb-3">
+            <div className="mb-0">
               <CustomTypeAnimation />
             </div>
 
@@ -299,7 +385,7 @@ const Home = () => {
           {/* ──────── RIGHT VISUAL ──────── */}
           <div className="relative flex justify-center lg:justify-end mt-16 lg:mt-0">
 
-            {/* Outer positioning wrapper */}
+{/* Outer positioning wrapper */}
             <div
               ref={portraitRef}
               className="relative w-full max-w-[300px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[560px] aspect-[52/60]"
@@ -337,53 +423,6 @@ const Home = () => {
                   priority
                   className="object-contain object-bottom"
                   sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 620px"
-                />
-              </div>
-
-              {/* ── SVG Orbital ellipse (the glowing swoosh trail) ── */}
-              {/* <svg
-                className="absolute pointer-events-none w-[90%] left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 -rotate-12"
-                style={{
-                  zIndex: 20,
-                  filter: "drop-shadow(0 0 6px rgba(168,85,247,0.9)) drop-shadow(0 0 22px rgba(168,85,247,0.55))",
-                }}
-                viewBox="0 0 480 160"
-                fill="none"
-              >
-                <defs>
-                  <linearGradient id="orbitGrad" x1="0" y1="160" x2="480" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#f0abfc" />
-                    <stop offset="18%" stopColor="#d946ef" stopOpacity="0.95" />
-                    <stop offset="45%" stopColor="#a855f7" stopOpacity="0.7" />
-                    <stop offset="72%" stopColor="#7c3aed" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.12" />
-                  </linearGradient>
-                </defs>
-                <ellipse
-                  cx="240"
-                  cy="80"
-                  rx="225"
-                  ry="68"
-                  stroke="url(#orbitGrad)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg> */}
-
-              {/* ── Animated glowing dot on orbit ── */}
-              <div
-                className="absolute pointer-events-none w-[90%] left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 -rotate-12"
-                style={{ zIndex: 25 }}
-              >
-                <div
-                  ref={orbitDotRef}
-                  className="absolute w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white"
-                  style={{
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: "0 0 8px white, 0 0 20px #d946ef, 0 0 45px #9333ea",
-                  }}
                 />
               </div>
 
