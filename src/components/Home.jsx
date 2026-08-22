@@ -1,173 +1,427 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { Code2, Bot, Palette, ArrowUpRight, MessageSquare } from "lucide-react";
 import CustomTypeAnimation from "./CustomTypeAnimation";
 import SocialIcons from "./SocialIcons";
-import { useVideoLazyLoad } from "../lib/useVideoLazyLoad";
+import gsap from "gsap";
 
+/* ─────────────────────────────────────────
+   Floating stat pill shown below the buttons
+───────────────────────────────────────── */
+const StatPill = ({ icon: Icon, value, label, color }) => (
+  <div className="flex flex-col items-center gap-0.5">
+    <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${color}`}>
+      <Icon size={15} className="text-white" />
+    </div>
+    <span className="text-white font-bold text-sm">{value}</span>
+    <span className="text-gray-400 text-xs">{label}</span>
+  </div>
+);
+
+/* ─────────────────────────────────────────
+   Individual floating glassmorphism card
+───────────────────────────────────────── */
+const FloatingCard = ({ icon: Icon, title, subtitle, className, iconBg }) => (
+  <div
+    className={`flex items-center gap-3 px-4 py-3 rounded-2xl
+      border border-purple-500/25 bg-black/50 backdrop-blur-md
+      shadow-[0_10px_40px_rgba(0,0,0,0.4),0_0_25px_rgba(168,85,247,0.08)]
+      ${className}`}
+  >
+    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+      <Icon size={18} className="text-white" />
+    </div>
+    <div>
+      <p className="text-white font-semibold text-sm leading-none mb-1">{title}</p>
+      <p className="text-gray-400 text-xs">{subtitle}</p>
+    </div>
+  </div>
+);
+
+/* ─────────────────────────────────────────
+   Main Hero
+───────────────────────────────────────── */
 const Home = () => {
-  const videoRef = useVideoLazyLoad();
+  const card1Ref = useRef(null);
+  const card2Ref = useRef(null);
+  const card3Ref = useRef(null);
+  const orbitDotRef = useRef(null);
+  const portraitRef = useRef(null);
+  const leftRef = useRef(null);
+
+  useEffect(() => {
+    // Entrance animation
+    const ctx = gsap.context(() => {
+      gsap.from(leftRef.current, {
+        x: -60,
+        opacity: 0,
+        duration: 1.1,
+        ease: "power3.out",
+        delay: 0.2,
+      });
+
+      gsap.from(portraitRef.current, {
+        x: 80,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        delay: 0.4,
+      });
+
+      // Floating card entrance
+      [card1Ref, card2Ref, card3Ref].forEach((ref, i) => {
+        gsap.from(ref.current, {
+          opacity: 0,
+          y: 20,
+          duration: 0.8,
+          delay: 0.9 + i * 0.15,
+          ease: "back.out(1.7)",
+        });
+      });
+
+      // Looping float animations
+      gsap.to(card1Ref.current, {
+        y: -14,
+        duration: 2.8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+      gsap.to(card2Ref.current, {
+        y: 10,
+        duration: 3.2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 0.5,
+      });
+      gsap.to(card3Ref.current, {
+        y: -10,
+        duration: 3.6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1,
+      });
+
+      // Animate the dot around an ellipse
+      let angle = 0;
+      const dot = orbitDotRef.current;
+      const container = portraitRef.current;
+
+      const animDot = () => {
+        angle += 0.008;
+        if (dot && container) {
+          const width = container.offsetWidth;
+          // SVG is 90% of container width
+          const svgWidth = width * 0.9;
+          const R_X = (225 / 480) * svgWidth; 
+          const R_Y = (68 / 480) * svgWidth;
+          
+          const x = R_X * Math.cos(angle);
+          const y = R_Y * Math.sin(angle);
+          dot.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+        }
+        requestAnimationFrame(animDot);
+      };
+      const raf = requestAnimationFrame(animDot);
+      return () => cancelAnimationFrame(raf);
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+      className="relative min-h-screen overflow-hidden"
+      style={{
+        background: `
+          radial-gradient(ellipse 55% 55% at 75% 45%, rgba(126,34,206,0.45) 0%, transparent 60%),
+          radial-gradient(ellipse 35% 35% at 88% 72%, rgba(59,130,246,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse 30% 40% at 15% 55%, rgba(168,85,247,0.08) 0%, transparent 60%),
+          #05020d
+        `,
+      }}
     >
-      {/* Animated Background Orbs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-float-slow top-[10%] left-[5%]" />
-        <div className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float-slower bottom-[15%] right-[5%]" />
-        <div className="absolute w-64 h-64 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-full blur-3xl animate-float-slow top-[50%] left-[50%]" />
+
+    
+      {/* ── Perspective grid floor ── */}
+      <div
+        className="absolute left-0 right-0 bottom-0 pointer-events-none z-0"
+        style={{
+          height: "320px",
+          backgroundImage: `
+            linear-gradient(rgba(168,85,247,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(168,85,247,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "55px 55px",
+          transform: "perspective(480px) rotateX(62deg)",
+          transformOrigin: "bottom",
+          maskImage: "linear-gradient(to top, black 10%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to top, black 10%, transparent 100%)",
+          opacity: 0.4,
+        }}
+      />
+
+      {/* ── Dot particle field ── */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: "radial-gradient(rgba(168,85,247,0.55) 1px, transparent 1px)",
+          backgroundSize: "26px 26px",
+          maskImage: "radial-gradient(ellipse 65% 70% at 70% 45%, black 20%, transparent 75%)",
+          WebkitMaskImage: "radial-gradient(ellipse 65% 70% at 70% 45%, black 20%, transparent 75%)",
+          opacity: 0.22,
+        }}
+      />
+
+      {/* ── Slow ambient orbs ── */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute w-[500px] h-[500px] rounded-full blur-3xl opacity-20 animate-[float-slow_9s_ease-in-out_infinite] top-[-10%] left-[-5%]"
+          style={{ background: "radial-gradient(circle, rgba(168,85,247,1), rgba(126,34,206,0.3), transparent)" }} />
+        <div className="absolute w-72 h-72 rounded-full blur-3xl opacity-15 animate-[float-slower_12s_ease-in-out_infinite] bottom-[10%] right-[-3%]"
+          style={{ background: "radial-gradient(circle, rgba(59,130,246,1), transparent)" }} />
       </div>
 
-      {/* Video Background */}
-      <video
-        ref={videoRef}
-        loop
-        muted
-        playsInline
-        preload="none"
-        className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
-      >
-        <source src="/assets/blackBackgroundAnimation.mp4" type="video/mp4" />
-      </video>
+      {/* ════════════════════════════════════════════
+          MAIN LAYOUT: Left content + Right visual
+      ════════════════════════════════════════════ */}
+      <div className="relative z-10 min-h-screen flex items-center px-6 sm:px-10 lg:px-20 xl:px-28 py-24">
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
-      {/* Main Content — Two-column layout */}
-      <div className="relative z-10 min-h-screen flex items-center px-6 sm:px-10 lg:px-20 py-32">
-        <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* LEFT — Text Content */}
-          <div className="flex flex-col items-center text-center  animate-fade-in order-2 lg:order-1">
-            {/* Greeting badge */}
-            {/* <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/40 bg-purple-500/10 text-purple-300 text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              Available for opportunities
-            </div> */}
+          {/* ──────── LEFT CONTENT ──────── */}
+          <div ref={leftRef} className="flex flex-col items-start">
 
-            {/* Name */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-bold text-white tracking-tight leading-tight mb-4 animate-slide-up delay-200 whitespace-nowrap">
-              Udit Kumar{" "}
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                Tiwari
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-purple-500/40 bg-purple-500/10 text-purple-300 text-sm font-medium mb-7">
+              <Code2 size={14} />
+              Full Stack Developer
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse ml-1" />
+            </div>
+
+            {/* Hi, I'm */}
+            <h1 className=" md:text-4xl text-3xl font-bold text-white leading-tight tracking-tight mb-3">
+              Hi, I&apos;m
+              <br />
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: "linear-gradient(90deg, #a855f7, #ec4899, #38bdf8)",
+                }}
+              >
+                Udit Kumar Tiwari
               </span>
             </h1>
 
-            {/* Typing animation */}
-            <div className="mb-5 animate-slide-up delay-300">
+            {/* Tagline */}
+            <p className="text-gray-300 text-lg mb-2 font-medium">
+              Crafting digital experiences that are fast, scalable, and impactful.
+            </p>
+
+            {/* GSAP type animation */}
+            <div className="mb-3">
               <CustomTypeAnimation />
             </div>
 
             {/* Description */}
-            <p className="text-base sm:text-lg text-gray-300 leading-relaxed max-w-xl mb-8 animate-slide-up delay-400">
-              Crafting exceptional digital experiences with modern technologies.
+            <p className="text-gray-400 text-base leading-relaxed max-w-lg mb-8">
               Specializing in{" "}
               <span className="text-purple-400 font-semibold">React</span>,{" "}
               <span className="text-purple-400 font-semibold">Node.js</span>,{" "}
-              <span className="text-purple-400 font-semibold">Next.js</span>,{" "}
-              <span className="text-purple-400 font-semibold">
-                Full Stack Development
-              </span>
-              , and{" "}
-              <span className="text-purple-400 font-semibold">
-                AI Application Development
-              </span>
-              . Turning ideas into scalable, beautiful applications.
+              <span className="text-purple-400 font-semibold">Next.js</span>, and{" "}
+              <span className="text-pink-400 font-semibold">AI-powered</span> applications.
+              <br />
             </p>
 
+  
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-10 animate-slide-up delay-500">
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto items-center gap-4 mb-10">
               <a
                 href="#projects"
-                className="group relative px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl text-white font-semibold text-base transition-all duration-300 overflow-hidden shadow-lg hover:shadow-purple-500/50 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto group relative flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-sm overflow-hidden shadow-lg transition-all duration-300 hover:shadow-purple-500/40 active:scale-95"
+                style={{ background: "linear-gradient(135deg, #9333ea, #ec4899)" }}
               >
                 <span className="relative z-10">View My Work</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <ArrowUpRight size={16} className="relative z-10 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </a>
+
               <a
                 href="#contact"
-                className="group relative px-8 py-3.5 bg-transparent border-2 border-purple-500 rounded-xl text-white font-semibold text-base transition-all duration-300 overflow-hidden shadow-lg hover:shadow-purple-500/50 hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <span className="relative z-10 group-hover:text-white transition-colors duration-300">
-                  Get In Touch
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                className="w-full sm:w-auto group flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-sm border border-purple-500/50 bg-white/5 backdrop-blur-sm hover:border-purple-400 hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-lg"
+              >               <span className="relative z-10">Get In Touch</span>
+                <MessageSquare size={16} className="relative z-10 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </a>
+
+              {/* <a
+                href="#contact"
+                className="group flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-sm border border-purple-500/50 bg-white/5 backdrop-blur-sm hover:border-purple-400 hover:bg-white/10 transition-all duration-300 active:scale-95 shadow-lg"
+c              >
+                Get In Touch
+                <MessageSquare size={15} className="opacity-70" />
+              </a> */}
+            </div>
+
+            {/* Stats row */}
+            <div className="flex items-center gap-8 mb-6">
+              <StatPill
+                icon={Code2}
+                value="20+"
+                label="Projects Completed"
+                color="bg-purple-600/80"
+              />
+              <div className="w-px h-10 bg-white/10" />
+              <StatPill
+                icon={({ size, className }) => (
+                  <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                )}
+                value="2+"
+                label="Years Experience"
+                color="bg-pink-600/80"
+              />
+              <div className="w-px h-10 bg-white/10" />
+              <StatPill
+                icon={({ size, className }) => (
+                  <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                )}
+                value="10+"
+                label="Happy Clients"
+                color="bg-green-600/80"
+              />
             </div>
 
             {/* Social Icons */}
-            <SocialIcons variant="home" />
+            {/* <SocialIcons variant="home" /> */}
           </div>
 
-          {/* RIGHT — Large Profile Image */}
-          <div className="flex justify-center lg:justify-end order-1 lg:order-2 animate-scale-in">
-            <div className="relative group w-full max-w-sm sm:max-w-md lg:max-w-lg">
-              {/* Glowing halo */}
-              <div className="absolute -inset-6 bg-gradient-to-br from-purple-600/50 via-pink-500/30 to-cyan-500/40 rounded-3xl blur-3xl opacity-60 group-hover:opacity-90 transition-opacity duration-700" />
+          {/* ──────── RIGHT VISUAL ──────── */}
+          <div className="relative flex justify-center lg:justify-end mt-16 lg:mt-0">
 
-              {/* Card */}
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-slate-800/40 backdrop-blur-sm shadow-2xl">
-                {/* Portrait image — tall aspect ratio */}
-                <div className="relative h-[350px] md:h-[500px] w-full">
-                  <Image
-                    src="/assets/udit_passport.jpg"
-                    alt="Udit Kumar Tiwari - Full Stack Developer"
-                    fill
-                    sizes="(max-width: 440px) 60vw, (max-width: 1024px) 35vw, 512px"
-                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    priority
-                  />
-                  {/* Bottom gradient overlay */}
-                  {/* <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent" /> */}
-                </div>
+            {/* Outer positioning wrapper */}
+            <div
+              ref={portraitRef}
+              className="relative w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] aspect-[52/60]"
+            >
 
-                {/* Stats row */}
-                {/* <div className="grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-slate-900/60">
-                  <div className="py-4 text-center">
-                    <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">5+</div>
-                    <div className="text-xs text-gray-400 mt-0.5">Projects</div>
-                  </div>
-                  <div className="py-4 text-center">
-                    <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">2+</div>
-                    <div className="text-xs text-gray-400 mt-0.5">Years Exp</div>
-                  </div>
-                  <div className="py-4 text-center">
-                    <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">10+</div>
-                    <div className="text-xs text-gray-400 mt-0.5">Tech Stack</div>
-                  </div>
-                </div> */}
+              {/* Large purple glow behind portrait */}
+              <div
+                className="absolute pointer-events-none w-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-[46%] rounded-full"
+                style={{
+                  background: "radial-gradient(circle, rgba(168,85,247,0.55) 0%, rgba(126,34,206,0.28) 38%, transparent 70%)",
+                  filter: "blur(22px)",
+                  zIndex: 1,
+                }}
+              />
+
+              {/* Circular halo ring */}
+              <div
+                className="absolute pointer-events-none w-[82%] aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                style={{
+                  border: "1px solid rgba(168,85,247,0.45)",
+                  boxShadow: "0 0 35px rgba(168,85,247,0.18), inset 0 0 35px rgba(168,85,247,0.1)",
+                  zIndex: 2,
+                }}
+              />
+
+              {/* Portrait image */}
+              <div
+                className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[115%] h-[115%]"
+                style={{ zIndex: 10 }}
+              >
+                <Image
+                  src="/assets/heroSection/udit_passport_without_background.png"
+                  alt="Udit Kumar Tiwari - Full Stack Developer"
+                  fill
+                  priority
+                  className="object-contain object-bottom"
+                  sizes="(max-width: 640px) 360px, (max-width: 1024px) 480px, 600px"
+                />
               </div>
+
+              {/* ── SVG Orbital ellipse ── */}
+              <svg
+                className="absolute pointer-events-none w-[90%] left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 -rotate-12"
+                style={{
+                  zIndex: 20,
+                  filter: "drop-shadow(0 0 6px rgba(168,85,247,0.9)) drop-shadow(0 0 22px rgba(168,85,247,0.55))",
+                }}
+                viewBox="0 0 480 160"
+                fill="none"
+              >
+                <defs>
+                  <linearGradient id="orbitGrad" x1="0" y1="0" x2="480" y2="160" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#9333ea" />
+                    <stop offset="40%" stopColor="#d946ef" stopOpacity="0.9" />
+                    <stop offset="70%" stopColor="#9333ea" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.4" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* ── Animated glowing dot on orbit ── */}
+              <div
+                className="absolute pointer-events-none w-[90%] left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 -rotate-12"
+                style={{ zIndex: 25 }}
+              >
+                <div
+                  ref={orbitDotRef}
+                  className="absolute w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white"
+                  style={{
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    boxShadow: "0 0 8px white, 0 0 20px #d946ef, 0 0 45px #9333ea",
+                  }}
+                />
+              </div>
+
+              {/* ── Floating Card 1: Clean Code (top-right) ── */}
+              <div ref={card1Ref} className="absolute z-30 top-[8%] -right-[5%] sm:-right-[8%] lg:-right-[4%] scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-top-right">
+                <FloatingCard
+                  icon={Code2}
+                  title="Clean Code"
+                  subtitle="Scalable Solutions"
+                  className="!relative"
+                  iconBg="bg-purple-600/70"
+                />
+              </div>
+
+              {/* ── Floating Card 2: AI Integration (mid-right) ── */}
+              <div ref={card2Ref} className="absolute z-30 top-[45%] -right-[8%] sm:-right-[10%] lg:-right-[6%] scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-right">
+                <FloatingCard
+                  icon={Bot}
+                  title="AI Integration"
+                  subtitle="Smart Applications"
+                  className="!relative"
+                  iconBg="bg-blue-600/70"
+                />
+              </div>
+
+              {/* ── Floating Card 3: Modern Design (bottom-left) ── */}
+              <div ref={card3Ref} className="absolute z-30 bottom-[14%] -left-[5%] sm:-left-[6%] lg:-left-[2%] scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-bottom-left">
+                <FloatingCard
+                  icon={Palette}
+                  title="Modern Design"
+                  subtitle="Great User Experience"
+                  className="!relative"
+                  iconBg="bg-pink-600/70"
+                />
+              </div>
+
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      {/* <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-10">
-        <div className="w-6 h-10 border-2 border-white/40 rounded-full flex justify-center p-2">
-          <div className="w-1.5 h-3 bg-white/60 rounded-full animate-scroll-indicator" />
-        </div>
-      </div> */}
-
-      {/* Bottom Wave */}
-      {/* <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
-        <svg
-          viewBox="0 0 1440 320"
-          className="w-full h-24 sm:h-32 md:h-40"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="rgba(168, 85, 247, 0.6)" />
-              <stop offset="50%" stopColor="rgba(236, 72, 153, 0.6)" />
-              <stop offset="100%" stopColor="rgba(34, 211, 238, 0.6)" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#waveGradient)"
-            d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,197.3C960,213,1056,203,1152,181.3C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-          />
-        </svg>
-      </div> */}
     </section>
   );
 };

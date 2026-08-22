@@ -66,7 +66,7 @@ const Contact = () => {
 
   return (
     <section id="contact" className="relative py-10 sm:py-20 overflow-hidden min-h-screen">
-      {/* Background Video/Stars */}
+      {/* Background Video/Stars - COMMENTED OUT
       {!videoError ? (
         <div className="absolute inset-0 overflow-hidden">
           <video
@@ -88,6 +88,7 @@ const Contact = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 via-purple-900/30 to-pink-900/50" />
         </div>
       )}
+      */}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
