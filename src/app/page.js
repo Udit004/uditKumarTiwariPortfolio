@@ -24,7 +24,7 @@ const Experience = dynamic(() => import('../feature/experience/Experience'), {
   ssr: true
 })
 
-const Projects = dynamic(() => import('../components/Projects'), {
+const Projects = dynamic(() => import('../components/projectSection/Projects'), {
   loading: () => null,
   ssr: true
 })
