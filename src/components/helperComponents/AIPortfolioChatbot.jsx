@@ -176,9 +176,8 @@ const AIPortfolioChatbot = () => {
         await ragService.initialize();
         const status = await ragService.getStatus();
         setRagStatus(status);
-        console.log("RAG service status:", status);
       } catch (error) {
-        console.error("Failed to initialize RAG:", error);
+        // RAG service handles fallback internally
       }
     };
 

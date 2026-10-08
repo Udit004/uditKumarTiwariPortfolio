@@ -17,13 +17,12 @@ class RAGService {
         this.isReady = status.isReady || false;
         console.log("RAG service initialized successfully", status);
       } else {
-        console.warn("Backend not available, falling back to basic AI");
         this.isReady = false;
       }
 
       return this.isReady;
     } catch (error) {
-      console.error("Failed to initialize RAG service:", error);
+      // Backend not available - silently fall back to basic AI
       this.isReady = false;
       return false;
     }
@@ -85,7 +84,7 @@ class RAGService {
         };
       }
     } catch (error) {
-      console.error("Error fetching status:", error);
+      // Backend not available - silent fallback
     }
     
     return {
