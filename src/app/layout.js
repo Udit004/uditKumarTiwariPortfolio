@@ -32,7 +32,7 @@ const caveat = Caveat({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://udit004.github.io"),
+  metadataBase: new URL("https://udittiwari.in"),
 
   title: {
     default:
@@ -45,8 +45,14 @@ export const metadata = {
 
   keywords: [
     "Udit",
+    "Udit kumar",
     "Udit Kumar Tiwari",
     "Udit Tiwari",
+    "udit kumar tiwari",
+    "udit kumar",
+    "udit tiwari",
+    "udittiwari",
+    "uditkrtiwari",
     "Full Stack Developer",
     "React Developer",
     "Next.js Developer",
@@ -57,6 +63,38 @@ export const metadata = {
     "Software Engineer",
     "JavaScript",
     "TypeScript",
+    "Python",
+    "Java",
+    "C++",
+    "C",
+    "HTML",
+    "CSS",
+    "Tailwind CSS",
+    "Bootstrap",
+    "Material UI",
+    "MERN Stack",
+    "MEAN Stack",
+    "Full Stack Developer",
+    "React Developer",
+    "Next.js Developer",
+    "AI Applications",
+    "Web Developer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Software Engineer",
+    "JavaScript",
+    "TypeScript",
+    "Python",
+    "Java",
+    "C++",
+    "C",
+    "HTML",
+    "CSS",
+    "Tailwind CSS",
+    "Bootstrap",
+    "Material UI",
+    "MERN Stack",
+    "MEAN Stack",
   ],
 
   authors: [
@@ -90,7 +128,7 @@ export const metadata = {
     description:
       "Portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js, and AI Applications.",
 
-    url: "https://uditkrtiwari.vercel.app",
+    url: "https://udittiwari.in",
 
     siteName: "Udit Kumar Tiwari Portfolio",
 
@@ -117,7 +155,7 @@ export const metadata = {
   },
 
   alternates: {
-    canonical: "https://uditkrtiwari.vercel.app",
+    canonical: "/",
   },
 };
 
@@ -168,7 +206,7 @@ export default function RootLayout({ children }) {
 
               alternateName: ["Udit", "Udit Tiwari"],
 
-              url: "https://uditkrtiwari.vercel.app",
+              url: "https://udittiwari.in",
 
               jobTitle: "Full Stack Developer",
 
@@ -176,7 +214,7 @@ export default function RootLayout({ children }) {
                 "Portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js, and AI Applications.",
 
               image:
-                "https://uditkrtiwari.vercel.app/profile.jpg",
+                "https://udittiwari.in/profile.jpg",
 
               knowsAbout: [
                 "React",
