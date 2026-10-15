@@ -26,7 +26,6 @@ const spaceGrotesk = Space_Grotesk({
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
-  weight: ["600", "700"],
   display: "swap",
   fallback: ["cursive"],
 });
