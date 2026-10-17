@@ -161,6 +161,7 @@ export default function RootLayout({ children }) {
         "url": "https://udittiwari.in/",
         "name": "Udit Kumar Tiwari",
         "alternateName": [
+          "Udit's Portfolio",
           "Udit Tiwari",
           "udittiwari.in",
           "Udit Kumar Tiwari Portfolio"
