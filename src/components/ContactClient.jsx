@@ -62,122 +62,22 @@ const IntroHeader = memo(() => (
 IntroHeader.displayName = "IntroHeader";
 
 /* ------------------------------------------------------------------ */
-/*  Left column — feature grid with center illustration               */
+/*  Left column — illustration showcase                               */
 /* ------------------------------------------------------------------ */
-const FEATURES = [
-  {
-    icon: "Lightbulb",
-    title: "New Ideas",
-    subtitle: "Let's brainstorm",
-    className: "text-purple-300 bg-purple-500/10 border-purple-500/30",
-  },
-  {
-    icon: "Users",
-    title: "Collaboration",
-    subtitle: "Let's build together",
-    className: "text-blue-300 bg-blue-500/10 border-blue-500/30",
-  },
-  {
-    icon: "Rocket",
-    title: "Opportunities",
-    subtitle: "Let's grow together",
-    className: "text-pink-300 bg-pink-500/10 border-pink-500/30",
-  },
-  {
-    icon: "Headphones",
-    title: "Support",
-    subtitle: "I'm here to help",
-    className: "text-purple-300 bg-purple-500/10 border-purple-500/30",
-  },
-];
-
-const FeatureItem = memo(({ icon, title, subtitle, className }) => {
-  const Icon = iconMap[icon];
-  return (
-    <div className="flex items-center gap-3">
-      <div
-        className={`shrink-0 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border ${className}`}
-      >
-        <Icon className="h-5 w-5" />
-      </div>
-      <div>
-        <p className="text-sm sm:text-base font-semibold text-white leading-tight">
-          {title}
-        </p>
-        <p className="text-xs sm:text-sm text-gray-500">{subtitle}</p>
-      </div>
-    </div>
-  );
-});
-FeatureItem.displayName = "FeatureItem";
-
 const FeatureShowcase = memo(() => (
-  <div className="relative overflow-hidden  p-6 sm:p-10">
-    {/* faint dot-grid texture */}
-    <div
-      className="pointer-events-none absolute inset-0 opacity-[0.15]"
-      style={{
-        backgroundImage:
-          "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)",
-        backgroundSize: "22px 22px",
-      }}
-    />
+  <div className="relative flex items-center justify-center py-2 sm:py-4 w-full">
+    {/* Ambient radial glow */}
+    <div className="pointer-events-none absolute h-64 w-4/5 sm:h-80 sm:w-full rounded-full bg-gradient-to-tr from-purple-600/30 via-fuchsia-600/20 to-blue-600/25 blur-3xl opacity-80" />
 
-    {/* decorative connector arcs, purely ornamental */}
-    {/* <svg
-      className="pointer-events-none absolute inset-0 hidden sm:block"
-      viewBox="0 0 400 260"
-      preserveAspectRatio="none"
-      fill="none"
-    >
-      <path
-        d="M200,130 Q140,90 75,55"
-        stroke="#a855f7"
-        strokeOpacity="0.25"
-        strokeWidth="1.5"
-        strokeDasharray="3 6"
+    {/* Center contact illustration */}
+    <div className="relative w-full max-w-lg lg:max-w-xl h-64 sm:h-80 md:h-96 lg:h-[22rem] transition-transform duration-500 hover:scale-[1.02]">
+      <Image
+        src="/assets/contact/contact.png"
+        alt="Contact illustration"
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+        className="object-contain drop-shadow-[0_15px_45px_rgba(168,85,247,0.45)]"
       />
-      <path
-        d="M200,130 Q260,90 325,55"
-        stroke="#60a5fa"
-        strokeOpacity="0.25"
-        strokeWidth="1.5"
-        strokeDasharray="3 6"
-      />
-      <path
-        d="M200,130 Q140,170 75,205"
-        stroke="#f472b6"
-        strokeOpacity="0.25"
-        strokeWidth="1.5"
-        strokeDasharray="3 6"
-      />
-      <path
-        d="M200,130 Q260,170 325,205"
-        stroke="#a855f7"
-        strokeOpacity="0.25"
-        strokeWidth="1.5"
-        strokeDasharray="3 6"
-      />
-    </svg> */}
-
-    <div className="relative grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-10 sm:gap-y-14">
-      {FEATURES.map((f) => (
-        <FeatureItem key={f.title} {...f} />
-      ))}
-    </div>
-
-    {/* center illustration — swap the src below for your own asset */}
-    <div className="pointer-events-none absolute inset-0 hidden items-center justify-center sm:flex">
-      <div className="relative h-46 w-36 lg:h-204 lg:w-224">
-        {/* <div className="absolute inset-0 rounded-full bg-purple-500/25 blur-3xl" /> */}
-        <Image
-          src="/assets/contact/contact-envelope.png"
-          alt="Envelope illustration"
-          fill
-          sizes="676px"
-          className="object-contain drop-shadow-[0_0_35px_rgba(168,85,247,0.45)] -z-10"
-        />
-      </div>
     </div>
   </div>
 ));
@@ -200,7 +100,7 @@ const SocialDivider = memo(() => (
 SocialDivider.displayName = "SocialDivider";
 
 const SocialGrid = memo(({ contactIcons }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+  <div className="grid grid-cols-4 gap-2.5 sm:gap-4">
     {contactIcons.map((item) => {
       const Icon = iconMap[item.icon];
       return (
@@ -209,15 +109,21 @@ const SocialGrid = memo(({ contactIcons }) => (
           href={item.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.05]"
+          aria-label={item.label}
+          title={item.label}
+          className="group flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-xl sm:rounded-2xl border border-white/10 bg-white/[0.02] p-3 sm:p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] active:scale-95"
         >
           <div
-            className={`flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+            className={`flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient} shadow-md transition-transform duration-300 group-hover:scale-110`}
           >
             <Icon className="h-5 w-5 text-white" />
           </div>
-          <p className="text-sm font-semibold text-white">{item.label}</p>
-          <p className="text-xs text-gray-500">{item.subtitle}</p>
+          <p className="hidden sm:block text-sm font-semibold text-white leading-tight">
+            {item.label}
+          </p>
+          <p className="hidden sm:block text-xs text-gray-500">
+            {item.subtitle}
+          </p>
         </a>
       );
     })}
@@ -290,37 +196,89 @@ const STEPS = [
 ];
 
 const ProcessSteps = memo(() => (
-  <div className="mt-8 sm:mt-10 flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-    {STEPS.map((step, i) => {
-      const Icon = iconMap[step.icon];
-      return (
-        <Fragment key={step.number}>
-          <div className="flex max-w-[10.5rem] flex-col gap-3">
-            <div className="flex items-center gap-2">
+  <div className="mt-6 sm:mt-8 rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] p-5 sm:p-7 shadow-xl shadow-black/20 backdrop-blur-sm">
+    <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-3">
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
+        <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-purple-300">
+          What Happens Next
+        </span>
+      </div>
+      <span className="text-[11px] text-gray-500 hidden sm:inline">3-step process</span>
+    </div>
+
+    {/* Mobile layout: Connected vertical timeline with side-by-side text */}
+    <div className="flex flex-col sm:hidden">
+      {STEPS.map((step, i) => {
+        const Icon = iconMap[step.icon];
+        const isLast = i === STEPS.length - 1;
+        return (
+          <div key={step.number} className="flex items-stretch gap-3.5">
+            {/* Left node with continuous vertical connecting line */}
+            <div className="flex flex-col items-center">
               <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full border ${
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 ${
                   step.filled
                     ? "border-transparent bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-500/30"
-                    : "border-white/20 text-gray-300"
+                    : "border-white/15 bg-white/[0.03] text-gray-300"
                 }`}
               >
                 <Icon className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold text-purple-400">
-                {step.number}
-              </span>
+              {!isLast && (
+                <div className="my-1.5 w-0.5 flex-1 min-h-[1.75rem] bg-gradient-to-b from-purple-500/40 via-blue-500/30 to-white/10" />
+              )}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-white">{step.title}</p>
-              <p className="text-xs text-gray-500">{step.subtitle}</p>
+
+            {/* Right text content aligned horizontally with icon */}
+            <div className={`flex-1 ${isLast ? "pb-0" : "pb-4"}`}>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-purple-400">
+                  {step.number}
+                </span>
+                <p className="text-sm font-semibold text-white">{step.title}</p>
+              </div>
+              <p className="mt-0.5 text-xs text-gray-400">{step.subtitle}</p>
             </div>
           </div>
-          {i < STEPS.length - 1 && (
-            <div className="hidden flex-1 border-t border-dashed border-white/15 mt-5 sm:block" />
-          )}
-        </Fragment>
-      );
-    })}
+        );
+      })}
+    </div>
+
+    {/* Desktop & Tablet layout: Horizontal stepper */}
+    <div className="hidden sm:flex sm:items-start sm:justify-between sm:gap-4">
+      {STEPS.map((step, i) => {
+        const Icon = iconMap[step.icon];
+        const isLast = i === STEPS.length - 1;
+        return (
+          <Fragment key={step.number}>
+            <div className="flex flex-1 flex-col gap-2.5 max-w-[11.5rem]">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 ${
+                    step.filled
+                      ? "border-transparent bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-500/30"
+                      : "border-white/15 bg-white/[0.03] text-gray-300"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
+                <span className="font-mono text-xs font-bold text-purple-400">
+                  {step.number}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">{step.title}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{step.subtitle}</p>
+              </div>
+            </div>
+            {!isLast && (
+              <div className="mt-5 flex-1 border-t border-dashed border-white/15" />
+            )}
+          </Fragment>
+        );
+      })}
+    </div>
   </div>
 ));
 ProcessSteps.displayName = "ProcessSteps";
@@ -373,15 +331,19 @@ const ContactClient = ({ contactIcons }) => {
 
       {/* Right column */}
       <div className="flex flex-col">
-        <div className="rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 shadow-2xl shadow-black/40">
-          <div className="mb-6 sm:mb-8 flex items-center gap-4">
-            <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-purple-400/40 bg-gradient-to-br from-purple-500/20 to-blue-500/20">
-              <Send className="h-6 w-6 sm:h-7 sm:w-7 text-purple-300" />
-              <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-purple-400" />
-              <span className="absolute -bottom-0.5 -left-0.5 h-1 w-1 rounded-full bg-blue-400" />
+        <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 shadow-2xl shadow-black/40 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-purple-500/35 hover:bg-white/[0.035] hover:shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(168,85,247,0.15)]">
+          {/* Ambient interactive gradient glow */}
+          <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-purple-500/20 via-fuchsia-500/10 to-transparent blur-3xl transition-all duration-700 ease-out group-hover:scale-125 group-hover:opacity-100 opacity-40" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-gradient-to-tr from-blue-500/15 via-purple-500/10 to-transparent blur-3xl transition-all duration-700 ease-out group-hover:scale-125 group-hover:opacity-100 opacity-30" />
+
+          <div className="relative z-10 mb-6 sm:mb-8 flex items-center gap-4">
+            <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-purple-400/40 bg-gradient-to-br from-purple-500/20 to-blue-500/20 transition-all duration-500 group-hover:scale-105 group-hover:border-purple-400/70 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.35)]">
+              <Send className="h-6 w-6 sm:h-7 sm:w-7 text-purple-300 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-purple-400 transition-all duration-500 group-hover:scale-125 group-hover:bg-purple-300" />
+              <span className="absolute -bottom-0.5 -left-0.5 h-1 w-1 rounded-full bg-blue-400 transition-all duration-500 group-hover:scale-125 group-hover:bg-blue-300" />
             </div>
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
+              <h3 className="text-xl sm:text-2xl font-bold text-white transition-colors duration-300 group-hover:text-purple-100">
                 Send a Message
               </h3>
               <p className="text-sm sm:text-base text-gray-400">
@@ -391,7 +353,7 @@ const ContactClient = ({ contactIcons }) => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="relative z-10 space-y-4">
             <FormField
               id="user_name"
               name="user_name"

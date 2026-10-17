@@ -26,7 +26,6 @@ const spaceGrotesk = Space_Grotesk({
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
-  weight: ["600", "700"],
   display: "swap",
   fallback: ["cursive"],
 });
@@ -35,33 +34,27 @@ export const metadata = {
   metadataBase: new URL("https://udittiwari.in"),
 
   title: {
-    default:
-      "Udit Kumar Tiwari | Full Stack Developer | React | Next.js | AI Applications",
+    default: "Udit Kumar Tiwari — Full Stack Developer & AI Specialist",
     template: "%s | Udit Kumar Tiwari",
   },
 
   description:
-    "Portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js, and AI Applications. Explore my projects, skills, and experience in web development.",
+    "Official portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js & AI applications. Explore projects, tech stack & experience.",
 
   keywords: [
-    "Udit",
-    "Udit kumar",
     "Udit Kumar Tiwari",
     "Udit Tiwari",
-    "udit kumar tiwari",
-    "udit kumar",
-    "udit tiwari",
-    "udittiwari",
-    "uditkrtiwari",
+    "Udit",
+    "udittiwari.in",
     "Full Stack Developer",
     "React Developer",
     "Next.js Developer",
-    "AI Applications",
-    "Web Developer",
+    "AI Specialist",
+    "AI Applications Developer",
+    "Software Engineer Portfolio",
     "Frontend Developer",
     "Backend Developer",
-    "Software Engineer",
-    "JavaScript",
+    "MERN Stack Developer",
     "TypeScript",
     "Python",
     "Java",
@@ -94,18 +87,35 @@ export const metadata = {
     "Bootstrap",
     "Material UI",
     "MERN Stack",
-    "MEAN Stack",
+    "Node.js",
+    "Web Developer India"
   ],
 
   authors: [
     {
       name: "Udit Kumar Tiwari",
+      url: "https://udittiwari.in",
     },
   ],
 
   creator: "Udit Kumar Tiwari",
-
   publisher: "Udit Kumar Tiwari",
+
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
+
+  manifest: "/manifest.json",
 
   robots: {
     index: true,
@@ -122,40 +132,34 @@ export const metadata = {
   },
 
   openGraph: {
-    title:
-      "Udit Kumar Tiwari | Full Stack Developer | React | Next.js",
-
+    title: "Udit Kumar Tiwari — Full Stack Developer & AI Specialist",
     description:
-      "Portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js, and AI Applications.",
-
+      "Official portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js & AI applications. Explore projects, tech stack & experience.",
     url: "https://udittiwari.in",
-
-    siteName: "Udit Kumar Tiwari Portfolio",
-
+    siteName: "Udit Kumar Tiwari",
     locale: "en_US",
-
     type: "profile",
-
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Udit Kumar Tiwari Portfolio",
+        alt: "Udit Kumar Tiwari - Full Stack Developer & AI Specialist",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Udit Kumar Tiwari | Full Stack Developer",
+    title: "Udit Kumar Tiwari — Full Stack Developer & AI Specialist",
     description:
-      "Portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js, and AI Applications.",
-    images: ["/og-image.png"],
+      "Official portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js & AI applications.",
+    images: ["/og-image.jpg"],
+    creator: "@uditkrtiwari",
   },
 
   alternates: {
-    canonical: "/",
+    canonical: "https://udittiwari.in",
   },
 };
 
@@ -175,6 +179,76 @@ const themeScript = `
 `;
 
 export default function RootLayout({ children }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://udittiwari.in/#website",
+        "url": "https://udittiwari.in/",
+        "name": "Udit Kumar Tiwari",
+        "alternateName": [
+          "Udit Tiwari",
+          "udittiwari.in",
+          "Udit Kumar Tiwari Portfolio"
+        ],
+        "description": "Official portfolio of Udit Kumar Tiwari, Full Stack Developer & AI Specialist.",
+        "publisher": {
+          "@id": "https://udittiwari.in/#person"
+        },
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://udittiwari.in/#person",
+        "name": "Udit Kumar Tiwari",
+        "alternateName": ["Udit", "Udit Tiwari", "uditkrtiwari"],
+        "url": "https://udittiwari.in",
+        "image": {
+          "@type": "ImageObject",
+          "@id": "https://udittiwari.in/#personImage",
+          "url": "https://udittiwari.in/assets/udit-kumar-tiwari.jpg",
+          "contentUrl": "https://udittiwari.in/assets/udit-kumar-tiwari.jpg",
+          "caption": "Udit Kumar Tiwari - Full Stack Developer & AI Specialist",
+          "width": "1200",
+          "height": "1200"
+        },
+        "jobTitle": "Full Stack Developer & AI Specialist",
+        "description": "Full Stack Developer specializing in React, Next.js, and AI-powered web applications.",
+        "sameAs": [
+          "https://github.com/Udit004",
+          "https://www.linkedin.com/in/udit-kumar-tiwari/"
+        ],
+        "knowsAbout": [
+          "React.js",
+          "Next.js",
+          "Node.js",
+          "Full Stack Development",
+          "Artificial Intelligence Applications",
+          "Web Architecture",
+          "JavaScript",
+          "TypeScript",
+          "Tailwind CSS"
+        ]
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://udittiwari.in/#profilepage",
+        "url": "https://udittiwari.in/",
+        "name": "Udit Kumar Tiwari — Full Stack Developer & AI Specialist Portfolio",
+        "isPartOf": {
+          "@id": "https://udittiwari.in/#website"
+        },
+        "mainEntity": {
+          "@id": "https://udittiwari.in/#person"
+        },
+        "primaryImageOfPage": {
+          "@id": "https://udittiwari.in/#personImage"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en">
       <head>
@@ -195,42 +269,10 @@ export default function RootLayout({ children }) {
         </ClientLayout>
 
         <script
-          id="person-schema"
+          id="structured-data-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-
-              name: "Udit Kumar Tiwari",
-
-              alternateName: ["Udit", "Udit Tiwari"],
-
-              url: "https://udittiwari.in",
-
-              jobTitle: "Full Stack Developer",
-
-              description:
-                "Portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js, and AI Applications.",
-
-              image:
-                "https://udittiwari.in/profile.jpg",
-
-              knowsAbout: [
-                "React",
-                "Next.js",
-                "AI Applications",
-                "Web Development",
-                "Full Stack Development",
-                "JavaScript",
-                "TypeScript",
-              ],
-
-              sameAs: [
-                "https://github.com/Udit004",
-                "https://www.linkedin.com/in/udit-kumar-tiwari/",
-              ],
-            }),
+            __html: JSON.stringify(structuredData),
           }}
         />
       </body>

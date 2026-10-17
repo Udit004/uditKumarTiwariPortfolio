@@ -288,12 +288,13 @@ const Home = () => {
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse ml-1" />
             </div>
 
-            {/* Hi, I'm */}
+            {/* Hi, I'm Udit Kumar Tiwari */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight tracking-tight mb-3">
-              Hi, I&apos;m
-              <br />
+              <span className="block text-2xl sm:text-3xl lg:text-4xl text-gray-300 font-medium mb-1">
+                Hi, I&apos;m
+              </span>
               <span
-                className="bg-clip-text text-transparent"
+                className="bg-clip-text text-transparent inline-block"
                 style={{
                   backgroundImage: "linear-gradient(90deg, #a855f7, #ec4899, #38bdf8)",
                 }}
@@ -304,7 +305,7 @@ const Home = () => {
 
             {/* Tagline */}
             <p className="text-gray-300 text-base sm:text-lg mb-2 font-medium">
-              Crafting digital experiences that are fast, scalable, and impactful.
+              Full Stack Developer &amp; AI Specialist crafting digital experiences that are fast, scalable, and impactful.
             </p>
 
             {/* GSAP type animation */}
