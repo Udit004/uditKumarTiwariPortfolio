@@ -6,10 +6,28 @@
     xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 
     <url>
-        <loc>https://uditportfolio-six.vercel.app/</loc>
-        <lastmod>2025-03-29T07:28:54.398Z</lastmod>
-        <changefreq>daily</changefreq>
+        <loc>https://udittiwari.in/</loc>
+        <lastmod>2026-10-18T00:00:00+00:00</lastmod>
+        <changefreq>weekly</changefreq>
         <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://udittiwari.in/assets/udit-kumar-tiwari.jpg</image:loc>
+            <image:title>Udit Kumar Tiwari - Full Stack Developer and AI Specialist</image:title>
+            <image:caption>Official portrait photo of Udit Kumar Tiwari, Full Stack Developer and AI Specialist based in India</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://udittiwari.in/og-image.jpg</image:loc>
+            <image:title>Udit Kumar Tiwari Portfolio</image:title>
+            <image:caption>Portfolio of Udit Kumar Tiwari - Full Stack Developer and AI Specialist</image:caption>
+        </image:image>
+    </url>
+
+    <url>
+        <loc>https://udittiwari.in/blog</loc>
+        <lastmod>2026-10-18T00:00:00+00:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
     </url>
 
 </urlset>
+

@@ -1,23 +1,23 @@
 {
-  "name": "Udit Kumar Tiwari - Portfolio",
-  "short_name": "Udit Portfolio",
-  "description": "Portfolio of Udit Kumar Tiwari, Full Stack Developer",
+  "name": "Udit Kumar Tiwari",
+  "short_name": "Udit Tiwari",
+  "description": "Portfolio of Udit Kumar Tiwari, Full Stack Developer & AI Specialist",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#8b5cf6",
+  "background_color": "#0a0614",
+  "theme_color": "#9333ea",
   "icons": [
     {
-      "src": "/assets/iconImage.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/assets/iconImage.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
