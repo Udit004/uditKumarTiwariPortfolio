@@ -34,7 +34,7 @@ export const metadata = {
   metadataBase: new URL("https://udittiwari.in"),
 
   title: {
-    default: "Udit Kumar Tiwari — Full Stack Developer & AI Specialist",
+    default: "Udit Kumar Tiwari | Full Stack Developer & AI Specialist",
     template: "%s | Udit Kumar Tiwari",
   },
 
@@ -56,38 +56,9 @@ export const metadata = {
     "Backend Developer",
     "MERN Stack Developer",
     "TypeScript",
-    "Python",
-    "Java",
-    "C++",
-    "C",
-    "HTML",
-    "CSS",
-    "Tailwind CSS",
-    "Bootstrap",
-    "Material UI",
-    "MERN Stack",
-    "MEAN Stack",
-    "Full Stack Developer",
-    "React Developer",
-    "Next.js Developer",
-    "AI Applications",
-    "Web Developer",
-    "Frontend Developer",
-    "Backend Developer",
-    "Software Engineer",
     "JavaScript",
-    "TypeScript",
-    "Python",
-    "Java",
-    "C++",
-    "C",
-    "HTML",
-    "CSS",
-    "Tailwind CSS",
-    "Bootstrap",
-    "Material UI",
-    "MERN Stack",
     "Node.js",
+    "Tailwind CSS",
     "Web Developer India"
   ],
 
@@ -132,29 +103,39 @@ export const metadata = {
   },
 
   openGraph: {
-    title: "Udit Kumar Tiwari — Full Stack Developer & AI Specialist",
+    title: "Udit Kumar Tiwari | Full Stack Developer & AI Specialist",
     description:
       "Official portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js & AI applications. Explore projects, tech stack & experience.",
     url: "https://udittiwari.in",
     siteName: "Udit Kumar Tiwari",
     locale: "en_US",
-    type: "profile",
+    type: "website",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "https://udittiwari.in/og-image.jpg",
+        secureUrl: "https://udittiwari.in/og-image.jpg",
         width: 1200,
         height: 630,
+        type: "image/jpeg",
         alt: "Udit Kumar Tiwari - Full Stack Developer & AI Specialist",
+      },
+      {
+        url: "https://udittiwari.in/assets/udit-kumar-tiwari.jpg",
+        secureUrl: "https://udittiwari.in/assets/udit-kumar-tiwari.jpg",
+        width: 600,
+        height: 600,
+        type: "image/jpeg",
+        alt: "Udit Kumar Tiwari - Portrait",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Udit Kumar Tiwari — Full Stack Developer & AI Specialist",
+    title: "Udit Kumar Tiwari | Full Stack Developer & AI Specialist",
     description:
       "Official portfolio of Udit Kumar Tiwari, Full Stack Developer specializing in React, Next.js & AI applications.",
-    images: ["/og-image.jpg"],
+    images: ["https://udittiwari.in/og-image.jpg"],
     creator: "@uditkrtiwari",
   },
 
@@ -210,8 +191,8 @@ export default function RootLayout({ children }) {
           "url": "https://udittiwari.in/assets/udit-kumar-tiwari.jpg",
           "contentUrl": "https://udittiwari.in/assets/udit-kumar-tiwari.jpg",
           "caption": "Udit Kumar Tiwari - Full Stack Developer & AI Specialist",
-          "width": "1200",
-          "height": "1200"
+          "width": 1200,
+          "height": 1200
         },
         "jobTitle": "Full Stack Developer & AI Specialist",
         "description": "Full Stack Developer specializing in React, Next.js, and AI-powered web applications.",
@@ -262,6 +243,14 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Preconnect to CDN for icon loading */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+
+        {/* WhatsApp & Social Open Graph direct tags */}
+        <meta property="og:image" content="https://udittiwari.in/og-image.jpg" />
+        <meta property="og:image:secure_url" content="https://udittiwari.in/og-image.jpg" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <link rel="image_src" href="https://udittiwari.in/og-image.jpg" />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${caveat.variable} antialiased font-sans`}>
         <ClientLayout>
