@@ -14,6 +14,35 @@ export const categories = [
 
 export const projectsData = [
   {
+    id: "vyapar-sathi",
+    title: "Vyapar Sathi – AI-Powered Retail Management Platform",
+    image: "/assets/vyaparskhaImage.jpg",
+    description:
+      "A multi-store retail management platform bringing POS billing, inventory, procurement, customer credit tracking, staff roles, and business analytics into a responsive Progressive Web App. Features camera-based barcode scanning, offline persistence, invoice generation, Node.js/Express APIs, and a FastAPI AI microservice with LangGraph, Gemini, Mem0 memory, Pinecone search, and CatBoost demand forecasting.",
+    technologies: [
+      "Next.js",
+      "FastAPI",
+      "LangGraph",
+      "Gemini",
+      "MongoDB",
+      "Redis",
+      "React",
+      "Tailwind CSS",
+      "Node.js",
+      "Express",
+      "BullMQ",
+      "Python",
+      "Pinecone",
+      "Mem0",
+      "CatBoost",
+      "WebSockets",
+      "PWA",
+    ],
+    category: "AI-Powered",
+    featured: true,
+    liveLink: "https://www.vyaparsakha.store/",
+  },
+  {
     id: "coachlix",
     title: "Coachlix AI Fitness Coaching",
     image: "/assets/Coachlix_AI_Fitness_Coaching.jpg",
@@ -93,18 +122,18 @@ export const projectsData = [
     liveLink: "https://uditportfolio-six.vercel.app/",
     githubLink: "https://github.com/Udit004/Udit004.github.io.git",
   },
-  {
-    id: "badminton-academy",
-    title: "Badminton Academy",
-    image: "/assets/Badminton_Academy.jpg",
-    description:
-      "A dynamic sports academy website showcasing training programs, coach profiles, and class schedules. Includes animated UI elements and responsive design for seamless browsing on all devices.",
-    technologies: ["React", "Tailwind CSS", "React Router", "SwiperJS", "Framer Motion"],
-    category: "Frontend",
-    featured: false,
-    liveLink: "https://badminton-academy-chi.vercel.app/",
-    githubLink: "https://github.com/Udit004/Badminton-Academy",
-  },
+  // {
+  //   id: "badminton-academy",
+  //   title: "Badminton Academy",
+  //   image: "/assets/Badminton_Academy.jpg",
+  //   description:
+  //     "A dynamic sports academy website showcasing training programs, coach profiles, and class schedules. Includes animated UI elements and responsive design for seamless browsing on all devices.",
+  //   technologies: ["React", "Tailwind CSS", "React Router", "SwiperJS", "Framer Motion"],
+  //   category: "Frontend",
+  //   featured: false,
+  //   liveLink: "https://badminton-academy-chi.vercel.app/",
+  //   githubLink: "https://github.com/Udit004/Badminton-Academy",
+  // },
   {
     id: "eu-wallet",
     title: "EU Citizen Wallet Portal",

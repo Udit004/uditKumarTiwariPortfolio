@@ -2,6 +2,7 @@ import {
   SiNextdotjs, SiReact, SiTypescript, SiNodedotjs, SiExpress, SiMongodb,
   SiTailwindcss, SiFirebase, SiSocketdotio, SiPython, SiPrisma, SiPostgresql,
   SiSupabase, SiCloudinary, SiJavascript, SiHtml5, SiCss, SiRedux, SiFramer,
+  SiRedis, SiFastapi, SiGooglegemini, SiLangchain, SiPwa,
 } from "react-icons/si";
 import { Sparkles } from "lucide-react";
 
@@ -27,6 +28,13 @@ const ICON_MAP = {
   "CSS3": { icon: SiCss, color: "#1572B6" },
   "Redux": { icon: SiRedux, color: "#764ABC" },
   "Framer Motion": { icon: SiFramer, color: "#ffffff" },
+  "Redis": { icon: SiRedis, color: "#DC382D" },
+  "FastAPI": { icon: SiFastapi, color: "#05998B" },
+  "Gemini": { icon: SiGooglegemini, color: "#8E75FF" },
+  "Gemini AI": { icon: SiGooglegemini, color: "#8E75FF" },
+  "LangChain": { icon: SiLangchain, color: "#ffffff" },
+  "LangGraph": { icon: SiLangchain, color: "#ffffff" },
+  "PWA": { icon: SiPwa, color: "#5A0FC8" },
 };
 
 const TechBadge = ({ tech }) => {

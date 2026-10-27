@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono, Space_Grotesk, Caveat } from "next/font/google";
 import "./globals.css";
 import ClientLayout from './layout-client';
+import Script from "next/script";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -258,6 +259,10 @@ export default function RootLayout({ children }) {
         {/* Preconnect to CDN for icon loading */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 
+        {/* Preconnect to Google Tag Manager and Microsoft Clarity */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.clarity.ms" />
+
         {/* WhatsApp & Social Open Graph direct tags */}
         <meta property="og:site_name" content="Udit Kumar Tiwari" />
         <meta property="og:image" content="https://udittiwari.in/og-image.jpg" />
@@ -269,6 +274,32 @@ export default function RootLayout({ children }) {
         <link rel="image_src" href="https://udittiwari.in/og-image.jpg" />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${caveat.variable} antialiased font-sans`}>
+        {/* Google Analytics (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-YYB08TT5QT"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-YYB08TT5QT');
+          `}
+        </Script>
+
+        {/* Microsoft Clarity UI Analytics */}
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "z48prtjxpy");
+          `}
+        </Script>
+
         <ClientLayout>
           {children}
         </ClientLayout>

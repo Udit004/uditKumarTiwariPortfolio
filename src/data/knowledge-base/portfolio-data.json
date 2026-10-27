@@ -67,6 +67,14 @@
   },
   "projects": [
     {
+      "name": "Vyapar Sathi – AI-Powered Retail Management Platform",
+      "description": "Multi-store retail management platform bringing POS billing, inventory, procurement, customer credit tracking, staff roles, and analytics into a responsive PWA with a FastAPI microservice, LangGraph, Gemini, Mem0, Pinecone, and CatBoost demand forecasting.",
+      "technologies": ["Next.js", "React", "FastAPI", "Python", "LangGraph", "Gemini", "Node.js", "Express", "MongoDB", "Redis", "BullMQ", "CatBoost", "Pinecone", "Mem0"],
+      "features": ["POS Billing & Invoicing", "Barcode scanning", "AI Copilot & Real-time Voice", "CatBoost Demand Forecasting", "Credit tracking (Khata)", "Multi-store management"],
+      "liveLink": "https://www.vyaparsakha.store/",
+      "status": "Completed"
+    },
+    {
       "name": "AI-Powered Portfolio Website",
       "description": "Interactive portfolio with intelligent chatbot featuring voice recognition and natural conversation capabilities",
       "technologies": ["React", "Next.js", "Gemini AI", "Tailwind CSS", "Framer Motion"],
