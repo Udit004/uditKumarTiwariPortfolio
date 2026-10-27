@@ -17,6 +17,50 @@ const Footer = dynamic(() => import('@/components/helperComponents/Footer'), { s
 
 export const revalidate = 60
 
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const post = await getPostBySlug(slug).catch(() => null)
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    }
+  }
+
+  const title = typeof post.title === 'string' ? post.title : 'Blog Post'
+  const description = post.excerpt || `Read ${title} by Udit Kumar Tiwari`
+  const ogImage = post.coverImage?.asset ? urlFor(post.coverImage).width(1200).height(630).url() : 'https://udittiwari.in/og-image.jpg'
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `https://udittiwari.in/blog/${slug}`,
+    },
+    openGraph: {
+      title: `${title} | Udit Kumar Tiwari`,
+      description,
+      url: `https://udittiwari.in/blog/${slug}`,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author?.name || 'Udit Kumar Tiwari'],
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  }
+}
+
 export default async function BlogPostPage({ params }) {
   const { slug } = await params
   const post = await getPostBySlug(slug).catch(() => null)
@@ -26,9 +70,63 @@ export default async function BlogPostPage({ params }) {
 
   const readingTime = Array.isArray(post?.content) ? calculateReadingTime(post.content) : 0
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `https://udittiwari.in/blog/${slug}#article`,
+        "headline": typeof post.title === 'string' ? post.title : 'Blog Post',
+        "description": post.excerpt || `Read ${post.title} by Udit Kumar Tiwari`,
+        "datePublished": post.publishedAt,
+        "dateModified": post._updatedAt || post.publishedAt,
+        "author": {
+          "@type": "Person",
+          "name": post.author?.name || "Udit Kumar Tiwari",
+          "url": "https://udittiwari.in"
+        },
+        "publisher": {
+          "@type": "Person",
+          "name": "Udit Kumar Tiwari",
+          "url": "https://udittiwari.in"
+        },
+        "mainEntityOfPage": `https://udittiwari.in/blog/${slug}`,
+        "image": post.coverImage?.asset ? urlFor(post.coverImage).width(1200).height(630).url() : "https://udittiwari.in/og-image.jpg"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `https://udittiwari.in/blog/${slug}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://udittiwari.in"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blog",
+            "item": "https://udittiwari.in/blog"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": typeof post.title === 'string' ? post.title : 'Article',
+            "item": `https://udittiwari.in/blog/${slug}`
+          }
+        ]
+      }
+    ]
+  }
+
   return (
     <>
-        <Navbar />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <Navbar />
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         {/* Video Background - COMMENTED OUT

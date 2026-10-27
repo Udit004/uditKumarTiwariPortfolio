@@ -1,3 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /sanity/
+Disallow: /blog/write
+Disallow: /blog/manage
+Disallow: /test-env
+Disallow: /test-sanity
+
 Sitemap: https://udittiwari.in/sitemap.xml

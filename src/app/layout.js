@@ -30,6 +30,15 @@ const caveat = Caveat({
   fallback: ["cursive"],
 });
 
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0614" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata = {
   metadataBase: new URL("https://udittiwari.in"),
 
@@ -189,7 +198,9 @@ export default function RootLayout({ children }) {
         "description": "Full Stack Developer specializing in React, Next.js, and AI-powered web applications.",
         "sameAs": [
           "https://github.com/Udit004",
-          "https://www.linkedin.com/in/udit-kumar-tiwari/"
+          "https://www.linkedin.com/in/udit-kumar-tiwari-2b2a15216",
+          "https://www.instagram.com/_uditkumar_004/",
+          "https://twitter.com/UditKrTiwari"
         ],
         "knowsAbout": [
           "React.js",
@@ -217,6 +228,18 @@ export default function RootLayout({ children }) {
         "primaryImageOfPage": {
           "@id": "https://udittiwari.in/#personImage"
         }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://udittiwari.in/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://udittiwari.in/"
+          }
+        ]
       }
     ]
   };
