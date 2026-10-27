@@ -161,9 +161,7 @@ export default function RootLayout({ children }) {
         "url": "https://udittiwari.in/",
         "name": "Udit Kumar Tiwari",
         "alternateName": [
-          "Udit's Portfolio",
           "Udit Tiwari",
-          "udittiwari.in",
           "Udit Kumar Tiwari Portfolio"
         ],
         "description": "Official portfolio of Udit Kumar Tiwari, Full Stack Developer & AI Specialist.",
@@ -238,6 +236,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 
         {/* WhatsApp & Social Open Graph direct tags */}
+        <meta property="og:site_name" content="Udit Kumar Tiwari" />
         <meta property="og:image" content="https://udittiwari.in/og-image.jpg" />
         <meta property="og:image:secure_url" content="https://udittiwari.in/og-image.jpg" />
         <meta property="og:image:type" content="image/jpeg" />
