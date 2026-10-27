@@ -114,8 +114,8 @@ export const metadata = {
       {
         url: "https://udittiwari.in/og-image.jpg",
         secureUrl: "https://udittiwari.in/og-image.jpg",
-        width: 1000,
-        height: 1000,
+        width: 1200,
+        height: 1200,
         type: "image/jpeg",
         alt: "Udit Kumar Tiwari - Full Stack Developer & AI Specialist",
       },
@@ -241,8 +241,9 @@ export default function RootLayout({ children }) {
         <meta property="og:image" content="https://udittiwari.in/og-image.jpg" />
         <meta property="og:image:secure_url" content="https://udittiwari.in/og-image.jpg" />
         <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="1000" />
-        <meta property="og:image:height" content="1000" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="1200" />
+        <meta property="og:image:alt" content="Udit Kumar Tiwari - Full Stack Developer & AI Specialist" />
         <link rel="image_src" href="https://udittiwari.in/og-image.jpg" />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${caveat.variable} antialiased font-sans`}>
