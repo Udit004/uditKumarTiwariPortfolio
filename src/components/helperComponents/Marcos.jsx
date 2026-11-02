@@ -62,7 +62,7 @@ export const MARCOS_ANIMATIONS = {
 
 /**
  * Marcos - AI Mascot for Udit's Portfolio
- * Features seamless dual-layer animation switching with zero disappearances.
+ * High-definition interactive 3D character with clean single-surface animation handoffs.
  */
 const Marcos = forwardRef(function Marcos(
   {
@@ -214,10 +214,14 @@ const Marcos = forwardRef(function Marcos(
         {/* Soft Radial Ambient Glow */}
         <div className="absolute inset-x-4 top-8 bottom-4 -z-10 rounded-full bg-purple-500/0 group-hover:bg-purple-500/20 dark:group-hover:bg-purple-400/25 blur-2xl transition-all duration-300" />
 
-        {/* Mascot Container - Dual-layer rendering for completely seamless transitions */}
+        {/* Mascot Container - Clean handoff between Idle and Gesture animations */}
         <div className="relative w-36 h-48 sm:w-44 sm:h-56 md:w-52 md:h-64 flex items-center justify-center overflow-visible">
-          {/* BASE LAYER: Permanent Idle Loop. Always mounted and running underneath so Marcos NEVER disappears. */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          {/* BASE LAYER: Active during idle. Fades out smoothly when an action animation is ready to avoid duplicate limbs/hands. */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150 ${
+              isActionActive && isActionReady ? "opacity-0" : "opacity-100"
+            }`}
+          >
             <DotLottieReact
               src={MARCOS_ANIMATIONS.idle.src}
               loop={true}
@@ -234,10 +238,10 @@ const Marcos = forwardRef(function Marcos(
             />
           </div>
 
-          {/* ACTION LAYER: Overlays gesture animations (wave, glance, celebrate). Fades in only once ready. */}
+          {/* ACTION LAYER: Overlays gesture animations (wave, glance, celebrate). Active only when ready, hiding the idle layer underneath. */}
           {actionAnim && (
             <div
-              className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ${
+              className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150 ${
                 isActionReady ? "opacity-100" : "opacity-0"
               }`}
             >
