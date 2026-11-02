@@ -1,0 +1,208 @@
+"use client";
+
+import React, { useState, useEffect, useRef, forwardRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+
+// Animations mapping - Includes all newly added animations, strictly omitting Point Right (11_MASCOT_POINT_RIGHT)
+export const MARCOS_ANIMATIONS = {
+  idle: {
+    src: "/marcos_Anim/01_MASCOT_IDLE_LOOP.lottie",
+    loop: true,
+  },
+  wave: {
+    src: "/marcos_Anim/05_MASCOT_GREETING_WAVE.lottie",
+    loop: true,
+  },
+  lookLeft: {
+    src: "/marcos_Anim/02_MASCOT_LOOK_LEFT.lottie",
+    loop: false,
+    duration: 700,
+  },
+  lookRight: {
+    src: "/marcos_Anim/03_MASCOT_LOOK_RIGHT.lottie",
+    loop: false,
+    duration: 700,
+  },
+  lookUp: {
+    src: "/marcos_Anim/04_MASCOT_LOOK_UP.lottie",
+    loop: false,
+    duration: 1200,
+  },
+  happy: {
+    src: "/marcos_Anim/06_MASCOT_HAPPY.lottie",
+    loop: false,
+    duration: 1200,
+  },
+  celebrate: {
+    src: "/marcos_Anim/08_MASCOT_CELEBRATE.lottie",
+    loop: false,
+    duration: 1600,
+  },
+  thinking: {
+    src: "/marcos_Anim/07_MASCOT_THINKING.lottie",
+    loop: true,
+  },
+  confused: {
+    src: "/marcos_Anim/09_MASCOT_CONFUSED.lottie",
+    loop: false,
+    duration: 1300,
+  },
+  pointLeft: {
+    src: "/marcos_Anim/10_MASCOT_POINT_LEFT.lottie",
+    loop: false,
+    duration: 1400,
+  },
+  wink: {
+    src: "/marcos_Anim/12_MASCOT_WINK.lottie",
+    loop: false,
+    duration: 1000,
+  },
+};
+
+/**
+ * Marcos - AI Mascot for Udit's Portfolio
+ * High-definition interactive 3D character with multi-state animations.
+ */
+const Marcos = forwardRef(function Marcos(
+  {
+    onClick,
+    animation: forcedAnimation,
+    className = "",
+  },
+  ref
+) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentAnimKey, setCurrentAnimKey] = useState("idle");
+  const [devicePixelRatio, setDevicePixelRatio] = useState(3);
+  const timeoutRef = useRef(null);
+  const idleIntervalRef = useRef(null);
+
+  // Determine High-DPI screen multiplier to ensure crisp, razor-sharp rendering
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const dpr = window.devicePixelRatio || 1;
+      // Use higher pixel ratio (at least 2.5x to 3x) so canvas renders at full HD
+      setDevicePixelRatio(Math.max(dpr * 1.5, 2.5));
+    }
+  }, []);
+
+  // Update animation based on hover or forced props
+  useEffect(() => {
+    if (forcedAnimation && MARCOS_ANIMATIONS[forcedAnimation]) {
+      setCurrentAnimKey(forcedAnimation);
+      return;
+    }
+
+    if (isHovered) {
+      // Wave to the user when hovering over Marcos
+      setCurrentAnimKey("wave");
+    } else {
+      setCurrentAnimKey("idle");
+    }
+  }, [isHovered, forcedAnimation]);
+
+  // Occasional lifelike idle glances (e.g. lookLeft, lookUp, wink) every 10-14 seconds
+  useEffect(() => {
+    if (forcedAnimation || isHovered) return;
+
+    idleIntervalRef.current = setInterval(() => {
+      const glances = ["lookLeft", "lookUp", "wink", "pointLeft"];
+      const randomGlance = glances[Math.floor(Math.random() * glances.length)];
+      const animConfig = MARCOS_ANIMATIONS[randomGlance];
+
+      setCurrentAnimKey(randomGlance);
+
+      timeoutRef.current = setTimeout(() => {
+        setCurrentAnimKey("idle");
+      }, animConfig.duration || 1000);
+    }, 12000);
+
+    return () => {
+      if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [forcedAnimation, isHovered]);
+
+  const activeAnim = MARCOS_ANIMATIONS[currentAnimKey] || MARCOS_ANIMATIONS.idle;
+
+  const handleClick = (e) => {
+    // Play quick celebratory/happy response on click
+    setCurrentAnimKey("celebrate");
+    setTimeout(() => {
+      onClick?.(e);
+    }, 300);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ scale: 0, opacity: 0, y: 50 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      exit={{ scale: 0, opacity: 0, y: 50 }}
+      transition={{ type: "spring", stiffness: 280, damping: 22 }}
+      className={`fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-50 flex flex-col items-end select-none ${className}`}
+    >
+      {/* Speech bubble tooltip - ONLY shown when hovered */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.9 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="mb-1 mr-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md px-4 py-2 rounded-2xl rounded-br-sm shadow-xl border border-purple-200/70 dark:border-purple-800/70 text-xs text-gray-800 dark:text-gray-100 flex items-center gap-2 pointer-events-none whitespace-nowrap z-10"
+          >
+            <span className="flex h-2 w-2 relative flex-shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="font-semibold text-xs tracking-tight">
+              Hi, I'm Marcos! Chat with me 👋
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Mascot Button */}
+      <motion.button
+        type="button"
+        aria-label="Open AI Assistant chat with Marcos"
+        onClick={handleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        whileHover={{ scale: 1.05, y: -6 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 350, damping: 22 }}
+        className="relative group cursor-pointer focus:outline-none flex flex-col items-center bg-transparent border-none p-0 m-0"
+      >
+        {/* Soft Radial Ambient Glow */}
+        <div className="absolute inset-x-4 top-8 bottom-4 -z-10 rounded-full bg-purple-500/0 group-hover:bg-purple-500/20 dark:group-hover:bg-purple-400/25 blur-2xl transition-all duration-300" />
+
+        {/* Mascot Canvas Container - Sized generously and zoomed slightly so character is prominent & clear */}
+        <div className="relative w-36 h-48 sm:w-44 sm:h-56 md:w-52 md:h-64 flex items-center justify-center overflow-visible">
+          <DotLottieReact
+            key={activeAnim.src}
+            src={activeAnim.src}
+            loop={activeAnim.loop}
+            autoplay={true}
+            renderConfig={{
+              devicePixelRatio: devicePixelRatio,
+              autoResize: true,
+            }}
+            layout={{
+              fit: "contain",
+              align: [0.5, 0.5],
+            }}
+            className="w-full h-full transform scale-110 sm:scale-120 transition-transform duration-200 pointer-events-none"
+          />
+        </div>
+
+        {/* Grounding Contact Shadow */}
+        <div className="w-20 sm:w-24 md:w-28 h-3 bg-black/15 dark:bg-black/40 rounded-[100%] blur-[3px] -mt-2 pointer-events-none transition-all duration-300 group-hover:scale-110 group-hover:opacity-50" />
+      </motion.button>
+    </motion.div>
+  );
+});
+
+export default Marcos;
