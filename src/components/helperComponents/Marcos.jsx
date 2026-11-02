@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { DotLottieReact, setWasmUrl } from "@lottiefiles/dotlottie-react";
 
 // Animations mapping - Includes all newly added animations, strictly omitting Point Right (11_MASCOT_POINT_RIGHT)
 export const MARCOS_ANIMATIONS = {
@@ -78,11 +78,15 @@ const Marcos = forwardRef(function Marcos(
   const timeoutRef = useRef(null);
   const idleIntervalRef = useRef(null);
 
-  // Determine High-DPI screen multiplier to ensure crisp, razor-sharp rendering
+  // Configure local wasm URL and High-DPI screen multiplier to ensure crisp, razor-sharp rendering
   useEffect(() => {
     if (typeof window !== "undefined") {
+      try {
+        setWasmUrl("/dotlottie-player.wasm");
+      } catch (e) {
+        // Fallback gracefully
+      }
       const dpr = window.devicePixelRatio || 1;
-      // Use higher pixel ratio (at least 2.5x to 3x) so canvas renders at full HD
       setDevicePixelRatio(Math.max(dpr * 1.5, 2.5));
     }
   }, []);
