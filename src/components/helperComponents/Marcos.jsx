@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, forwardRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DotLottieReact, setWasmUrl } from "@lottiefiles/dotlottie-react";
 
@@ -62,7 +62,7 @@ export const MARCOS_ANIMATIONS = {
 
 /**
  * Marcos - AI Mascot for Udit's Portfolio
- * High-definition interactive 3D character with multi-state animations.
+ * Features seamless dual-layer animation switching with zero disappearances.
  */
 const Marcos = forwardRef(function Marcos(
   {
@@ -74,39 +74,48 @@ const Marcos = forwardRef(function Marcos(
 ) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentAnimKey, setCurrentAnimKey] = useState("idle");
+  const [isActionReady, setIsActionReady] = useState(false);
   const [devicePixelRatio, setDevicePixelRatio] = useState(3);
+
+  const actionInstanceRef = useRef(null);
   const timeoutRef = useRef(null);
   const idleIntervalRef = useRef(null);
 
-  // Configure local wasm URL and High-DPI screen multiplier to ensure crisp, razor-sharp rendering
+  // Configure local wasm URL, determine screen pixel ratio, and pre-warm cache
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         setWasmUrl("/dotlottie-player.wasm");
-      } catch (e) {
-        // Fallback gracefully
-      }
+      } catch (e) {}
+
       const dpr = window.devicePixelRatio || 1;
       setDevicePixelRatio(Math.max(dpr * 1.5, 2.5));
+
+      // Pre-warm all animations into browser cache so transitions are instantaneous
+      Object.values(MARCOS_ANIMATIONS).forEach((anim) => {
+        fetch(anim.src, { cache: "force-cache" }).catch(() => {});
+      });
     }
   }, []);
 
   // Update animation based on hover or forced props
   useEffect(() => {
     if (forcedAnimation && MARCOS_ANIMATIONS[forcedAnimation]) {
+      setIsActionReady(false);
       setCurrentAnimKey(forcedAnimation);
       return;
     }
 
     if (isHovered) {
-      // Wave to the user when hovering over Marcos
+      setIsActionReady(false);
       setCurrentAnimKey("wave");
     } else {
+      setIsActionReady(false);
       setCurrentAnimKey("idle");
     }
   }, [isHovered, forcedAnimation]);
 
-  // Occasional lifelike idle glances (e.g. lookLeft, lookUp, wink) every 10-14 seconds
+  // Occasional lifelike idle glances (e.g. lookLeft, lookUp, wink) every 11-14 seconds
   useEffect(() => {
     if (forcedAnimation || isHovered) return;
 
@@ -115,9 +124,11 @@ const Marcos = forwardRef(function Marcos(
       const randomGlance = glances[Math.floor(Math.random() * glances.length)];
       const animConfig = MARCOS_ANIMATIONS[randomGlance];
 
+      setIsActionReady(false);
       setCurrentAnimKey(randomGlance);
 
       timeoutRef.current = setTimeout(() => {
+        setIsActionReady(false);
         setCurrentAnimKey("idle");
       }, animConfig.duration || 1000);
     }, 12000);
@@ -128,15 +139,35 @@ const Marcos = forwardRef(function Marcos(
     };
   }, [forcedAnimation, isHovered]);
 
-  const activeAnim = MARCOS_ANIMATIONS[currentAnimKey] || MARCOS_ANIMATIONS.idle;
+  const handleActionRef = useCallback((instance) => {
+    if (!instance) return;
+    actionInstanceRef.current = instance;
+
+    const onReady = () => {
+      setIsActionReady(true);
+      try {
+        instance.play();
+      } catch (e) {}
+    };
+
+    if (instance.isLoaded) {
+      onReady();
+    } else {
+      instance.addEventListener("load", onReady);
+      instance.addEventListener("ready", onReady);
+    }
+  }, []);
 
   const handleClick = (e) => {
-    // Play quick celebratory/happy response on click
+    setIsActionReady(false);
     setCurrentAnimKey("celebrate");
     setTimeout(() => {
       onClick?.(e);
-    }, 300);
+    }, 350);
   };
+
+  const isActionActive = currentAnimKey !== "idle";
+  const actionAnim = isActionActive ? MARCOS_ANIMATIONS[currentAnimKey] : null;
 
   return (
     <motion.div
@@ -155,7 +186,7 @@ const Marcos = forwardRef(function Marcos(
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.9 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="mb-1 mr-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md px-4 py-2 rounded-2xl rounded-br-sm shadow-xl border border-purple-200/70 dark:border-purple-800/70 text-xs text-gray-800 dark:text-gray-100 flex items-center gap-2 pointer-events-none whitespace-nowrap z-10"
+            className="mb-1 mr-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md px-4 py-2 rounded-2xl rounded-br-sm shadow-xl border border-purple-200/70 dark:border-purple-800/70 text-xs text-gray-800 dark:text-gray-100 flex items-center gap-2 pointer-events-none whitespace-nowrap z-20"
           >
             <span className="flex h-2 w-2 relative flex-shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -183,23 +214,50 @@ const Marcos = forwardRef(function Marcos(
         {/* Soft Radial Ambient Glow */}
         <div className="absolute inset-x-4 top-8 bottom-4 -z-10 rounded-full bg-purple-500/0 group-hover:bg-purple-500/20 dark:group-hover:bg-purple-400/25 blur-2xl transition-all duration-300" />
 
-        {/* Mascot Canvas Container - Sized generously and zoomed slightly so character is prominent & clear */}
+        {/* Mascot Container - Dual-layer rendering for completely seamless transitions */}
         <div className="relative w-36 h-48 sm:w-44 sm:h-56 md:w-52 md:h-64 flex items-center justify-center overflow-visible">
-          <DotLottieReact
-            key={activeAnim.src}
-            src={activeAnim.src}
-            loop={activeAnim.loop}
-            autoplay={true}
-            renderConfig={{
-              devicePixelRatio: devicePixelRatio,
-              autoResize: true,
-            }}
-            layout={{
-              fit: "contain",
-              align: [0.5, 0.5],
-            }}
-            className="w-full h-full transform scale-110 sm:scale-120 transition-transform duration-200 pointer-events-none"
-          />
+          {/* BASE LAYER: Permanent Idle Loop. Always mounted and running underneath so Marcos NEVER disappears. */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <DotLottieReact
+              src={MARCOS_ANIMATIONS.idle.src}
+              loop={true}
+              autoplay={true}
+              renderConfig={{
+                devicePixelRatio: devicePixelRatio,
+                autoResize: true,
+              }}
+              layout={{
+                fit: "contain",
+                align: [0.5, 0.5],
+              }}
+              className="w-full h-full transform scale-110 sm:scale-120 transition-transform duration-200 pointer-events-none"
+            />
+          </div>
+
+          {/* ACTION LAYER: Overlays gesture animations (wave, glance, celebrate). Fades in only once ready. */}
+          {actionAnim && (
+            <div
+              className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ${
+                isActionReady ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <DotLottieReact
+                src={actionAnim.src}
+                loop={actionAnim.loop}
+                autoplay={true}
+                dotLottieRefCallback={handleActionRef}
+                renderConfig={{
+                  devicePixelRatio: devicePixelRatio,
+                  autoResize: true,
+                }}
+                layout={{
+                  fit: "contain",
+                  align: [0.5, 0.5],
+                }}
+                className="w-full h-full transform scale-110 sm:scale-120 transition-transform duration-200 pointer-events-none"
+              />
+            </div>
+          )}
         </div>
 
         {/* Grounding Contact Shadow */}
