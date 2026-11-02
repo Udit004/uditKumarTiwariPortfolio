@@ -14,25 +14,30 @@ export const MARCOS_ANIMATIONS = {
     src: "/marcos_Anim/05_MASCOT_GREETING_WAVE.lottie",
     loop: true,
   },
+  pointLeft: {
+    src: "/marcos_Anim/10_MASCOT_POINT_LEFT.lottie",
+    loop: true,
+    duration: 3800, // Increased duration: points and guides attention for nearly 4 seconds
+  },
   lookLeft: {
     src: "/marcos_Anim/02_MASCOT_LOOK_LEFT.lottie",
     loop: false,
-    duration: 700,
+    duration: 900,
   },
   lookRight: {
     src: "/marcos_Anim/03_MASCOT_LOOK_RIGHT.lottie",
     loop: false,
-    duration: 700,
+    duration: 900,
   },
   lookUp: {
     src: "/marcos_Anim/04_MASCOT_LOOK_UP.lottie",
     loop: false,
-    duration: 1200,
+    duration: 1300,
   },
   happy: {
     src: "/marcos_Anim/06_MASCOT_HAPPY.lottie",
     loop: false,
-    duration: 1200,
+    duration: 1300,
   },
   celebrate: {
     src: "/marcos_Anim/08_MASCOT_CELEBRATE.lottie",
@@ -46,23 +51,19 @@ export const MARCOS_ANIMATIONS = {
   confused: {
     src: "/marcos_Anim/09_MASCOT_CONFUSED.lottie",
     loop: false,
-    duration: 1300,
-  },
-  pointLeft: {
-    src: "/marcos_Anim/10_MASCOT_POINT_LEFT.lottie",
-    loop: false,
     duration: 1400,
   },
   wink: {
     src: "/marcos_Anim/12_MASCOT_WINK.lottie",
     loop: false,
-    duration: 1000,
+    duration: 1100,
   },
 };
 
 /**
  * Marcos - AI Mascot for Udit's Portfolio
  * High-definition interactive 3D character with clean single-surface animation handoffs.
+ * Uses persistent dual-canvases with cross-fading so Marcos never disappears and limbs never duplicate.
  */
 const Marcos = forwardRef(function Marcos(
   {
@@ -73,12 +74,14 @@ const Marcos = forwardRef(function Marcos(
   ref
 ) {
   const [isHovered, setIsHovered] = useState(false);
-  const [currentAnimKey, setCurrentAnimKey] = useState("idle");
-  const [isActionReady, setIsActionReady] = useState(false);
+  const [activeMode, setActiveMode] = useState("idle"); // 'idle' | 'action'
+  const [actionSrc, setActionSrc] = useState(MARCOS_ANIMATIONS.wave.src);
+  const [actionLoop, setActionLoop] = useState(true);
   const [devicePixelRatio, setDevicePixelRatio] = useState(3);
 
-  const actionInstanceRef = useRef(null);
+  const actionDotLottieRef = useRef(null);
   const timeoutRef = useRef(null);
+  const cycleIndexRef = useRef(0);
   const idleIntervalRef = useRef(null);
 
   // Configure local wasm URL, determine screen pixel ratio, and pre-warm cache
@@ -98,76 +101,88 @@ const Marcos = forwardRef(function Marcos(
     }
   }, []);
 
-  // Update animation based on hover or forced props
+  // Callback to capture the action DotLottie player instance
+  const handleActionDotLottieRef = useCallback((instance) => {
+    actionDotLottieRef.current = instance;
+    if (instance) {
+      try {
+        instance.play();
+      } catch (e) {}
+    }
+  }, []);
+
+  // Safe helper to switch to an action animation without blinking
+  const triggerAction = useCallback((animKey, customDuration) => {
+    const config = MARCOS_ANIMATIONS[animKey];
+    if (!config) return;
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    setActionSrc(config.src);
+    setActionLoop(config.loop);
+
+    // Switch active display mode to action layer
+    setActiveMode("action");
+
+    // Play action instance
+    if (actionDotLottieRef.current) {
+      try {
+        actionDotLottieRef.current.play();
+      } catch (e) {}
+    }
+
+    // Return to idle after duration (if not looping infinitely)
+    const duration = customDuration || config.duration;
+    if (duration) {
+      timeoutRef.current = setTimeout(() => {
+        setActiveMode("idle");
+      }, duration);
+    }
+  }, []);
+
+  // Respond to hover and external animation prop
   useEffect(() => {
     if (forcedAnimation && MARCOS_ANIMATIONS[forcedAnimation]) {
-      setIsActionReady(false);
-      setCurrentAnimKey(forcedAnimation);
+      triggerAction(forcedAnimation);
       return;
     }
 
     if (isHovered) {
-      setIsActionReady(false);
-      setCurrentAnimKey("wave");
+      // While hovered, play the greeting wave continuously
+      triggerAction("wave");
     } else {
-      setIsActionReady(false);
-      setCurrentAnimKey("idle");
+      // Revert to idle cleanly
+      setActiveMode("idle");
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     }
-  }, [isHovered, forcedAnimation]);
+  }, [isHovered, forcedAnimation, triggerAction]);
 
-  // Occasional lifelike idle glances (e.g. lookLeft, lookUp, wink) every 11-14 seconds
+  // INCREASED FREQUENCY: Idle gesture loop every 6.5 seconds with prominent pointLeft prioritization
   useEffect(() => {
     if (forcedAnimation || isHovered) return;
 
+    // Pattern deliberately repeats pointLeft frequently so visitors are regularly guided toward site content
+    const gestures = ["pointLeft", "lookLeft", "pointLeft", "lookUp", "pointLeft", "wink"];
+
     idleIntervalRef.current = setInterval(() => {
-      const glances = ["lookLeft", "lookUp", "wink", "pointLeft"];
-      const randomGlance = glances[Math.floor(Math.random() * glances.length)];
-      const animConfig = MARCOS_ANIMATIONS[randomGlance];
+      const gesture = gestures[cycleIndexRef.current % gestures.length];
+      cycleIndexRef.current += 1;
 
-      setIsActionReady(false);
-      setCurrentAnimKey(randomGlance);
-
-      timeoutRef.current = setTimeout(() => {
-        setIsActionReady(false);
-        setCurrentAnimKey("idle");
-      }, animConfig.duration || 1000);
-    }, 12000);
+      triggerAction(gesture);
+    }, 6500);
 
     return () => {
       if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [forcedAnimation, isHovered]);
-
-  const handleActionRef = useCallback((instance) => {
-    if (!instance) return;
-    actionInstanceRef.current = instance;
-
-    const onReady = () => {
-      setIsActionReady(true);
-      try {
-        instance.play();
-      } catch (e) {}
-    };
-
-    if (instance.isLoaded) {
-      onReady();
-    } else {
-      instance.addEventListener("load", onReady);
-      instance.addEventListener("ready", onReady);
-    }
-  }, []);
+  }, [forcedAnimation, isHovered, triggerAction]);
 
   const handleClick = (e) => {
-    setIsActionReady(false);
-    setCurrentAnimKey("celebrate");
+    triggerAction("celebrate", 500);
     setTimeout(() => {
       onClick?.(e);
     }, 350);
   };
-
-  const isActionActive = currentAnimKey !== "idle";
-  const actionAnim = isActionActive ? MARCOS_ANIMATIONS[currentAnimKey] : null;
 
   return (
     <motion.div
@@ -214,12 +229,12 @@ const Marcos = forwardRef(function Marcos(
         {/* Soft Radial Ambient Glow */}
         <div className="absolute inset-x-4 top-8 bottom-4 -z-10 rounded-full bg-purple-500/0 group-hover:bg-purple-500/20 dark:group-hover:bg-purple-400/25 blur-2xl transition-all duration-300" />
 
-        {/* Mascot Container - Clean handoff between Idle and Gesture animations */}
+        {/* Mascot Container - Dual persistent layers with smooth crossfade */}
         <div className="relative w-36 h-48 sm:w-44 sm:h-56 md:w-52 md:h-64 flex items-center justify-center overflow-visible">
-          {/* BASE LAYER: Active during idle. Fades out smoothly when an action animation is ready to avoid duplicate limbs/hands. */}
+          {/* LAYER 1: Permanent Idle Player. Active during idle mode, fades down when action is active. */}
           <div
-            className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150 ${
-              isActionActive && isActionReady ? "opacity-0" : "opacity-100"
+            className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ease-in-out ${
+              activeMode === "idle" ? "opacity-100" : "opacity-0"
             }`}
           >
             <DotLottieReact
@@ -238,30 +253,28 @@ const Marcos = forwardRef(function Marcos(
             />
           </div>
 
-          {/* ACTION LAYER: Overlays gesture animations (wave, glance, celebrate). Active only when ready, hiding the idle layer underneath. */}
-          {actionAnim && (
-            <div
-              className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150 ${
-                isActionReady ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <DotLottieReact
-                src={actionAnim.src}
-                loop={actionAnim.loop}
-                autoplay={true}
-                dotLottieRefCallback={handleActionRef}
-                renderConfig={{
-                  devicePixelRatio: devicePixelRatio,
-                  autoResize: true,
-                }}
-                layout={{
-                  fit: "contain",
-                  align: [0.5, 0.5],
-                }}
-                className="w-full h-full transform scale-110 sm:scale-120 transition-transform duration-200 pointer-events-none"
-              />
-            </div>
-          )}
+          {/* LAYER 2: Action Player (Wave, Point Left, Look Up, Wink). Cross-fades smoothly so no blank canvas ever appears. */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ease-in-out ${
+              activeMode === "action" ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <DotLottieReact
+              src={actionSrc}
+              loop={actionLoop}
+              autoplay={true}
+              dotLottieRefCallback={handleActionDotLottieRef}
+              renderConfig={{
+                devicePixelRatio: devicePixelRatio,
+                autoResize: true,
+              }}
+              layout={{
+                fit: "contain",
+                align: [0.5, 0.5],
+              }}
+              className="w-full h-full transform scale-110 sm:scale-120 transition-transform duration-200 pointer-events-none"
+            />
+          </div>
         </div>
 
         {/* Grounding Contact Shadow */}
